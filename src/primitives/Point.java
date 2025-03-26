@@ -1,50 +1,93 @@
 package primitives;
 
+/**
+ * Represents a point in 3D space, defined by three coordinates (x, y, z).
+ */
 public class Point {
 
-   protected Double3 xyz;
-   public static Point ZERO = new Point(0.0,0.0,0.0);
+    /**
+     * The coordinates of the point.
+     */
+    protected Double3 xyz;
 
-    public Point(Double d1 , Double d2 , Double d3)
-    {
-        xyz = new Double3(d1,d2,d3);
+    /**
+     * A constant representing the point (0, 0, 0).
+     */
+    public static Point ZERO = new Point(0.0, 0.0, 0.0);
+
+    /**
+     * Constructs a Point with given coordinates.
+     *
+     * @param d1 the x-coordinate of the point
+     * @param d2 the y-coordinate of the point
+     * @param d3 the z-coordinate of the point
+     */
+    public Point(Double d1, Double d2, Double d3) {
+        xyz = new Double3(d1, d2, d3);
     }
-    public Point(Double3 d)
-    {
+
+    /**
+     * Constructs a Point using a Double3 object.
+     *
+     * @param d a Double3 object representing the coordinates
+     */
+    public Point(Double3 d) {
         this(d.d1(), d.d2(), d.d3());
     }
 
-    public Vector subtract (Point p)
-    {
+    /**
+     * Subtracts a given point from this point to get the resulting vector.
+     *
+     * @param p the point to subtract
+     * @return the resulting vector from the subtraction
+     */
+    public Vector subtract(Point p) {
         return new Vector(xyz.subtract(p.xyz));
     }
 
-    public Point add(Vector v)
-    {
+    /**
+     * Adds a given vector to this point, returning a new point.
+     *
+     * @param v the vector to add
+     * @return the resulting point after addition
+     */
+    public Point add(Vector v) {
         return new Point(this.xyz.add(v.xyz));
     }
 
-    public double distanceSquared(Point p)
-    {
-        return (this.xyz.d1() - p.xyz.d1()) * (this.xyz.d1() - p.xyz.d1()) + (this.xyz.d2() - p.xyz.d2()) * (this.xyz.d2() - p.xyz.d2()) + (this.xyz.d3() - p.xyz.d3()) * (this.xyz.d3() - p.xyz.d3());
+    /**
+     * Computes the squared distance from this point to another point.
+     *
+     * @param p the point to measure the distance to
+     * @return the squared distance between this point and the given point
+     */
+    public double distanceSquared(Point p) {
+        return (this.xyz.d1() - p.xyz.d1()) * (this.xyz.d1() - p.xyz.d1()) +
+                (this.xyz.d2() - p.xyz.d2()) * (this.xyz.d2() - p.xyz.d2()) +
+                (this.xyz.d3() - p.xyz.d3()) * (this.xyz.d3() - p.xyz.d3());
     }
 
-    public double distance(Point p)
-    {
+    /**
+     * Computes the distance from this point to another point.
+     *
+     * @param p the point to measure the distance to
+     * @return the distance between this point and the given point
+     */
+    public double distance(Point p) {
         return Math.sqrt(distanceSquared(p));
     }
+
 
     @Override
     public String toString() {
         return xyz.toString();
     }
 
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        return (obj instanceof Point other)
-                && xyz.equals(other.xyz);
+        return (obj instanceof Point other) && xyz.equals(other.xyz);
     }
-
-
 }
+

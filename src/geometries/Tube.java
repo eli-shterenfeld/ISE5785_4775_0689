@@ -2,17 +2,31 @@ package geometries;
 
 import primitives.*;
 
-public class Tube extends RadialGeometry{
+/**
+ * Represents an infinite tube in 3D space, defined by a radius and an axis.
+ */
+public class Tube extends RadialGeometry {
 
+    /**
+     * The axis of the tube.
+     */
     protected final Ray axis;
 
+    /**
+     * Constructs a Tube with a given radius and axis.
+     *
+     * @param radius the radius of the tube
+     * @param axis   the axis of the tube
+     */
     public Tube(double radius, Ray axis) {
         super(radius);
         this.axis = axis;
     }
+
 
     @Override
     public Vector getNormal(Point point) {
         return null;
     }
 }
+
