@@ -13,8 +13,8 @@ public class Payroll {
         Employee[] emp = new Employee[3];  // Create an array to hold Employee objects (of different types)
 
         emp[0] = new HourlyEmployee("ali", "shteren", 323054775, 30, 50);  // Initialize an HourlyEmployee object
-        emp[1] = new CommissionEmployee("david", "gindy", 331672204, 3, 34589.63f);  // Initialize a CommissionEmployee object
-        emp[2] = new BasePlusCommissionEmployee("tomas", "shelvi", 307212431, 4, 45696.79f, 59);  // Initialize a BasePlusCommissionEmployee object
+        emp[1] = new CommissionEmployee("david", "gindy", 331672204, 3, 10);  // Initialize a CommissionEmployee object
+        emp[2] = new BasePlusCommissionEmployee("tomas", "shelvi", 307212431, 4, 20, 59);  // Initialize a BasePlusCommissionEmployee object
 
         for (Employee Emp : emp) {  // Loop through each employee in the array
             /*
@@ -23,12 +23,12 @@ public class Payroll {
              */
             if (Emp instanceof BasePlusCommissionEmployee) {
                 BasePlusCommissionEmployee bese = (BasePlusCommissionEmployee) Emp;
-                bese.SetBaseSalary(bese.GetBaseSalary() * 1.10f);
+                bese.setBaseSalary(bese.getBaseSalary() * 1.10f);
             }
 
             // Print the employee's details using toString()
             System.out.println(Emp);
-            System.out.println("his earn: " + Emp.earning());
+            System.out.println("his earn: " + Emp.earnings());
         }
     }
 }
