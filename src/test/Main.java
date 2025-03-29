@@ -9,6 +9,8 @@ import primitives.*;
 /**
  * Test program for the 1st stage
  * @author Dan Zilberstein
+ * student 1 name: eli shterenfeld, id: 323054775, mail: alishtren11@gmail.com
+ * student 2: name david gindy, id : 322330689, mail: daviddaviddavid0584@gmail.com
  */
 public final class Main {
    /** A point for tests at (1,2,3) */
