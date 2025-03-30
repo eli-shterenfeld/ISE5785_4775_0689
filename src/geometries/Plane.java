@@ -1,4 +1,5 @@
 package geometries;
+
 import primitives.*;
 
 /**
@@ -39,7 +40,7 @@ public class Plane extends Geometry {
     /**
      * Constructs a plane using a point and a normal vector.
      *
-     * @param p1    a point on the plane
+     * @param p1     a point on the plane
      * @param normal the normal vector of the plane
      */
     public Plane(Point p1, Vector normal) {
