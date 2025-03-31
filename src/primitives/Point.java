@@ -32,7 +32,7 @@ public class Point {
      * @param d a Double3 object representing the coordinates
      */
     public Point(Double3 d) {
-        this(d.d1(), d.d2(), d.d3());
+        xyz = d;
     }
 
     /**
