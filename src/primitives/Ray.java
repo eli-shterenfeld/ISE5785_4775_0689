@@ -8,12 +8,12 @@ public class Ray {
     /**
      * The starting point (head) of the ray.
      */
-    Point head;
+    private final Point head;
 
     /**
      * The direction vector of the ray.
      */
-    Vector direction;
+    private final Vector direction;
 
     /**
      * Constructs a Ray with a given starting point and direction vector.
@@ -38,6 +38,14 @@ public class Ray {
         if (this == obj) return true;
         return (obj instanceof Ray other)
                 && head.equals(other.head) && direction.equals(other.direction);
+    }
+
+    public Point getHead() {
+        return head;
+    }
+
+    public Vector getDirection() {
+        return direction;
     }
 }
 

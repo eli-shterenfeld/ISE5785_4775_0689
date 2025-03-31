@@ -33,8 +33,11 @@ public class Plane extends Geometry {
      */
     public Plane(Point p1, Point p2, Point p3) {
         super();
-        normal = null; // Normal calculation should be implemented
         p = p1;
+
+        Vector v1 = p1.subtract(p2);
+        Vector v2 = p2.subtract(p3);
+        normal = v1.crossProduct(v2).normalize();
     }
 
     /**
@@ -51,7 +54,7 @@ public class Plane extends Geometry {
 
 
     @Override
-    Vector getNormal(Point p) {
+    public Vector getNormal(Point p) {
         return normal;
     }
 }
