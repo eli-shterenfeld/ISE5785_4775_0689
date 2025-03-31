@@ -29,7 +29,7 @@ public class Ray {
 
     @Override
     public String toString() {
-        return head.toString() + direction.toString();
+        return "Ray:" + head + direction;
     }
 
 
