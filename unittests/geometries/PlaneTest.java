@@ -20,18 +20,13 @@ class PlaneTest {
         Vector v1 = p1.subtract(p2);
         Vector v2 = p2.subtract(p3);
 
-        Vector v0 = new Vector(0,0,0);
-
-
         Plane pl = new Plane(p1, p2, p3);
-
 
         assertEquals(1, pl.normal.length(), DELTA);
 
-        assertEquals(v0, pl.normal.crossProduct(v1));
+        assertEquals(0, pl.normal.dotProduct(v1));
 
-        assertEquals(v0, pl.normal.crossProduct(v2));
-
+        assertEquals(0, pl.normal.dotProduct(v2));
 
         // =============== Boundary Values Tests ==================
         assertThrows(IllegalArgumentException.class, //

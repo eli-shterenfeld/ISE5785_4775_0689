@@ -22,13 +22,13 @@ class TubeTest {
         Vector normal = new Vector(1, 0, 0);
 
         assertEquals(1, tube.getNormal(p).length(), DELTA, "incorrect normal length");
-        assertEquals(normal, tube.getNormal(p), "incorrect normal length");
+        assertEquals(normal, tube.getNormal(p), "incorrect normal");
 
 
         // =============== Boundary Values Tests ==================
          p = new Point(1.0, 0.0, 0.0);
 
         assertEquals(1, tube.getNormal(p).length(), DELTA, "incorrect normal length");
-        assertEquals(normal, tube.getNormal(p), "incorrect normal length");
+        assertEquals(normal, tube.getNormal(p), "incorrect normal");
     }
 }

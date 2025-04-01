@@ -29,9 +29,14 @@ public class Tube extends RadialGeometry {
     public Vector getNormal(Point point) {
         Point head = axis.getHead();
         Vector direction = axis.getDirection();
-        //ליבדוק אם להכניס את ה t
+
+        //לבדוק אם להכניס את ה t
         //double t = point.subtract(head).dotProduct(direction);
-        return point.subtract(head.add(direction.scale(point.subtract(head).dotProduct(direction)))).normalize();
+        Vector v = point.subtract(head);
+        if(v.dotProduct(direction) == 0)
+            return v.normalize();
+
+        return point.subtract(head.add(direction.scale(v.dotProduct(direction)))).normalize();
     }
 }
 
