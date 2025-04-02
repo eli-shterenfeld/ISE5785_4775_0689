@@ -12,7 +12,6 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author eli
  */
 class TubeTest {
-
     /**
      * Test method for {@link geometries.Tube#getNormal(primitives.Point)}.
      * This test verifies the correct calculation of the normal vector at a given point on the tube.

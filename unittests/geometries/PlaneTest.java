@@ -11,7 +11,6 @@ import static org.junit.jupiter.api.Assertions.*;
  *  @author eli
  */
 class PlaneTest {
-
     /**
      * Test method for {@link geometries.Plane#Plane(primitives.Point, primitives.Point, primitives.Point)} constructor.
      * This test verifies that the constructor correctly calculates the normal vector

@@ -11,7 +11,6 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author eli
  */
 class SphereTest {
-
     /**
      * Test method for {@link geometries.Sphere#getNormal(primitives.Point)}.
      * This test verifies that the normal vector calculation is correct and normalized.

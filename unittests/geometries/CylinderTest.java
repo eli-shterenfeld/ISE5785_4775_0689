@@ -12,7 +12,6 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author eli
  */
 class CylinderTest {
-
     /**
      * Test method for {@link geometries.Cylinder#getNormal(primitives.Point)}.
      * This test verifies that the normal vector is correctly calculated
