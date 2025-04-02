@@ -8,7 +8,7 @@ public class Point {
     /**
      * The coordinates of the point.
      */
-    protected Double3 xyz;
+    final protected Double3 xyz;
 
     /**
      * A constant representing the point (0, 0, 0).

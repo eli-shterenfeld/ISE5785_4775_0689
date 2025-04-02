@@ -10,19 +10,12 @@ public class Plane extends Geometry {
     /**
      * A point on the plane.
      */
-    Point p;
+    final private Point p;
 
     /**
      * The normal vector of the plane.
      */
-    Vector normal;
-
-    /**
-     * Default constructor for a plane.
-     */
-    public Plane() {
-        super();
-    }
+    final private Vector normal;
 
     /**
      * Constructs a plane using three points in space.
