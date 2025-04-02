@@ -17,15 +17,15 @@ public final class Main {
     /**
      * A point for tests at (1,2,3)
      */
-    private static final Point P1 = new Point(1.0, 2.0, 3.0);
+    private static final Point P1 = new Point(1, 2, 3);
     /**
      * A point for tests at (2,4,6)
      */
-    private static final Point P2 = new Point(2.0, 4.0, 6.0);
+    private static final Point P2 = new Point(2, 4, 6);
     /**
      * A point for tests at (2,4,5)
      */
-    private static final Point P3 = new Point(2.0, 4.0, 5.0);
+    private static final Point P3 = new Point(2, 4, 5);
 
     /**
      * A vector for tests to (1,2,3)

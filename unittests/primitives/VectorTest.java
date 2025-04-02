@@ -8,7 +8,7 @@ class VectorTest {
 
     Vector v1 = new Vector(1,0, 0);
     @Test
-    void add() {
+    void testAdd() {
         // ============ Equivalence Partitions Tests ==============
         assertEquals(new Vector(2,1,0), v1.add(new Vector(1,1, 0)), "adding two vector of acute angle");
 
@@ -20,7 +20,19 @@ class VectorTest {
     }
 
     @Test
-    void scale() {
+    void testSubtract() {
+        // ============ Equivalence Partitions Tests ==============
+        assertEquals(new Vector(0,-1,0), v1.subtract(new Vector(1,1, 0)), "subtracting two vector of acute angle");
+
+        assertEquals(new Vector(2,-1,0), v1.subtract(new Vector(-1,1, 0)), "subtracting two vector of obtuse angle");
+
+        // =============== Boundary Values Tests ==================
+        assertThrows(IllegalArgumentException.class, () -> v1.subtract(new Vector(1,0, 0)),
+                "Expected subtracting opposite vectors to throw an exception");
+    }
+
+    @Test
+    void testScale() {
         // ============ Equivalence Partitions Tests ==============
         Vector v2 = new Vector(1, 7, 0);
         double scalar = 5;
@@ -28,7 +40,7 @@ class VectorTest {
     }
 
     @Test
-    void dotProduct() {
+    void testDotProduct() {
         // ============ Equivalence Partitions Tests ==============
         assertEquals(1, v1.dotProduct(new Vector(1,1, 0)), "dot Product two vector of acute angle");
 
@@ -41,7 +53,7 @@ class VectorTest {
     }
 
     @Test
-    void crossProduct() {
+    void testCrossProduct() {
         // ============ Equivalence Partitions Tests ==============
         assertEquals(new Vector(0,0,1), v1.crossProduct(new Vector(1,1, 0)), "cross product two vector of acute angle");
 
@@ -62,21 +74,21 @@ class VectorTest {
     }
 
     @Test
-    void lengthSquared() {
+    void testLengthSquared() {
         // ============ Equivalence Partitions Tests ==============
         Vector v1 = new Vector(4,0, 0);
         assertEquals(16, v1.lengthSquared(), "length squared");
     }
 
     @Test
-    void length() {
+    void testLength() {
         // ============ Equivalence Partitions Tests ==============
         Vector v1 = new Vector(4,0, 0);
         assertEquals(4, v1.length(), "length");
     }
 
     @Test
-    void normalize() {
+    void testNormalize() {
         // ============ Equivalence Partitions Tests ==============
         Vector v1 = new Vector(4,0, 0);
         assertEquals(new Vector(1,0,0), v1.normalize(), "normalized vector");
