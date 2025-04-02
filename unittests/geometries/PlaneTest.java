@@ -34,11 +34,11 @@ class PlaneTest {
         Plane pl = new Plane(p1, p2, p3);
 
         // Check that the normal is a unit vector
-        assertEquals(1, pl.normal.length(), DELTA);
+        assertEquals(1, pl.getNormal().length(), DELTA);
 
         // Check that the normal is perpendicular to both vectors defining the plane
-        assertEquals(0, pl.normal.dotProduct(v1));
-        assertEquals(0, pl.normal.dotProduct(v2));
+        assertEquals(0, pl.getNormal().dotProduct(v1));
+        assertEquals(0, pl.getNormal().dotProduct(v2));
 
         // =============== Boundary Values Tests ==================
         // Test case: two identical points (should throw an exception)
@@ -87,9 +87,9 @@ class PlaneTest {
         Vector reversedNormal = new Vector(0,0,-1);
 
         // Check that the calculated normal matches one of the expected directions
-        assertTrue(normal.equals(pl.normal) || reversedNormal.equals(pl.normal),"incorrect normal");
+        assertTrue(normal.equals(pl.getNormal()) || reversedNormal.equals(pl.getNormal()),"incorrect normal");
 
         // Check that the normal is normalized
-        assertEquals(1, pl.normal.length(),DELTA, "the normal is not normalized");
+        assertEquals(1, pl.getNormal().length(),DELTA, "the normal is not normalized");
     }
 }

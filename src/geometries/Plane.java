@@ -50,4 +50,9 @@ public class Plane extends Geometry {
     public Vector getNormal(Point p) {
         return normal;
     }
+
+
+    public Vector getNormal() {
+        return normal;
+    }
 }
