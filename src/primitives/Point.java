@@ -13,7 +13,7 @@ public class Point {
     /**
      * A constant representing the point (0, 0, 0).
      */
-    public static Point ZERO = new Point(0.0, 0.0, 0.0);
+    public static Point ZERO = new Point(0, 0, 0);
 
     /**
      * Constructs a Point with given coordinates.
