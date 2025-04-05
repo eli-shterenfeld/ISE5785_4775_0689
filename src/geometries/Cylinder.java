@@ -39,7 +39,7 @@ public class Cylinder extends Tube {
 
         Point upperBase = head.add(direction.scale(height));
 
-        if (upperBase.equals(point) ||upperBase.subtract(point).dotProduct(direction) == 0)
+        if (upperBase.equals(point) || upperBase.subtract(point).dotProduct(direction) == 0)
             return direction;
 
         return super.getNormal(point);

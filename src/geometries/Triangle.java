@@ -13,7 +13,9 @@ public class Triangle extends Polygon {
     }
 
     @Override
-    public Vector getNormal(Point p) { return super.getNormal(p); }
+    public Vector getNormal(Point p) {
+        return super.getNormal(p);
+    }
 
 
 }
