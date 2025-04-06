@@ -38,10 +38,20 @@ public class Ray {
                 && head.equals(other.head) && direction.equals(other.direction);
     }
 
+    /**
+     * Returns the starting point (head) of the ray.
+     *
+     * @return the starting point
+     */
     public Point getHead() {
         return head;
     }
 
+    /**
+     * Returns the direction vector of the ray.
+     *
+     * @return the direction vector
+     */
     public Vector getDirection() {
         return direction;
     }

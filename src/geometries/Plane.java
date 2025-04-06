@@ -50,7 +50,13 @@ public class Plane extends Geometry {
         return normal;
     }
 
-    public Vector getNormal() {
+    /**
+     * Returns the normal vector of the plane.
+     * Useful when the normal is constant and independent of the point on the plane.
+     *
+     * @return the normalized normal vector of the plane
+     */
+    public Vector getNormalPlane() {
         return normal;
     }
 }

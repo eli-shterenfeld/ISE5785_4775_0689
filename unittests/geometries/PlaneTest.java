@@ -35,13 +35,13 @@ class PlaneTest {
         Plane pl = new Plane(p1, p2, p3);
 
         // TC04: Check that the normal is a unit vector
-        assertEquals(1, pl.getNormal().length(), DELTA);
+        assertEquals(1, pl.getNormalPlane().length(), DELTA);
 
         // TC05: Check that the normal is perpendicular to vector v1
-        assertEquals(0, pl.getNormal().dotProduct(v1));
+        assertEquals(0, pl.getNormalPlane().dotProduct(v1));
 
         // TC06: Check that the normal is perpendicular to vector v2
-        assertEquals(0, pl.getNormal().dotProduct(v2));
+        assertEquals(0, pl.getNormalPlane().dotProduct(v2));
 
         // =============== Boundary Values Tests ==================
 
@@ -93,9 +93,9 @@ class PlaneTest {
         Vector reversedNormal = new Vector(0, 0, -1);
 
         // TC04: Check that the calculated normal matches one of the expected directions
-        assertTrue(normal.equals(pl.getNormal()) || reversedNormal.equals(pl.getNormal()), "incorrect normal");
+        assertTrue(normal.equals(pl.getNormalPlane()) || reversedNormal.equals(pl.getNormalPlane()), "incorrect normal");
 
         // TC05: Check that the normal is normalized
-        assertEquals(1, pl.getNormal().length(), DELTA, "the normal is not normalized");
+        assertEquals(1, pl.getNormalPlane().length(), DELTA, "the normal is not normalized");
     }
 }
