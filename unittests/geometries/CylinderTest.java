@@ -5,6 +5,8 @@ import primitives.Point;
 import primitives.Ray;
 import primitives.Vector;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -70,4 +72,18 @@ class CylinderTest {
         assertEquals(normal, c1.getNormal(p1), "point on the upper base on the edge");
         assertEquals(1, c1.getNormal(p1).normalize().length(), DELTA, "point on the upper base on the edge");
     }
+
+
+
+
+
+    @Test
+    public void testFindIntersections() {
+
+
+    }
+
+
+
+
 }

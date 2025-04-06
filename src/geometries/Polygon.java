@@ -93,4 +93,9 @@ public class Polygon extends Geometry {
         return plane.getNormal(point);
     }
 
+
+    public List<Point> findIntersections(Ray ray) {
+        return null;
+
+    }
 }

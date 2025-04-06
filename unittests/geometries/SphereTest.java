@@ -32,4 +32,12 @@ class SphereTest {
         // TC02: Verify that the normal is a unit vector
         assertEquals(1, sph.getNormal(new Point(0, 0, 1)).length(), "Normal vector is not normalized");
     }
+
+
+    @Test
+    public void testFindIntersections() {
+
+
+    }
+
 }

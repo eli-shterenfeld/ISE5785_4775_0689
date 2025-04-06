@@ -2,6 +2,9 @@ package geometries;
 
 import primitives.*;
 
+import java.util.List;
+import static primitives.Util.*;
+
 /**
  * Represents a plane in 3D space, defined by a point and a normal vector.
  */
@@ -49,4 +52,28 @@ public class Plane extends Geometry {
     public Vector getNormal(Point p) {
         return normal;
     }
+
+
+
+
+
+    public List<Point> findIntersections(Ray ray) {
+
+        //בודק אם הקרן מקבילה למישור
+        double VdotN = ray.getDirection().dotProduct(normal);
+        if(isZero(VdotN))
+            return null;
+
+        //הסקאלר לקרן
+        double t = ( normal.dotProduct(p.subtract(ray.getHead())) )/ VdotN;
+
+        //אם הסקאלר הוא 0 או מאוד קרוב לא נחשיב כחיתוך
+        if(alignZero(t) <= 0)
+            return null;
+
+
+       return List.of(ray.getHead().add(ray.getDirection().scale(t)));
+
+    }
+
 }

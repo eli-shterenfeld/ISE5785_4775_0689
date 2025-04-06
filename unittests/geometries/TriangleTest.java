@@ -43,4 +43,13 @@ class TriangleTest {
         // TC06: Verify that the normal is a unit vector
         assertEquals(1, tr.getNormal(in).length(), DELTA, "Normal vector is not normalized");
     }
+
+
+
+    @Test
+    public void testFindIntersections() {
+
+
+    }
+
 }

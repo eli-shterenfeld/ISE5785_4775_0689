@@ -2,6 +2,8 @@ package geometries;
 
 import primitives.*;
 
+import java.util.List;
+
 /**
  * Represents an infinite tube in 3D space, defined by a radius and an axis.
  */
@@ -36,5 +38,13 @@ public class Tube extends RadialGeometry {
 
         return point.subtract(head.add(direction.scale(v.dotProduct(direction)))).normalize();
     }
+
+
+
+    public List<Point> findIntersections(Ray ray) {
+        return null;
+
+    }
+
 }
 

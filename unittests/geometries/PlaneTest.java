@@ -98,4 +98,14 @@ class PlaneTest {
         // TC05: Check that the normal is normalized
         assertEquals(1, pl.getNormal(p1).length(), DELTA, "the normal is not normalized");
     }
+
+
+
+
+    @Test
+    public void testFindIntersections() {
+
+
+    }
+
 }

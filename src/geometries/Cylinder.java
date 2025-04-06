@@ -4,6 +4,8 @@ import primitives.Point;
 import primitives.Ray;
 import primitives.Vector;
 
+import java.util.List;
+
 /**
  * Represents a cylinder, which extends a Tube and has a specific height.
  */
@@ -47,6 +49,13 @@ public class Cylinder extends Tube {
         // Otherwise, point lies on the curved side – defer to Tube’s implementation
         return super.getNormal(point);
     }
+
+
+    public List<Point> findIntersections(Ray ray) {
+        return null;
+
+    }
+
 }
 
 

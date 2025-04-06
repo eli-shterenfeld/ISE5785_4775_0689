@@ -2,6 +2,10 @@ package geometries;
 
 import primitives.*;
 
+import java.util.List;
+import static primitives.Util.*;
+
+
 /**
  * Represents a sphere in 3D space, defined by a center point and a radius.
  */
@@ -27,4 +31,43 @@ public class Sphere extends RadialGeometry {
     public Vector getNormal(Point point) {
         return point.subtract(center).normalize();
     }
+
+
+    public List<Point> findIntersections(Ray ray) {
+
+        //וקטור מראש הקרן למרכז המעגל
+       Vector u = center.subtract(ray.getHead());
+
+        //תוספת שלי, אם הקרן מחוץ לכדור וגם הזווית בין u לכיוון הקרן גדולה מ 90 אז אין חיתוכים
+       if(alignZero(u.dotProduct(ray.getDirection())) <= 0 && alignZero(u.length()) >= radius)
+           return null;
+           
+
+       //צד אחד של המשולש
+       double tm = u.dotProduct(ray.getDirection());
+       //המרחק בריבוע ממרכז המעגל
+       double dSquared = u.lengthSquared() - tm*tm;
+
+       //אם המרחק גדול או שווה לרדיוס
+       if(alignZero(Math.sqrt(dSquared) - radius) >= 0)
+           return null;
+
+       double th = Math.sqrt(radius*radius - dSquared);
+
+
+
+       //לסדר את הקטע הזה
+        if(alignZero(tm - th) <= 0 && alignZero(tm + th) <= 0)
+           return null;
+        if(alignZero(tm - th) <= 0 && alignZero(tm + th) > 0)
+            return List.of( ray.getHead().add(ray.getDirection().scale(tm + th)));
+        if(alignZero(tm - th) > 0 && alignZero(tm + th) <= 0)
+            return null;
+
+        if(alignZero(tm - th) > 0 && alignZero(tm + th) > 0)
+            return List.of( ray.getHead().add(ray.getDirection().scale(tm-th)), ray.getHead().add(ray.getDirection().scale(tm +th)));
+
+
+    }
+
 }

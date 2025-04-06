@@ -5,7 +5,7 @@ import primitives.*;
 /**
  * Abstract class representing a geometric shape.
  */
-abstract public class Geometry {
+abstract public class Geometry implements Intersectable {
 
     /**
      * Computes the normal vector at a given point on the geometry.

@@ -1,7 +1,10 @@
 package geometries;
 
 import primitives.Point;
+import primitives.Ray;
 import primitives.Vector;
+
+import java.util.List;
 
 /**
  * Represents a triangle, which is a specific type of polygon.
@@ -23,4 +26,11 @@ public class Triangle extends Polygon {
     public Vector getNormal(Point p) {
         return super.getNormal(p);
     }
+
+
+    public List<Point> findIntersections(Ray ray) {
+        return null;
+
+    }
+
 }
