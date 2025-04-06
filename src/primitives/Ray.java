@@ -26,12 +26,10 @@ public class Ray {
         direction = v.normalize();
     }
 
-
     @Override
     public String toString() {
         return "Ray:" + head + direction;
     }
-
 
     @Override
     public boolean equals(Object obj) {

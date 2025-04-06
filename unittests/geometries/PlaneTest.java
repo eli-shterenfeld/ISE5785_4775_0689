@@ -8,7 +8,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit tests for {@link Plane} class.
- *  @author eli and david
+ *
+ * @author eli and david
  */
 class PlaneTest {
     /**
@@ -88,13 +89,13 @@ class PlaneTest {
         Plane pl = new Plane(p1, p2, p3);
 
         // TC03: Define possible normal directions
-        Vector normal = new Vector(0,0,1);
-        Vector reversedNormal = new Vector(0,0,-1);
+        Vector normal = new Vector(0, 0, 1);
+        Vector reversedNormal = new Vector(0, 0, -1);
 
         // TC04: Check that the calculated normal matches one of the expected directions
-        assertTrue(normal.equals(pl.getNormal()) || reversedNormal.equals(pl.getNormal()),"incorrect normal");
+        assertTrue(normal.equals(pl.getNormal()) || reversedNormal.equals(pl.getNormal()), "incorrect normal");
 
         // TC05: Check that the normal is normalized
-        assertEquals(1, pl.getNormal().length(),DELTA, "the normal is not normalized");
+        assertEquals(1, pl.getNormal().length(), DELTA, "the normal is not normalized");
     }
 }

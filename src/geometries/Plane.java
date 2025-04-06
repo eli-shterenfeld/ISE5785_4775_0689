@@ -45,12 +45,10 @@ public class Plane extends Geometry {
         this.normal = normal.normalize();
     }
 
-
     @Override
     public Vector getNormal(Point p) {
         return normal;
     }
-
 
     public Vector getNormal() {
         return normal;

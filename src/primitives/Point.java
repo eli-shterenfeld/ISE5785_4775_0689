@@ -77,12 +77,10 @@ public class Point {
         return Math.sqrt(distanceSquared(p));
     }
 
-
     @Override
     public String toString() {
         return xyz.toString();
     }
-
 
     @Override
     public boolean equals(Object obj) {

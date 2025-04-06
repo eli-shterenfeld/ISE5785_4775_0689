@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit tests for primitives.Point class.
+ *
  * @author eli and david
  */
 class PointTest {
@@ -15,6 +16,10 @@ class PointTest {
      */
     private final Point p1 = new Point(1, 2, 3);
 
+    /**
+     * Test method for {@link primitives.Point#subtract(primitives.Point)}.
+     * This test verifies correct subtraction of two points.
+     */
     @Test
     void testSubtract() {
         // ============ Equivalence Partitions Tests ==============
@@ -32,6 +37,10 @@ class PointTest {
         assertEquals(new Vector(1, 2, 3), p1.subtract(Point.ZERO), "subtracting Point zero");
     }
 
+    /**
+     * Test method for {@link primitives.Point#add(primitives.Vector)}.
+     * This test verifies correct addition of a point and a vector.
+     */
     @Test
     void testAdd() {
         // ============ Equivalence Partitions Tests ==============
@@ -45,6 +54,10 @@ class PointTest {
         assertEquals(Point.ZERO, p1.add(new Vector(-1, -2, -3)), "adding upset vector to a point");
     }
 
+    /**
+     * Test method for {@link primitives.Point#distanceSquared(primitives.Point)}.
+     * This test verifies correct calculation of the squared distance between two points.
+     */
     @Test
     void testDistanceSquared() {
         // ============ Equivalence Partitions Tests ==============
@@ -61,6 +74,10 @@ class PointTest {
         assertEquals(new Vector(1, 2, 3).lengthSquared(), p1.distanceSquared(Point.ZERO), "distance squared of a point to zero");
     }
 
+    /**
+     * Test method for {@link primitives.Point#distance(primitives.Point)}.
+     * This test verifies correct calculation of the Euclidean distance between two points.
+     */
     @Test
     void testDistance() {
         // ============ Equivalence Partitions Tests ==============
