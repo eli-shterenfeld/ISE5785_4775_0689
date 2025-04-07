@@ -71,9 +71,7 @@ public class Plane extends Geometry {
         if(alignZero(t) <= 0)
             return null;
 
-
-       return List.of(ray.getHead().add(ray.getDirection().scale(t)));
-
+        return List.of(ray.getPoint(t));
     }
 
 }

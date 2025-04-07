@@ -55,19 +55,17 @@ public class Sphere extends RadialGeometry {
        double th = Math.sqrt(radius*radius - dSquared);
 
 
-
-       //לסדר את הקטע הזה
+       //בודק כל מקרה
+        if(alignZero(tm - th) > 0 && alignZero(tm + th) > 0)
+            return List.of( ray.getPoint(tm-th), ray.getPoint(tm + th));
+        if(alignZero(tm - th) <= 0 && alignZero(tm + th) > 0)
+            return List.of(ray.getPoint(tm + th));
         if(alignZero(tm - th) <= 0 && alignZero(tm + th) <= 0)
            return null;
-        if(alignZero(tm - th) <= 0 && alignZero(tm + th) > 0)
-            return List.of( ray.getHead().add(ray.getDirection().scale(tm + th)));
-        if(alignZero(tm - th) > 0 && alignZero(tm + th) <= 0)
-            return null;
+        //if(alignZero(tm - th) > 0 && alignZero(tm + th) <= 0)
+        //   return null;
 
-        if(alignZero(tm - th) > 0 && alignZero(tm + th) > 0)
-            return List.of( ray.getHead().add(ray.getDirection().scale(tm-th)), ray.getHead().add(ray.getDirection().scale(tm +th)));
-
-
+        return null;
     }
 
 }

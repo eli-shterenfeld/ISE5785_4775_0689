@@ -104,6 +104,7 @@ class PlaneTest {
 
     @Test
     public void testFindIntersections() {
+        // ============ Equivalence Partitions Tests ==============
 
 
     }
