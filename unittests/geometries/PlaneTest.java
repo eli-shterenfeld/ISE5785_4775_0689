@@ -3,6 +3,7 @@ package geometries;
 import org.junit.jupiter.api.Test;
 import primitives.Point;
 import primitives.Vector;
+import primitives.Ray;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -12,6 +13,9 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author eli and david
  */
 class PlaneTest {
+
+    final Plane plane = new Plane (new Point(0,0,1),new Vector(0,0,1));
+
     /**
      * Test method for {@link geometries.Plane#Plane(primitives.Point, primitives.Point, primitives.Point)} constructor.
      * This test verifies that the constructor correctly calculates the normal vector
@@ -105,6 +109,9 @@ class PlaneTest {
     @Test
     public void testFindIntersections() {
         // ============ Equivalence Partitions Tests ==============
+        // TC01: Ray intersects the plane
+        Ray ray = new Ray(new Point(0,1,0),new Vector(0,1,1));
+        assertEquals(new Point(0,1,1), plane.findIntersections(ray).getFirst(), "Ray should intersect the plane");
 
 
     }
