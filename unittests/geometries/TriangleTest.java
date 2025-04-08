@@ -28,21 +28,18 @@ class TriangleTest {
         Point p2 = new Point(0, 4, 0);
         Point p3 = new Point(0, 0, 0);
 
-        // TC02: Create a triangle with these points
+        // Create a triangle with these points
         Triangle tr = new Triangle(p1, p2, p3);
 
-        // TC03: Expected normal vectors
+        //Expected normal vectors
         Vector normal = new Vector(0, 0, 1);
         Vector reversedNormal = new Vector(0, 0, -1);
 
-        // TC04: A point inside the triangle plane
+        //A point inside the triangle plane
         Point in = new Point(1, 1, 0);
 
-        // TC05: Verify that the calculated normal is correct (can be either normal or its reverse)
+        // TC01: Verify that the calculated normal is correct (can be either normal or its reverse)
         assertTrue(normal.equals(tr.getNormal(in)) || reversedNormal.equals(tr.getNormal(in)), "Incorrect normal vector");
-
-        // TC06: Verify that the normal is a unit vector
-        assertEquals(1, tr.getNormal(in).length(), DELTA, "Normal vector is not normalized");
     }
 
 

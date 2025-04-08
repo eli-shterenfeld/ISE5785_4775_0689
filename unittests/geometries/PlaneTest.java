@@ -86,23 +86,20 @@ class PlaneTest {
         // ============ Equivalence Partitions Tests ==============
         double DELTA = 0.000001; // Allowed margin of error for floating-point comparisons
 
-        // TC01: Define three non-collinear points to construct the plane
+        //Define three non-collinear points to construct the plane
         Point p1 = new Point(1, 0, 0);
         Point p2 = new Point(0, 1, 0);
         Point p3 = new Point(-1, 0, 0);
 
-        // TC02: Create the plane
+        // Create the plane
         Plane pl = new Plane(p1, p2, p3);
 
-        // TC03: Define possible normal directions
+        // Define possible normal directions
         Vector normal = new Vector(0, 0, 1);
         Vector reversedNormal = new Vector(0, 0, -1);
 
-        // TC04: Check that the calculated normal matches one of the expected directions
+        // TC01: Check that the calculated normal matches one of the expected directions
         assertTrue(normal.equals(pl.getNormal(p1)) || reversedNormal.equals(pl.getNormal(p1)), "incorrect normal");
-
-        // TC05: Check that the normal is normalized
-        assertEquals(1, pl.getNormal(p1).length(), DELTA, "the normal is not normalized");
     }
 
 

@@ -28,7 +28,6 @@ public class Plane extends Geometry {
      * @param p3 the third point
      */
     public Plane(Point p1, Point p2, Point p3) {
-        super();
         p = p1;
 
         Vector v1 = p1.subtract(p2);
@@ -43,7 +42,6 @@ public class Plane extends Geometry {
      * @param normal the normal vector of the plane
      */
     public Plane(Point p1, Vector normal) {
-        super();
         p = p1;
         this.normal = normal.normalize();
     }
