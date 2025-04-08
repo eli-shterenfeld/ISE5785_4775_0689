@@ -31,17 +31,14 @@ class TubeTest {
         Point p = new Point(1, 0, 3);
         Vector normal = new Vector(1, 0, 0);
 
-        // TC01: Verify the normal vector is correct and has unit length
-        assertEquals(1, tube.getNormal(p).length(), DELTA, "Incorrect normal length");
-
-        // TC02: Verify the normal vector is correct
+        // TC01: Verify the normal vector is correct
         assertEquals(normal, tube.getNormal(p), "Incorrect normal vector");
 
         // =============== Boundary Values Tests ==================
         // Test normal for a point at the base of the tube
         p = new Point(1, 0, 0);
 
-        // TC03: Verify the normal vector is correct
+        // TC02: Verify the normal vector is correct
         assertEquals(normal, tube.getNormal(p), "Incorrect normal vector");
     }
 
