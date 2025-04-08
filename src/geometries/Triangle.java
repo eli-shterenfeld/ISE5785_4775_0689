@@ -44,6 +44,9 @@ public class Triangle extends Polygon {
         Point b = vertices.get(1);
         Point c = vertices.get(2);
 
+        if(q.equals(a) || q.equals(b) || q.equals(c))
+            return null;
+
         Vector v0 = c.subtract(a); // c - a
         Vector v1 = b.subtract(a); // b - a
         Vector v2 = q.subtract(a); // q - a

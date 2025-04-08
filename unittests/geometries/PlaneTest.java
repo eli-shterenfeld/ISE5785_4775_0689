@@ -5,6 +5,8 @@ import primitives.Point;
 import primitives.Vector;
 import primitives.Ray;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -111,11 +113,11 @@ class PlaneTest {
         // ============ Equivalence Partitions Tests ==============
         // TC01: Ray is not parallel nor orthogonal and intersects
         Ray ray = new Ray(new Point(0,1,0),new Vector(0,1,1));
-        assertEquals(new Point(0,1,1), plane.findIntersections(ray).getFirst(), "Ray should intersect the plane");
+        assertEquals(new Point(0,2,1), plane.findIntersections(ray).getFirst(), "Ray should intersect the plane");
 
         // TC02: Ray is not parallel nor orthogonal and does not intersect
         ray = new Ray(new Point(0,1,0),new Vector(0,-1,-1));
-        assertEquals(new Point(0,1,1), plane.findIntersections(ray).getFirst(), "Ray should not intersect the plane");
+        assertNull(plane.findIntersections(ray), "Ray should not intersect the plane");
 
 
         // =============== Boundary Values Tests ==================
@@ -131,17 +133,17 @@ class PlaneTest {
 
 
         // **** Group 2: Ray's line is orthogonal to the plane
-        // TC05: Ray contained in the plane
+        // TC05: Ray is orthogonal and starts after the plane
         ray = new Ray(new Point(0,1,2),new Vector(0,0,1));
         assertNull(plane.findIntersections(ray), "Ray is orthogonal and starts after the plane");
 
-        // TC06: Ray contained in the plane
+        // TC06: Ray is orthogonal and starts in the plane
         ray = new Ray(new Point(0,1,1),new Vector(0,0,1));
         assertNull(plane.findIntersections(ray), "Ray is orthogonal and starts in the plane");
 
-        // TC07: Ray contained in the plane
+        // TC07: Ray is orthogonal and starts before the plane
         ray = new Ray(new Point(0,1,0),new Vector(0,0,1));
-        assertEquals(new Point(0,1,1), plane.findIntersections(ray), "Ray is orthogonal and starts before the plane");
+        assertEquals(new Point(0,1,1), plane.findIntersections(ray).getFirst(), "Ray is orthogonal and starts before the plane");
 
 
         // **** Group 3: Ray is not parallel nor orthogonal but starts in the plane

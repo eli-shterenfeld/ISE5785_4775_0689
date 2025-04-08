@@ -50,7 +50,7 @@ class SphereTest {
 
         // TC1: Ray starts outside the sphere (2 point)
         intersections = sphere.findIntersections(new Ray(new Point(-4, 3, 4), new Vector(1, 0, 0)));
-        p1 = new Point(3, 3, 4);
+        p1 = new Point(-3, 3, 4);
         p2 = new Point(7, 3, 4);
         assertEquals(2, intersections.size(), "there should be 2 intersection");
         assertEquals(List.of(p1, p2), intersections , "incorrect intersections");
@@ -84,7 +84,7 @@ class SphereTest {
         assertEquals(List.of(p1), intersections , "incorrect intersections");
 
         // TC6: Ray starts on the sphere to the outside (0 point)
-        intersections = sphere.findIntersections(new Ray(new Point(-3, 3, 4), new Vector(1, 0, 0)));
+        intersections = sphere.findIntersections(new Ray(new Point(7, 3, 4), new Vector(1, 0, 0)));
         assertNull(intersections, "there should be 0 intersections");
 
 
@@ -148,7 +148,7 @@ class SphereTest {
         sphere = new Sphere(5, new Point(2, 3, 4));
 
         // TC16: Ray starts inside the sphere (1 point)
-        p1 = new Point(7, 3, 4);
+        p1 = new Point(6.898979485566356, 2, 4);
         intersections = sphere.findIntersections(new Ray(new Point(2, 2, 4), new Vector(1, 0, 0)));
         assertEquals(1, intersections.size(), "there should be 1 intersections");
         assertEquals(List.of(p1), intersections , "incorrect intersections");

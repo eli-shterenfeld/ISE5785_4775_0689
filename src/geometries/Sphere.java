@@ -35,6 +35,10 @@ public class Sphere extends RadialGeometry {
 
     public List<Point> findIntersections(Ray ray) {
 
+        //אם המקור הקרן הוא מרכז הכדור
+        if(center.equals(ray.getHead()))
+            return List.of(ray.getPoint(radius));
+
         //וקטור מראש הקרן למרכז המעגל
        Vector u = center.subtract(ray.getHead());
 
@@ -63,7 +67,7 @@ public class Sphere extends RadialGeometry {
         if(alignZero(tm - th) <= 0 && alignZero(tm + th) <= 0)
            return null;
         //if(alignZero(tm - th) > 0 && alignZero(tm + th) <= 0)
-        //   return null;
+        //  return null;
 
         return null;
     }

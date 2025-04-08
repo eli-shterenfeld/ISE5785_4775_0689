@@ -2,6 +2,7 @@ package geometries;
 
 import org.junit.jupiter.api.Test;
 import primitives.Point;
+import primitives.Ray;
 import primitives.Vector;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -49,6 +50,34 @@ class TriangleTest {
     @Test
     public void testFindIntersections() {
 
+        Triangle t1 = new Triangle(new Point(1,0,0), new Point(1,2,0), new Point(5,0,0));
+        Ray ray = null;
+
+        // ============ Equivalence Partitions Tests ==============
+        // TC01: Ray intersects the triangle
+        ray = new Ray(new Point(2,1,1),new Vector(0,0,-1));
+        assertEquals(new Point(2,1,0), t1.findIntersections(ray).getFirst(), "incorrect intersection");
+
+        // TC02: Ray passes between one of the triangle's points
+        ray = new Ray(new Point(6,-1,1),new Vector(0,0,-1));
+        assertNull(t1.findIntersections(ray), "there should not be any intersections");
+
+        // TC03: Ray passes near one of the triangle's lines
+        ray = new Ray(new Point(2,-1,1),new Vector(0,0,-1));
+        assertNull(t1.findIntersections(ray), "there should not be any intersections");
+
+        // =============== Boundary Values Tests ==================
+        // TC04: Ray passes on one of the triangle's lines
+        ray = new Ray(new Point(2,0,1),new Vector(0,0,-1));
+        assertNull(t1.findIntersections(ray), "there should not be any intersections");
+
+        // TC05: Ray passes on one of the triangle's points
+        ray = new Ray(new Point(1,0,1),new Vector(0,0,-1));
+        assertNull(t1.findIntersections(ray), "there should not be any intersections");
+
+        // TC06: Ray passes on one of the triangle's imaginary continued lines
+        ray = new Ray(new Point(1,-1,1),new Vector(0,0,-1));
+        assertNull(t1.findIntersections(ray), "there should not be any intersections");
 
     }
 

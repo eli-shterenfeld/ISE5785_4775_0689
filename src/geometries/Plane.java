@@ -59,6 +59,10 @@ public class Plane extends Geometry {
 
     public List<Point> findIntersections(Ray ray) {
 
+        //בודק אם תחילת הקרן הוא בסיס המישור
+        if(p.equals(ray.getHead()))
+            return null;
+
         //בודק אם הקרן מקבילה למישור
         double VdotN = ray.getDirection().dotProduct(normal);
         if(isZero(VdotN))
