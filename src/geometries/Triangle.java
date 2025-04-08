@@ -23,15 +23,6 @@ public class Triangle extends Polygon {
         super(p1, p2, p3);
     }
 
-    @Override
-    public Vector getNormal(Point p) {
-        return super.getNormal(p);
-    }
-
-
-
-
-
     public List<Point> findIntersections(Ray ray) {
 
         List<Point> intersection = plane.findIntersections(ray);

@@ -3,6 +3,7 @@ package geometries;
 import primitives.*;
 
 import java.util.List;
+import static primitives.Util.*;
 
 /**
  * Represents an infinite tube in 3D space, defined by a radius and an axis.
@@ -33,10 +34,11 @@ public class Tube extends RadialGeometry {
         //לבדוק אם להכניס את ה t
         //double t = point.subtract(head).dotProduct(direction);
         Vector v = point.subtract(head);
-        if (v.dotProduct(direction) == 0)
+        double t = v.dotProduct(direction);
+        if (isZero(t))
             return v.normalize();
 
-        return point.subtract(axis.getPoint(v.dotProduct(direction))).normalize();
+        return point.subtract(axis.getPoint(t)).normalize();
     }
 
 

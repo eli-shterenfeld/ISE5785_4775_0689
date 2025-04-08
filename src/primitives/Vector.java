@@ -70,7 +70,7 @@ public class Vector extends Point {
      */
     public Vector crossProduct(Vector v) {
         return new Vector(this.xyz.d2() * v.xyz.d3() - v.xyz.d2() * this.xyz.d3(),
-                -(this.xyz.d1() * v.xyz.d3() - v.xyz.d1() * this.xyz.d3()),
+                -this.xyz.d1() * v.xyz.d3() + v.xyz.d1() * this.xyz.d3(),
                 this.xyz.d1() * v.xyz.d2() - v.xyz.d1() * this.xyz.d2());
     }
 
@@ -98,9 +98,8 @@ public class Vector extends Point {
      *
      * @return the normalized vector
      */
-    public Vector normalize() {
-        double length = length(); // check if this is ok
-        return new Vector(this.xyz.d1() / length, this.xyz.d2() / length, this.xyz.d3() / length);
+    public Vector normalize() {// check if this is ok
+        return new Vector(this.xyz.reduce(length()));
     }
 
     @Override
