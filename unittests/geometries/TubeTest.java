@@ -20,8 +20,6 @@ class TubeTest {
     @Test
     void testGetNormal() {
         // ============ Equivalence Partitions Tests ==============
-        double DELTA = 0.000001;
-
         // Define the radius and ray for the tube
         double radius = 1;
         Ray ray = new Ray(new Point(0, 0, 0), new Vector(0, 0, 1));
