@@ -26,28 +26,6 @@ public class Geometries implements Intersectable {
 
     public List<Point> findIntersections(Ray ray) {
 
-        /*List<Point> intersections = new ArrayList<>(); // A mutable list to store intersections
-
-        for (Intersectable geometry : geometries) {
-            List<Point> intersectionPoints = geometry.findIntersections(ray);
-            if (intersectionPoints != null) {
-                intersections.addAll(intersectionPoints); // Use addAll to combine points
-            }
-        }
-
-        return intersections; // Return the mutable list of intersections*/
-
-
-
-
-
-
-
-
-
-
-
-
         List<Point> L = null;
         List<Point> found = null;
 
@@ -62,7 +40,7 @@ public class Geometries implements Intersectable {
                 if (L == null)
                     L = new ArrayList<>(found);
                 else
-                    L.addAll(new ArrayList<>(found));
+                    L.addAll(found);
             }
             found = null;
         }
