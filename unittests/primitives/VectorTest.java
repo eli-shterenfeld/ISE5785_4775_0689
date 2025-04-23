@@ -24,9 +24,9 @@ class VectorTest {
     void testAdd() {
         // ============ Equivalence Partitions Tests ==============
         // TC01: adding two vectors with an acute angle
-        assertEquals(new Vector(2, 1, 0), v1.add(new Vector(1, 1, 0)), "adding two vectors with an acute angle");
+        assertEquals(new Vector(2, 1, 0), v1.add(new Vector(1, 1, 0)), "incorrect vector");
         // TC02: adding two vectors with an obtuse angle
-        assertEquals(new Vector(0, 1, 0), v1.add(new Vector(-1, 1, 0)), "adding two vectors with an obtuse angle");
+        assertEquals(new Vector(0, 1, 0), v1.add(new Vector(-1, 1, 0)), "incorrect vector");
 
         // =============== Boundary Values Tests ==================
         // TC03: adding opposite vectors (should throw exception)
@@ -42,9 +42,9 @@ class VectorTest {
     void testSubtract() {
         // ============ Equivalence Partitions Tests ==============
         // TC01: subtracting two vectors with an acute angle
-        assertEquals(new Vector(0, -1, 0), v1.subtract(new Vector(1, 1, 0)), "subtracting two vectors with an acute angle");
+        assertEquals(new Vector(0, -1, 0), v1.subtract(new Vector(1, 1, 0)), "incorrect vector");
         // TC02: subtracting two vectors with an obtuse angle
-        assertEquals(new Vector(2, -1, 0), v1.subtract(new Vector(-1, 1, 0)), "subtracting two vectors with an obtuse angle");
+        assertEquals(new Vector(2, -1, 0), v1.subtract(new Vector(-1, 1, 0)), "incorrect vector");
 
         // =============== Boundary Values Tests ==================
         // TC03: subtracting identical vectors (should throw exception)
@@ -62,7 +62,7 @@ class VectorTest {
         // TC01: scaling a vector
         Vector v2 = new Vector(1, 7, 0);
         double scalar = 5;
-        assertEquals(new Vector(5, 35, 0), v2.scale(scalar), "scaling a vector");
+        assertEquals(new Vector(5, 35, 0), v2.scale(scalar), "incorrect vector");
     }
 
     /**
@@ -73,15 +73,15 @@ class VectorTest {
     void testDotProduct() {
         // ============ Equivalence Partitions Tests ==============
         // TC01: dot product of two vectors with an acute angle
-        assertEquals(1, v1.dotProduct(new Vector(1, 1, 0)), "dot product of two vectors with an acute angle");
+        assertEquals(1, v1.dotProduct(new Vector(1, 1, 0)), "incorrect dot product of two vectors with an acute angle");
         // TC02: dot product of two vectors with an obtuse angle
-        assertEquals(-1, v1.dotProduct(new Vector(-1, 1, 0)), "dot product of two vectors with an obtuse angle");
+        assertEquals(-1, v1.dotProduct(new Vector(-1, 1, 0)), "incorrect dot product of two vectors with an obtuse angle");
 
         // =============== Boundary Values Tests ==================
         // TC03: dot product of orthogonal vectors
-        assertEquals(0, v1.dotProduct(new Vector(0, 4, 0)), "dot product of orthogonal vectors");
+        assertEquals(0, v1.dotProduct(new Vector(0, 4, 0)), "incorrect dot product of orthogonal vectors");
         // TC04: dot product with a unit vector
-        assertEquals(1, v1.dotProduct(new Vector(1, 4, 0)), "dot product with a unit vector");
+        assertEquals(1, v1.dotProduct(new Vector(1, 4, 0)), "incorrect dot product with a unit vector");
     }
 
     /**
@@ -92,9 +92,9 @@ class VectorTest {
     void testCrossProduct() {
         // ============ Equivalence Partitions Tests ==============
         // TC01: cross product of two vectors with an acute angle
-        assertEquals(new Vector(0, 0, 1), v1.crossProduct(new Vector(1, 1, 0)), "cross product of two vectors with an acute angle");
+        assertEquals(new Vector(0, 0, 1), v1.crossProduct(new Vector(1, 1, 0)), "incorrect cross product of two vectors with an acute angle");
         // TC02: cross product of two vectors with an obtuse angle
-        assertEquals(new Vector(0, 0, 1), v1.crossProduct(new Vector(-1, 1, 0)), "cross product of two vectors with an obtuse angle");
+        assertEquals(new Vector(0, 0, 1), v1.crossProduct(new Vector(-1, 1, 0)), "incorrect cross product of two vectors with an obtuse angle");
 
         // =============== Boundary Values Tests ==================
         // TC03: cross product of two vectors with the same direction and length
@@ -120,7 +120,7 @@ class VectorTest {
         // ============ Equivalence Partitions Tests ==============
         // TC01: length squared calculation
         Vector v1 = new Vector(4, 0, 0);
-        assertEquals(16, v1.lengthSquared(), "length squared calculation");
+        assertEquals(16, v1.lengthSquared(), "incorrect length squared calculation");
     }
 
     /**
@@ -132,7 +132,7 @@ class VectorTest {
         // ============ Equivalence Partitions Tests ==============
         // TC01: length calculation
         Vector v1 = new Vector(4, 0, 0);
-        assertEquals(4, v1.length(), "length calculation");
+        assertEquals(4, v1.length(), "incorrect length calculation");
     }
 
     /**
@@ -144,6 +144,6 @@ class VectorTest {
         // ============ Equivalence Partitions Tests ==============
         // TC01: vector normalization
         Vector v1 = new Vector(4, 0, 0);
-        assertEquals(new Vector(1, 0, 0), v1.normalize(), "vector normalization");
+        assertEquals(new Vector(1, 0, 0), v1.normalize(), "incorrect vector normalization");
     }
 }

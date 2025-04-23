@@ -63,19 +63,22 @@ class TriangleTest {
         ray = new Ray(new Point(2,-1,1),new Vector(0,0,-1));
         assertNull(t1.findIntersections(ray), "there should not be any intersections");
 
+        // TC04: Ray parallel to the triangle's plane
+        ray = new Ray(new Point(1,0,1),new Vector(1,0,0));
+        assertNull(t1.findIntersections(ray), "there should not be any intersections");
+
         // =============== Boundary Values Tests ==================
-        // TC04: Ray passes on one of the triangle's lines
+        // TC05: Ray passes on one of the triangle's lines
         ray = new Ray(new Point(2,0,1),new Vector(0,0,-1));
         assertNull(t1.findIntersections(ray), "there should not be any intersections");
 
-        // TC05: Ray passes on one of the triangle's points
+        // TC06: Ray passes on one of the triangle's points
         ray = new Ray(new Point(1,0,1),new Vector(0,0,-1));
         assertNull(t1.findIntersections(ray), "there should not be any intersections");
 
-        // TC06: Ray passes on one of the triangle's imaginary continued lines
+        // TC07: Ray passes on one of the triangle's imaginary continued lines
         ray = new Ray(new Point(1,-1,1),new Vector(0,0,-1));
         assertNull(t1.findIntersections(ray), "there should not be any intersections");
-
     }
 
 }

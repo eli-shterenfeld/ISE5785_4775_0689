@@ -122,35 +122,35 @@ class PlaneTest {
         // **** Group 1: Ray's line is parallel or orthogonal to the plane
         // TC03: "Ray is parallel to the plane
         ray = new Ray(new Point(0,1,0),new Vector(0,1,0));
-        assertNull(plane.findIntersections(ray), "Ray is parallel to the plane");
+        assertNull(plane.findIntersections(ray), "Ray should not intersect the plane");
 
         // TC04: Ray contained in the plane
         ray = new Ray(new Point(0,1,1),new Vector(0,1,0));
-        assertNull(plane.findIntersections(ray), "Ray contained in the plane");
+        assertNull(plane.findIntersections(ray), "Ray should not intersect the plane");
 
 
         // **** Group 2: Ray's line is orthogonal to the plane
         // TC05: Ray is orthogonal and starts after the plane
         ray = new Ray(new Point(0,1,2),new Vector(0,0,1));
-        assertNull(plane.findIntersections(ray), "Ray is orthogonal and starts after the plane");
+        assertNull(plane.findIntersections(ray), "Ray should not intersect the plane");
 
         // TC06: Ray is orthogonal and starts in the plane
         ray = new Ray(new Point(0,1,1),new Vector(0,0,1));
-        assertNull(plane.findIntersections(ray), "Ray is orthogonal and starts in the plane");
+        assertNull(plane.findIntersections(ray), "Ray should not intersect the plane");
 
         // TC07: Ray is orthogonal and starts before the plane
         ray = new Ray(new Point(0,1,0),new Vector(0,0,1));
-        assertEquals(new Point(0,1,1), plane.findIntersections(ray).getFirst(), "Ray is orthogonal and starts before the plane");
+        assertEquals(new Point(0,1,1), plane.findIntersections(ray).getFirst(), "incorrect intersections");
 
 
         // **** Group 3: Ray is not parallel nor orthogonal but starts in the plane
         // TC05: Ray contained in the plane
         ray = new Ray(new Point(0,0,1),new Vector(0,1,1));
-        assertNull(plane.findIntersections(ray), "Ray starts in p(main point)");
+        assertNull(plane.findIntersections(ray), "Ray should not intersect the plane");
 
         // TC06: Ray contained in the plane
         ray = new Ray(new Point(0,1,1),new Vector(0,1,1));
-        assertNull(plane.findIntersections(ray), "Ray starts somewhere in the plane");
+        assertNull(plane.findIntersections(ray), "Ray should not intersect the plane");
 
     }
 

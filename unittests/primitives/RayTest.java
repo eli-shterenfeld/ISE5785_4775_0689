@@ -8,17 +8,18 @@ class RayTest {
 
     @Test
     void getPoint() {
-        // ============ Equivalence Partitions Tests ==============
 
+        // ============ Equivalence Partitions Tests ==============
         Ray ray = new Ray(new Point(0,0,1), new Vector(0,0,1));
 
-        assertEquals(new Point(0,0, 5), ray.getPoint(4),"positive scale");
+        // TC01: positive scaling
+        assertEquals(new Point(0,0, 5), ray.getPoint(4),"incorrect positive scale");
 
-        assertEquals(new Point(0,0,-1), ray.getPoint(-2),"negative scale");
-
+        // TC02: negative scaling
+        assertEquals(new Point(0,0,-1), ray.getPoint(-2),"incorrect negative scale");
 
         // =============== Boundary Values Tests ==================
-
-        assertEquals(new Point(0,0, 1), ray.getPoint(0),"zero scale");
+        // TC03: scaling by zero
+        assertEquals(new Point(0,0, 1), ray.getPoint(0),"incorrect zero scale");
     }
 }
