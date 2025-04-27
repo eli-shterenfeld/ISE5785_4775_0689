@@ -52,25 +52,26 @@ public class Plane extends Geometry {
         return normal;
     }
 
+    @Override
     public List<Point> findIntersections(Ray ray) {
 
-        //בודק אם תחילת הקרן הוא בסיס המישור
+        // Check if the ray origin coincides with the plane's reference point
         if (p.equals(ray.getHead()))
             return null;
 
-        //בודק אם הקרן מקבילה למישור
+        // Check if the ray is parallel to the plane
         double VdotN = ray.getDirection().dotProduct(normal);
         if (isZero(VdotN))
             return null;
 
-        //הסקאלר לקרן
+        // Calculate the scalar parameter t for the intersection point
         double t = (normal.dotProduct(p.subtract(ray.getHead()))) / VdotN;
 
-        //אם הסקאלר הוא 0 או מאוד קרוב לא נחשיב כחיתוך
+        // If t is zero or negative (or very close to zero), consider no intersection
         if (alignZero(t) <= 0)
             return null;
 
+        // Return the intersection point as a list
         return List.of(ray.getPoint(t));
     }
-
 }

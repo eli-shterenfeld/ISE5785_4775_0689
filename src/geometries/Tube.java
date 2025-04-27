@@ -32,8 +32,6 @@ public class Tube extends RadialGeometry {
         Point head = axis.getHead();
         Vector direction = axis.getDirection();
 
-        //לבדוק אם להכניס את ה t
-        //double t = point.subtract(head).dotProduct(direction);
         Vector v = point.subtract(head);
         double t = v.dotProduct(direction);
         if (isZero(t))
@@ -42,12 +40,7 @@ public class Tube extends RadialGeometry {
         return point.subtract(axis.getPoint(t)).normalize();
     }
 
-    /**
-     * Finds the intersection points between a ray and the tube.
-     *
-     * @param ray the ray to intersect with the tube
-     * @return a list of intersection points or {@code null} if there are no intersections
-     */
+    @Override
     public List<Point> findIntersections(Ray ray) {
         return null;
     }

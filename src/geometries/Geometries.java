@@ -51,11 +51,7 @@ public class Geometries implements Intersectable {
         this.geometries.addAll(List.of(geometries));
     }
 
-    /**
-     * Adds a single intersectable geometry to the current Geometries object.
-     *
-     * @param ray for all the geometries
-     */
+    @Override
     public List<Point> findIntersections(Ray ray) {
 
         List<Point> L = null;
