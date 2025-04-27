@@ -81,5 +81,10 @@ class TriangleTest {
         // TC07: Ray passes on one of the triangle's imaginary continued lines
         ray = new Ray(new Point(1, -1, 1), new Vector(0, 0, -1));
         assertNull(t1.findIntersections(ray), "there should not be any intersections");
+
+        // TC08: Ray starts inside the triangle
+        ray = new Ray(new Point(2, 1, 0), new Vector(0, 0, -1));
+        assertNull(t1.findIntersections(ray), "there should not be any intersections");
+
     }
 }
