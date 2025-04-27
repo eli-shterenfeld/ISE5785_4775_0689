@@ -50,12 +50,15 @@ public class Cylinder extends Tube {
         return super.getNormal(point);
     }
 
-
+    /**
+     * Finds the intersection points between a ray and the cylinder.
+     *
+     * @param ray the ray to intersect with the cylinder
+     * @return a list of intersection points or {@code null} if there are no intersections
+     */
     public List<Point> findIntersections(Ray ray) {
         return null;
-
     }
-
 }
 
 

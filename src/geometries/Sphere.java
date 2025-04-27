@@ -3,6 +3,7 @@ package geometries;
 import primitives.*;
 
 import java.util.List;
+
 import static primitives.Util.*;
 
 
@@ -32,44 +33,47 @@ public class Sphere extends RadialGeometry {
         return point.subtract(center).normalize();
     }
 
-
+    /**
+     * Finds the intersection points between a ray and the sphere.
+     *
+     * @param ray the ray to intersect with the sphere
+     * @return a list of intersection points or {@code null} if there are no intersections
+     */
     public List<Point> findIntersections(Ray ray) {
 
-        //אם המקור הקרן הוא מרכז הכדור
-        if(center.equals(ray.getHead()))
+        // if the ray origin is the center of the sphere
+        if (center.equals(ray.getHead()))
             return List.of(ray.getPoint(radius));
 
-        //וקטור מראש הקרן למרכז המעגל
-       Vector u = center.subtract(ray.getHead());
+        // vector from ray head to the center of the sphere
+        Vector u = center.subtract(ray.getHead());
 
-        //תוספת שלי, אם הקרן מחוץ לכדור וגם הזווית בין u לכיוון הקרן גדולה מ 90 אז אין חיתוכים
-       if(alignZero(u.dotProduct(ray.getDirection())) <= 0 && alignZero(u.length()) >= radius)
-           return null;
-           
+        // projection of u on the ray direction
+        double tm = u.dotProduct(ray.getDirection());
 
-       //צד אחד של המשולש
-       double tm = u.dotProduct(ray.getDirection());
-       //המרחק בריבוע ממרכז המעגל
-       double dSquared = u.lengthSquared() - tm*tm;
+        // additional check: if the ray is outside the sphere and the angle between u and the ray direction is greater than 90, then no intersection
+        if (alignZero(tm) <= 0 && alignZero(u.length()) >= radius)
+            return null;
 
-       //אם המרחק גדול או שווה לרדיוס
-       if(alignZero(Math.sqrt(dSquared) - radius) >= 0)
-           return null;
+        // squared distance from the center of the sphere to the ray
+        double dSquared = u.lengthSquared() - tm * tm;
 
-       double th = Math.sqrt(radius*radius - dSquared);
+        // if the distance is greater than or equal to the radius
+        if (alignZero(dSquared - radius * radius) >= 0)
+            return null;
 
+        double th = Math.sqrt(radius * radius - dSquared);
 
-       //בודק כל מקרה
-        if(alignZero(tm - th) > 0 && alignZero(tm + th) > 0)
-            return List.of( ray.getPoint(tm-th), ray.getPoint(tm + th));
-        if(alignZero(tm - th) <= 0 && alignZero(tm + th) > 0)
+        // check each case
+        if (alignZero(tm - th) > 0 && alignZero(tm + th) > 0)
+            return List.of(ray.getPoint(tm - th), ray.getPoint(tm + th));
+
+        if (alignZero(tm - th) <= 0 && alignZero(tm + th) > 0)
             return List.of(ray.getPoint(tm + th));
-        if(alignZero(tm - th) <= 0 && alignZero(tm + th) <= 0)
-           return null;
-        //if(alignZero(tm - th) > 0 && alignZero(tm + th) <= 0)
-        //  return null;
+
+        if (alignZero(tm - th) <= 0 && alignZero(tm + th) <= 0)
+            return null;
 
         return null;
     }
-
 }

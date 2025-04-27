@@ -42,43 +42,44 @@ class TriangleTest {
         assertTrue(normal.equals(tr.getNormal(in)) || reversedNormal.equals(tr.getNormal(in)), "Incorrect normal vector");
     }
 
-
-
+    /**
+     * Test method for {@link geometries.Triangle#findIntersections(primitives.Ray)}.
+     * This test verifies the intersection points of a ray with the triangle.
+     */
     @Test
     public void testFindIntersections() {
 
-        Triangle t1 = new Triangle(new Point(1,0,0), new Point(1,2,0), new Point(5,0,0));
+        Triangle t1 = new Triangle(new Point(1, 0, 0), new Point(1, 2, 0), new Point(5, 0, 0));
         Ray ray = null;
 
         // ============ Equivalence Partitions Tests ==============
         // TC01: Ray intersects the triangle
-        ray = new Ray(new Point(2,1,1),new Vector(0,0,-1));
-        assertEquals(new Point(2,1,0), t1.findIntersections(ray).getFirst(), "incorrect intersection");
+        ray = new Ray(new Point(2, 1, 1), new Vector(0, 0, -1));
+        assertEquals(new Point(2, 1, 0), t1.findIntersections(ray).getFirst(), "incorrect intersection");
 
         // TC02: Ray passes between one of the triangle's points
-        ray = new Ray(new Point(6,-1,1),new Vector(0,0,-1));
+        ray = new Ray(new Point(6, -1, 1), new Vector(0, 0, -1));
         assertNull(t1.findIntersections(ray), "there should not be any intersections");
 
         // TC03: Ray passes near one of the triangle's lines
-        ray = new Ray(new Point(2,-1,1),new Vector(0,0,-1));
+        ray = new Ray(new Point(2, -1, 1), new Vector(0, 0, -1));
         assertNull(t1.findIntersections(ray), "there should not be any intersections");
 
         // TC04: Ray parallel to the triangle's plane
-        ray = new Ray(new Point(1,0,1),new Vector(1,0,0));
+        ray = new Ray(new Point(1, 0, 1), new Vector(1, 0, 0));
         assertNull(t1.findIntersections(ray), "there should not be any intersections");
 
         // =============== Boundary Values Tests ==================
         // TC05: Ray passes on one of the triangle's lines
-        ray = new Ray(new Point(2,0,1),new Vector(0,0,-1));
+        ray = new Ray(new Point(2, 0, 1), new Vector(0, 0, -1));
         assertNull(t1.findIntersections(ray), "there should not be any intersections");
 
         // TC06: Ray passes on one of the triangle's points
-        ray = new Ray(new Point(1,0,1),new Vector(0,0,-1));
+        ray = new Ray(new Point(1, 0, 1), new Vector(0, 0, -1));
         assertNull(t1.findIntersections(ray), "there should not be any intersections");
 
         // TC07: Ray passes on one of the triangle's imaginary continued lines
-        ray = new Ray(new Point(1,-1,1),new Vector(0,0,-1));
+        ray = new Ray(new Point(1, -1, 1), new Vector(0, 0, -1));
         assertNull(t1.findIntersections(ray), "there should not be any intersections");
     }
-
 }

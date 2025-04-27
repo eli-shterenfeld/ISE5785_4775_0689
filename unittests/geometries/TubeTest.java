@@ -40,14 +40,4 @@ class TubeTest {
         assertEquals(normal, tube.getNormal(p), "Incorrect normal vector");
     }
 
-
-
-
-    @Test
-    public void testFindIntersections() {
-
-
-    }
-
-
 }

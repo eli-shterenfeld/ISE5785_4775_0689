@@ -17,6 +17,7 @@ abstract public class RadialGeometry extends Geometry {
      * The square of the radius, used for distance calculations.
      */
     protected final double radiusSquared;
+
     /**
      * Constructs a RadialGeometry with a specified radius.
      *

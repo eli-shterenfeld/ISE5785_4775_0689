@@ -3,6 +3,7 @@ package geometries;
 import primitives.*;
 
 import java.util.List;
+
 import static primitives.Util.*;
 
 /**
@@ -51,26 +52,22 @@ public class Plane extends Geometry {
         return normal;
     }
 
-
-
-
-
     public List<Point> findIntersections(Ray ray) {
 
         //בודק אם תחילת הקרן הוא בסיס המישור
-        if(p.equals(ray.getHead()))
+        if (p.equals(ray.getHead()))
             return null;
 
         //בודק אם הקרן מקבילה למישור
         double VdotN = ray.getDirection().dotProduct(normal);
-        if(isZero(VdotN))
+        if (isZero(VdotN))
             return null;
 
         //הסקאלר לקרן
-        double t = ( normal.dotProduct(p.subtract(ray.getHead())) )/ VdotN;
+        double t = (normal.dotProduct(p.subtract(ray.getHead()))) / VdotN;
 
         //אם הסקאלר הוא 0 או מאוד קרוב לא נחשיב כחיתוך
-        if(alignZero(t) <= 0)
+        if (alignZero(t) <= 0)
             return null;
 
         return List.of(ray.getPoint(t));

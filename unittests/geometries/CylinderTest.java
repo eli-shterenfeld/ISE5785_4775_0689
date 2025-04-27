@@ -72,18 +72,4 @@ class CylinderTest {
         assertEquals(normal, c1.getNormal(p1), "point on the upper base on the edge");
         assertEquals(1, c1.getNormal(p1).normalize().length(), DELTA, "point on the upper base on the edge");
     }
-
-
-
-
-
-    @Test
-    public void testFindIntersections() {
-
-
-    }
-
-
-
-
 }

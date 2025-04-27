@@ -3,6 +3,7 @@ package geometries;
 import primitives.*;
 
 import java.util.List;
+
 import static primitives.Util.*;
 
 /**
@@ -41,12 +42,14 @@ public class Tube extends RadialGeometry {
         return point.subtract(axis.getPoint(t)).normalize();
     }
 
-
-
+    /**
+     * Finds the intersection points between a ray and the tube.
+     *
+     * @param ray the ray to intersect with the tube
+     * @return a list of intersection points or {@code null} if there are no intersections
+     */
     public List<Point> findIntersections(Ray ray) {
         return null;
-
     }
-
 }
 

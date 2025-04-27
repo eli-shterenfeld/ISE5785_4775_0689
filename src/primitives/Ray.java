@@ -1,4 +1,5 @@
 package primitives;
+
 import static primitives.Util.*;
 
 /**
@@ -57,17 +58,18 @@ public class Ray {
         return direction;
     }
 
-
-
-
-
+    /**
+     * Returns a point on the ray at a distance t from the starting point (head).
+     *
+     * @param t the distance from the head
+     * @return the point on the ray at distance t
+     */
     public Point getPoint(double t) {
-
-        if(isZero(t))
+        try {
+            return head.add(direction.scale(t));
+        } catch (IllegalArgumentException e) {
             return head;
-
-        return head.add(direction.scale(t));
+        }
     }
-
 }
 
