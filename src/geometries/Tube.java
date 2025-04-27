@@ -32,8 +32,6 @@ public class Tube extends RadialGeometry {
         Point head = axis.getHead();
         Vector direction = axis.getDirection();
 
-        //לבדוק אם להכניס את ה t
-        //double t = point.subtract(head).dotProduct(direction);
         Vector v = point.subtract(head);
         double t = v.dotProduct(direction);
         if (isZero(t))

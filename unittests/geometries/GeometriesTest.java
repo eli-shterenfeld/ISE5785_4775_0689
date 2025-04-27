@@ -60,7 +60,7 @@ class GeometriesTest {
         geo.add(plane, triangle, sphere);
         assertEquals(1, geo.findIntersections(ray).size(), "there should be 1 point of intersection");
 
-        // TC04: Ray intersects the triangle
+        // TC04: all the shapes intersected
         geo = new Geometries();
         plane = new Plane(new Point(0, 0, 1), new Vector(0, 0, 1));
         triangle = new Triangle(new Point(10, 0, 2), new Point(0, 10, 2), new Point(0, 0, -1));
