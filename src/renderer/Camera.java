@@ -8,31 +8,80 @@ import java.util.MissingResourceException;
 
 import static primitives.Util.isZero;
 
+/**
+ * Represents a camera in a 3D rendering system.
+ */
 public class Camera implements Cloneable {
 
+    /**
+     * The location of the camera in 3D space.
+     */
     private Point location = new Point(0, 0, 0);
+
+    /**
+     * The forward direction vector of the camera.
+     */
     private Vector to, up, right;
-    private double vpWidth = 0.0, vpHeight = 0.0;
+
+    /**
+     * The width of the view plane.
+     */
+    private double vpWidth = 0.0;
+
+    /**
+     * The height of the view plane.
+     */
+    private double vpHeight = 0.0;
+
+    /**
+     * The distance from the camera to the view plane.
+     */
     private double vpDistance = 0.0;
 
+    /**
+     * Private constructor to prevent instantiation from outside the builder.
+     */
     private Camera() {
-
     }
 
+    /**
+     * Returns a new builder instance for creating a Camera object.
+     *
+     * @return a new Builder instance
+     */
     public static Builder getBuilder() {
         return new Builder();
     }
 
+    /**
+     * Builder class for creating Camera instances.
+     */
     public static class Builder {
 
+        /**
+         * The Camera object being constructed by this builder.
+         */
         private final Camera camera = new Camera();
 
+        /**
+         * Sets the location of the camera.
+         *
+         * @param p the location point
+         * @return the current Builder instance
+         */
         public Builder setLocation(Point p) {
             if (p == null) throw new IllegalArgumentException("Location cannot be null");
             camera.location = p;
             return this;
         }
 
+        /**
+         * Sets the forward and upward direction vectors of the camera.
+         *
+         * @param to forward direction vector
+         * @param up upward direction vector
+         * @return the current Builder instance
+         */
         public Builder setDirection(Vector to, Vector up) {
             if (to == null || up == null) throw new IllegalArgumentException("Vectors cannot be null");
 
@@ -42,6 +91,13 @@ public class Camera implements Cloneable {
             return this;
         }
 
+        /**
+         * Sets the camera direction using a look-at point and an approximate up vector.
+         *
+         * @param lookAt   the point to look at
+         * @param upApprox the approximate up vector
+         * @return the current Builder instance
+         */
         public Builder setDirection(Point lookAt, Vector upApprox) {
             if (lookAt == null || upApprox == null)
                 throw new IllegalArgumentException("LookAt point or up vector cannot be null");
@@ -51,10 +107,23 @@ public class Camera implements Cloneable {
             return this;
         }
 
+        /**
+         * Sets the camera direction using a look-at point and a default up vector.
+         *
+         * @param lookAt the point to look at
+         * @return the current Builder instance
+         */
         public Builder setDirection(Point lookAt) {
             return setDirection(lookAt, new Vector(0, 1, 0));
         }
 
+        /**
+         * Sets the size of the view plane.
+         *
+         * @param width  the width of the view plane
+         * @param height the height of the view plane
+         * @return the current Builder instance
+         */
         public Builder setVpSize(double width, double height) {
             if (width <= 0 || height <= 0) throw new IllegalArgumentException("View plane size must be positive");
             camera.vpWidth = width;
@@ -62,17 +131,40 @@ public class Camera implements Cloneable {
             return this;
         }
 
+        /**
+         * Sets the distance from the camera to the view plane.
+         *
+         * @param distance the distance to the view plane
+         * @return the current Builder instance
+         */
         public Builder setVpDistance(double distance) {
             if (distance <= 0) throw new IllegalArgumentException("View plane distance must be positive");
             camera.vpDistance = distance;
             return this;
         }
 
+        /**
+         * Sets the resolution of the camera.
+         *
+         * @param nX number of columns
+         * @param nY number of rows
+         * @return this Builder instance for method chaining
+         */
+        public Builder setResolution(int nX, int nY) {
+            // not implemented yet
+            return this;
+        }
+
+        /**
+         * Finalizes and returns the constructed Camera object after validating its configuration.
+         *
+         * @return the built Camera instance
+         */
         public Camera build() {
             final String GENERAL_DESCRIPTION = "Missing rendering data";
             final String CAMERA_CLASS_NAME = Camera.class.getSimpleName();
 
-            // בדיקה שהשדות קיימים
+            // Check that required fields exist
             if (camera.location == null)
                 throw new MissingResourceException(GENERAL_DESCRIPTION, CAMERA_CLASS_NAME, "Location");
 
@@ -91,7 +183,7 @@ public class Camera implements Cloneable {
             if (camera.vpDistance == 0)
                 throw new MissingResourceException(GENERAL_DESCRIPTION, CAMERA_CLASS_NAME, "View Plane Distance");
 
-            // בדיקה נוספת: האם הערכים עצמם הגיוניים (לא שליליים או אפס אורך)
+            // Additional validation: check if values are logical (non-negative and non-zero length)
             if (camera.vpWidth < 0)
                 throw new IllegalArgumentException("View Plane Width must be positive");
 
@@ -100,25 +192,26 @@ public class Camera implements Cloneable {
 
             if (camera.vpDistance < 0)
                 throw new IllegalArgumentException("View Plane Distance must be positive");
-            
+
             if (camera.to.lengthSquared() == 0)
                 throw new IllegalArgumentException("Direction To vector cannot be zero vector");
 
             if (camera.up.lengthSquared() == 0)
                 throw new IllegalArgumentException("Direction Up vector cannot be zero vector");
 
-            // חישוב וקטור right מחדש
+            // Recalculate the right vector
             camera.right = camera.to.crossProduct(camera.up);
 
-            // בדיקה שאחרי חישוב המכפלה הוקטורית לא קיבלנו וקטור אפס
+            // Validate that cross product did not result in a zero vector
             if (camera.right.lengthSquared() == 0)
                 throw new IllegalArgumentException("Right vector resulted in zero vector — direction vectors might be parallel");
 
-            // נירמול כל הוקטורים
+            // Normalize all vectors
             camera.to = camera.to.normalize();
             camera.up = camera.up.normalize();
             camera.right = camera.right.normalize();
 
+            // Return a clone of camera to avoid exposing internal references
             try {
                 return (Camera) camera.clone();
             } catch (CloneNotSupportedException e) {
@@ -140,21 +233,19 @@ public class Camera implements Cloneable {
         if (isZero(vpDistance))
             throw new IllegalArgumentException("View Plane distance cannot be zero");
 
-        Point pIJ = location.add(to.scale(vpDistance));
-
+        // Calculate pixel size
         double rX = vpWidth / nX;
         double rY = vpHeight / nY;
 
-        double xJ = (j - (nX - 1) / 2.0) * rX;
-        double yI = -(i - (nY - 1) / 2.0) * rY;
+        // Offsets from the center
+        double xJ = (j - (nX - 1) * 0.5) * rX;
+        double yI = -(i - (nY - 1) * 0.5) * rY;
 
-        if (!isZero(xJ))
-            pIJ = pIJ.add(right.scale(xJ));
-        if (!isZero(yI))
-            pIJ = pIJ.add(up.scale(yI));
+        // Start with center point of view plane
+        Vector offset = to.scale(vpDistance);
+        if (!isZero(xJ)) offset = offset.add(right.scale(xJ));
+        if (!isZero(yI)) offset = offset.add(up.scale(yI));
 
-        return new Ray(location, pIJ.subtract(location));
+        return new Ray(location, offset);
     }
 }
-
-
