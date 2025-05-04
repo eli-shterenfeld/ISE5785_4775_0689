@@ -6,13 +6,14 @@ import primitives.Vector;
 
 import java.util.MissingResourceException;
 
+import static primitives.Util.isZero;
+
 public class Camera implements Cloneable {
 
-    private Point location;
+    private Point location = new Point(0, 0, 0);
     private Vector to, up, right;
     private double vpWidth = 0.0, vpHeight = 0.0;
     private double vpDistance = 0.0;
-    private int nX = 0, nY = 0;
 
     private Camera() {
 
@@ -20,10 +21,6 @@ public class Camera implements Cloneable {
 
     public static Builder getBuilder() {
         return new Builder();
-    }
-
-    public Ray constructRay(int nX, int nY, int j, int i) {
-        return null;
     }
 
     public static class Builder {
@@ -71,13 +68,6 @@ public class Camera implements Cloneable {
             return this;
         }
 
-        public Builder setResolution(int nX, int nY) {
-            if (nX <= 0 || nY <= 0) throw new IllegalArgumentException("Resolution must be positive");
-            camera.nX = nX;
-            camera.nY = nY;
-            return this;
-        }
-
         public Camera build() {
             final String GENERAL_DESCRIPTION = "Missing rendering data";
             final String CAMERA_CLASS_NAME = Camera.class.getSimpleName();
@@ -101,12 +91,6 @@ public class Camera implements Cloneable {
             if (camera.vpDistance == 0)
                 throw new MissingResourceException(GENERAL_DESCRIPTION, CAMERA_CLASS_NAME, "View Plane Distance");
 
-            if (camera.nX == 0)
-                throw new MissingResourceException(GENERAL_DESCRIPTION, CAMERA_CLASS_NAME, "Resolution X");
-
-            if (camera.nY == 0)
-                throw new MissingResourceException(GENERAL_DESCRIPTION, CAMERA_CLASS_NAME, "Resolution Y");
-
             // בדיקה נוספת: האם הערכים עצמם הגיוניים (לא שליליים או אפס אורך)
             if (camera.vpWidth < 0)
                 throw new IllegalArgumentException("View Plane Width must be positive");
@@ -116,13 +100,7 @@ public class Camera implements Cloneable {
 
             if (camera.vpDistance < 0)
                 throw new IllegalArgumentException("View Plane Distance must be positive");
-
-            if (camera.nX < 0)
-                throw new IllegalArgumentException("Resolution X must be positive");
-
-            if (camera.nY < 0)
-                throw new IllegalArgumentException("Resolution Y must be positive");
-
+            
             if (camera.to.lengthSquared() == 0)
                 throw new IllegalArgumentException("Direction To vector cannot be zero vector");
 
@@ -149,6 +127,34 @@ public class Camera implements Cloneable {
         }
     }
 
+    /**
+     * Constructs ray from camera's location to the center of a given pixel in the view plane.
+     *
+     * @param nX number of columns
+     * @param nY number of rows
+     * @param j  pixel's x index (column)
+     * @param i  pixel's y index (row)
+     * @return resulting Ray
+     */
+    public Ray constructRay(int nX, int nY, int j, int i) {
+        if (isZero(vpDistance))
+            throw new IllegalArgumentException("View Plane distance cannot be zero");
+
+        Point pIJ = location.add(to.scale(vpDistance));
+
+        double rX = vpWidth / nX;
+        double rY = vpHeight / nY;
+
+        double xJ = (j - (nX - 1) / 2.0) * rX;
+        double yI = -(i - (nY - 1) / 2.0) * rY;
+
+        if (!isZero(xJ))
+            pIJ = pIJ.add(right.scale(xJ));
+        if (!isZero(yI))
+            pIJ = pIJ.add(up.scale(yI));
+
+        return new Ray(location, pIJ.subtract(location));
+    }
 }
 
 

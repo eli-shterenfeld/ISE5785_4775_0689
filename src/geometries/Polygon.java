@@ -1,12 +1,12 @@
 package geometries;
 
-import static java.lang.Double.*;
+import primitives.Point;
+import primitives.Ray;
+import primitives.Vector;
 
 import java.util.List;
 
-import static primitives.Util.*;
-
-import primitives.*;
+import static primitives.Util.isZero;
 
 /**
  * Polygon class represents two-dimensional polygon in 3D Cartesian coordinate
@@ -93,8 +93,46 @@ public class Polygon extends Geometry {
         return plane.getNormal(point);
     }
 
+
     @Override
     public List<Point> findIntersections(Ray ray) {
-        return null;
+        List<Point> intersection = plane.findIntersections(ray);
+        if (intersection == null) {
+            return null;
+        }
+
+        Point q = intersection.getFirst(); // Intersection point
+        Vector n = plane.getNormal(q);       // Normal vector to the plane
+
+        int size = vertices.size();
+        Vector edge1, edge2;
+        double sign = 0;
+
+        for (int i = 0; i < size; i++) {
+            Point p1 = vertices.get(i);
+            Point p2 = vertices.get((i + 1) % size); // wrap around at the end
+
+            edge1 = p2.subtract(p1); // Edge vector
+
+            double currentSign;
+            try {
+                edge2 = q.subtract(p1); // Vector from vertex to intersection point
+                currentSign = n.dotProduct(edge1.crossProduct(edge2));
+            } catch (IllegalArgumentException e) {
+                return null; // If q equals p1 ➔ zero vector ➔ point on vertex ➔ no intersection
+            }
+
+            if (isZero(currentSign)) {
+                return null; // point is exactly on an edge
+            }
+
+            if (sign == 0) {
+                sign = currentSign;
+            } else if (sign * currentSign < 0) {
+                return null; // sign changed, point is outside polygon
+            }
+        }
+
+        return intersection;
     }
 }

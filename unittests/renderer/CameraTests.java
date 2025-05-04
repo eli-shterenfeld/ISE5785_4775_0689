@@ -5,8 +5,9 @@ import primitives.Point;
 import primitives.Ray;
 import primitives.Vector;
 
-import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 
 /**
  * Testing Camera Class
@@ -69,7 +70,7 @@ class CameraTest {
 
     @Test
     void testBuilder() {
-        cameraBuilder.setVpSize(4, 4).setResolution(2, 2);
+        cameraBuilder.setVpSize(4, 4);
 
         // ============ Equivalence Partitions Tests ==============
         // EP01: set to a target point without up vector
@@ -95,3 +96,4 @@ class CameraTest {
         assertThrows(IllegalArgumentException.class, () -> cameraBuilder.setDirection(new Point(0, 10, 0)).build());
     }
 }
+

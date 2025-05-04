@@ -5,7 +5,8 @@ import primitives.Point;
 import primitives.Ray;
 import primitives.Vector;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 /**
  * Unit tests for {@link Tube} class.
@@ -39,5 +40,4 @@ class TubeTest {
         // TC02: Verify the normal vector is correct
         assertEquals(normal, tube.getNormal(p), "Incorrect normal vector");
     }
-
 }
