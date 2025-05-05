@@ -19,9 +19,19 @@ public class Camera implements Cloneable {
     private Point location = new Point(0, 0, 0);
 
     /**
-     * The forward direction vector of the camera.
+     * The forward direction vector of the camera (points to where the camera is looking).
      */
-    private Vector to, up, right;
+    private Vector to;
+
+    /**
+     * The upward direction vector of the camera (defines the vertical orientation).
+     */
+    private Vector up;
+
+    /**
+     * The rightward direction vector of the camera (perpendicular to both 'to' and 'up').
+     */
+    private Vector right;
 
     /**
      * The width of the view plane.
@@ -37,6 +47,11 @@ public class Camera implements Cloneable {
      * The distance from the camera to the view plane.
      */
     private double vpDistance = 0.0;
+
+    /**
+     * The point on the view plane corresponding to a pixel (i, j).
+     */
+    private Point pIJ;
 
     /**
      * Private constructor to prevent instantiation from outside the builder.
@@ -174,42 +189,26 @@ public class Camera implements Cloneable {
             if (camera.up == null)
                 throw new MissingResourceException(GENERAL_DESCRIPTION, CAMERA_CLASS_NAME, "Direction Up");
 
-            if (camera.vpWidth == 0)
-                throw new MissingResourceException(GENERAL_DESCRIPTION, CAMERA_CLASS_NAME, "View Plane Width");
-
-            if (camera.vpHeight == 0)
-                throw new MissingResourceException(GENERAL_DESCRIPTION, CAMERA_CLASS_NAME, "View Plane Height");
-
-            if (camera.vpDistance == 0)
-                throw new MissingResourceException(GENERAL_DESCRIPTION, CAMERA_CLASS_NAME, "View Plane Distance");
-
             // Additional validation: check if values are logical (non-negative and non-zero length)
-            if (camera.vpWidth < 0)
+            if (camera.vpWidth <= 0)
                 throw new IllegalArgumentException("View Plane Width must be positive");
 
-            if (camera.vpHeight < 0)
+            if (camera.vpHeight <= 0)
                 throw new IllegalArgumentException("View Plane Height must be positive");
 
-            if (camera.vpDistance < 0)
+            if (camera.vpDistance <= 0)
                 throw new IllegalArgumentException("View Plane Distance must be positive");
-
-            if (camera.to.lengthSquared() == 0)
-                throw new IllegalArgumentException("Direction To vector cannot be zero vector");
-
-            if (camera.up.lengthSquared() == 0)
-                throw new IllegalArgumentException("Direction Up vector cannot be zero vector");
 
             // Recalculate the right vector
             camera.right = camera.to.crossProduct(camera.up);
-
-            // Validate that cross product did not result in a zero vector
-            if (camera.right.lengthSquared() == 0)
-                throw new IllegalArgumentException("Right vector resulted in zero vector — direction vectors might be parallel");
 
             // Normalize all vectors
             camera.to = camera.to.normalize();
             camera.up = camera.up.normalize();
             camera.right = camera.right.normalize();
+
+            // Calculate the point on the view plane corresponding to the camera's location
+            camera.pIJ = camera.location.add(camera.to.scale(camera.vpDistance));
 
             // Return a clone of camera to avoid exposing internal references
             try {
@@ -230,9 +229,6 @@ public class Camera implements Cloneable {
      * @return resulting Ray
      */
     public Ray constructRay(int nX, int nY, int j, int i) {
-        if (isZero(vpDistance))
-            throw new IllegalArgumentException("View Plane distance cannot be zero");
-
         // Calculate pixel size
         double rX = vpWidth / nX;
         double rY = vpHeight / nY;
@@ -242,10 +238,9 @@ public class Camera implements Cloneable {
         double yI = -(i - (nY - 1) * 0.5) * rY;
 
         // Start with center point of view plane
-        Vector offset = to.scale(vpDistance);
-        if (!isZero(xJ)) offset = offset.add(right.scale(xJ));
-        if (!isZero(yI)) offset = offset.add(up.scale(yI));
+        if (!isZero(xJ)) pIJ = pIJ.add(right.scale(xJ));
+        if (!isZero(yI)) pIJ = pIJ.add(up.scale(yI));
 
-        return new Ray(location, offset);
+        return new Ray(location, pIJ.subtract(location));
     }
 }
