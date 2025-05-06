@@ -50,15 +50,15 @@ public class CameraIntersectionsIntegrationTests {
                 .setLocation(Point.ZERO)
                 .setDirection(new Vector(0, 0, -1), new Vector(0, 1, 0))
                 .setVpSize(3, 3)
-                .setVpDistance(1)
+                .setVpDistance(10)
                 .build();
 
         // Case 1: Small sphere behind center
-        Sphere sphere1 = new Sphere(1, new Point(0, 0, -3));
+        Sphere sphere1 = new Sphere(1, new Point(0, 0, -14));
         assertCountIntersections(camera, sphere1, 2, "Sphere Case 1: Expected 2 intersections");
 
         // Case 2: Large sphere that encompasses the entire view
-        Sphere sphere2 = new Sphere(2.5, new Point(0, 0, -2.5));
+        Sphere sphere2 = new Sphere(10, new Point(0, 0, -20));
         assertCountIntersections(camera, sphere2, 18, "Sphere Case 2: Expected 18 intersections");
 
         // Case 3: Medium sphere intersecting central rays
@@ -79,7 +79,7 @@ public class CameraIntersectionsIntegrationTests {
                 .setLocation(Point.ZERO)
                 .setDirection(new Vector(0, 0, -1), new Vector(0, 1, 0))
                 .setVpSize(3, 3)
-                .setVpDistance(1)
+                .setVpDistance(3)
                 .build();
 
         // Case 1: Plane perpendicular to view plane

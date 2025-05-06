@@ -1,5 +1,6 @@
 package renderer;
 
+import primitives.Color;
 import primitives.Point;
 import primitives.Ray;
 import primitives.Vector;
@@ -54,6 +55,26 @@ public class Camera implements Cloneable {
     private Point pIJ;
 
     /**
+     * The image writer used for rendering the scene.
+     */
+    private ImageWriter imageWriter;
+
+    /**
+     * The ray tracer used for rendering the scene.
+     */
+    private RayTracerBase rayTracer;
+
+    /**
+     * The number of columns in the image.
+     */
+    int nX = 1;
+
+    /**
+     * The number of rows in the image.
+     */
+    int nY = 1;
+
+    /**
      * Private constructor to prevent instantiation from outside the builder.
      */
     private Camera() {
@@ -77,6 +98,7 @@ public class Camera implements Cloneable {
          * The Camera object being constructed by this builder.
          */
         private final Camera camera = new Camera();
+
 
         /**
          * Sets the location of the camera.
@@ -166,7 +188,9 @@ public class Camera implements Cloneable {
          * @return this Builder instance for method chaining
          */
         public Builder setResolution(int nX, int nY) {
-            // not implemented yet
+            if (nX <= 0 || nY <= 0) throw new IllegalArgumentException("Resolution must be positive");
+            this.camera.nX = nX;
+            this.camera.nY = nY;
             return this;
         }
 
@@ -199,6 +223,15 @@ public class Camera implements Cloneable {
             if (camera.vpDistance <= 0)
                 throw new IllegalArgumentException("View Plane Distance must be positive");
 
+            if (camera.nX <= 0 || camera.nY <= 0) throw new IllegalArgumentException("Resolution must be positive");
+
+            if (camera.rayTracer == null) {
+                camera.rayTracer = new SimpleRayTracer(null); // no scene, placeholder
+            }
+
+            // Initialize the image writer
+            camera.imageWriter = new ImageWriter(camera.nX, camera.nY);
+
             // Recalculate the right vector
             camera.right = camera.to.crossProduct(camera.up);
 
@@ -216,6 +249,21 @@ public class Camera implements Cloneable {
             } catch (CloneNotSupportedException e) {
                 throw new RuntimeException("Unexpected error: Clone not supported", e);
             }
+        }
+
+        /**
+         * Sets the ray tracer for the camera based on the given scene and type.
+         *
+         * @param scene the scene to be rendered
+         * @param type  the type of ray tracer to use
+         * @return the builder (for method chaining)
+         */
+        public Builder setRayTracer(scene.Scene scene, RayTracerType type) {
+            switch (type) {
+                case SIMPLE -> camera.rayTracer = new SimpleRayTracer(scene);
+                default -> camera.rayTracer = null;
+            }
+            return this;
         }
     }
 
@@ -243,4 +291,62 @@ public class Camera implements Cloneable {
 
         return new Ray(location, pIJ.subtract(location));
     }
+
+    /**
+     * Casts a ray through the center of a given pixel, traces it using the ray tracer,
+     * and writes the resulting color to the image.
+     *
+     * @param i pixel column index (X)
+     * @param j pixel row index (Y)
+     */
+    private void castRay(int i, int j) {
+        Ray ray = constructRay(nX, nY, i, j);
+        Color color = rayTracer.traceRay(ray);
+        imageWriter.writePixel(i, j, color);
+    }
+
+    /**
+     * Renders the image by casting rays through each pixel and writing the resulting color.
+     *
+     * @return this camera object (for chaining)
+     */
+    public Camera renderImage() {
+        for (int j = 0; j < nY; j++) {
+            for (int i = 0; i < nX; i++) {
+                castRay(i, j);
+            }
+        }
+        return this;
+    }
+
+
+    /**
+     * Overlays a grid on the rendered image, coloring every nth row and column.
+     *
+     * @param interval spacing between grid lines (in pixels)
+     * @param color    color of the grid lines
+     * @return this camera object (for chaining)
+     */
+    public Camera printGrid(int interval, Color color) {
+        for (int x = 0; x < nX; x++) {
+            for (int y = 0; y < nY; y++) {
+                if (x % interval == 0 || y % interval == 0) {
+                    imageWriter.writePixel(x, y, color);
+                }
+            }
+        }
+        return this;
+    }
+
+    /**
+     * Writes the final image to a file with the given name (without extension).
+     *
+     * @param filename the name of the image file (without extension)
+     * @return this camera object (for chaining)
+     */
+    public Camera writeToImage(String filename) {
+        imageWriter.writeToImage(filename);
+        return this;
+    }
+
 }
