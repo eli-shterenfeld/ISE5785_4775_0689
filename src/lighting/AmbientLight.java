@@ -8,7 +8,10 @@ import primitives.Color;
  */
 public class AmbientLight {
 
-    // The intensity of the ambient light (immutable)
+    /**
+     * The intensity of the ambient light, represented as a Color object.
+     * This color is used to determine the brightness of the ambient light.
+     */
     private final Color intensity;
 
     /**
