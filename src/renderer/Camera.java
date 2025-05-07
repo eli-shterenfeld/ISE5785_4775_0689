@@ -52,7 +52,7 @@ public class Camera implements Cloneable {
     /**
      * The point on the view plane corresponding to a pixel (i, j).
      */
-    private Point pIJ;
+    private Point viewPlaneCenter;
 
     /**
      * The image writer used for rendering the scene.
@@ -241,7 +241,7 @@ public class Camera implements Cloneable {
             camera.right = camera.right.normalize();
 
             // Calculate the point on the view plane corresponding to the camera's location
-            camera.pIJ = camera.location.add(camera.to.scale(camera.vpDistance));
+            camera.viewPlaneCenter = camera.location.add(camera.to.scale(camera.vpDistance));
 
             // Return a clone of camera to avoid exposing internal references
             try {
@@ -285,11 +285,13 @@ public class Camera implements Cloneable {
         double xJ = (j - (nX - 1) * 0.5) * rX;
         double yI = -(i - (nY - 1) * 0.5) * rY;
 
-        // Start with center point of view plane
-        if (!isZero(xJ)) pIJ = pIJ.add(right.scale(xJ));
-        if (!isZero(yI)) pIJ = pIJ.add(up.scale(yI));
+        // Calculate the pixel center
+        Point pixelCenter = viewPlaneCenter;
 
-        return new Ray(location, pIJ.subtract(location));
+        if (!isZero(xJ)) pixelCenter = pixelCenter.add(right.scale(xJ));
+        if (!isZero(yI)) pixelCenter = pixelCenter.add(up.scale(yI));
+
+        return new Ray(location, pixelCenter.subtract(location));
     }
 
     /**
@@ -314,6 +316,10 @@ public class Camera implements Cloneable {
         for (int j = 0; j < nY; j++) {
             for (int i = 0; i < nX; i++) {
                 castRay(i, j);
+                if (i == 250 && j == 250) {
+                    int k = 10;
+                }
+
             }
         }
         return this;
