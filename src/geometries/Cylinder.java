@@ -4,7 +4,12 @@ import primitives.Point;
 import primitives.Ray;
 import primitives.Vector;
 
+import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
+
+import static primitives.Util.alignZero;
+
 
 /**
  * Represents a cylinder, which extends a Tube and has a specific height.
@@ -52,7 +57,48 @@ public class Cylinder extends Tube {
 
     @Override
     public List<Point> findIntersections(Ray ray) {
-        return null;
+        final List<Point> intersections = new LinkedList<>();
+        final Vector axisDir = axis.getDirection();
+        final Point baseCenter = axis.getPoint(0);
+        final Point topCenter = axis.getPoint(height);
+        final Point rayOrigin = ray.getPoint(0);
+
+        // 1. Tube intersections
+        List<Point> tubeIntersections = super.findIntersections(ray);
+        if (tubeIntersections != null) {
+            for (Point p : tubeIntersections) {
+                double axisProjection = axisDir.dotProduct(p.subtract(baseCenter));
+                if (alignZero(axisProjection) >= 0 && alignZero(axisProjection - height) <= 0) {
+                    intersections.add(p);
+                }
+            }
+        }
+
+        // 2. Bottom cap
+        Plane bottomPlane = new Plane(baseCenter, axisDir);
+        List<Point> bottom = bottomPlane.findIntersections(ray);
+        if (bottom != null) {
+            Point p = bottom.get(0);
+            if (alignZero(p.distanceSquared(baseCenter) - radiusSquared) < 0) {
+                intersections.add(p);
+            }
+        }
+
+        // 3. Top cap
+        Plane topPlane = new Plane(topCenter, axisDir);
+        List<Point> top = topPlane.findIntersections(ray);
+        if (top != null) {
+            Point p = top.get(0);
+            if (alignZero(p.distanceSquared(topCenter) - radiusSquared) < 0) {
+                intersections.add(p);
+            }
+        }
+
+        // 4. Sort by distance
+        intersections.sort(Comparator.comparingDouble(p ->
+                p.subtract(rayOrigin).dotProduct(ray.getDirection())));
+
+        return intersections.isEmpty() ? null : intersections;
     }
 }
 

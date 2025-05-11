@@ -7,6 +7,7 @@ import primitives.Vector;
 
 import java.util.MissingResourceException;
 
+import static primitives.Util.alignZero;
 import static primitives.Util.isZero;
 
 /**
@@ -99,7 +100,6 @@ public class Camera implements Cloneable {
          */
         private final Camera camera = new Camera();
 
-
         /**
          * Sets the location of the camera.
          *
@@ -121,7 +121,6 @@ public class Camera implements Cloneable {
          */
         public Builder setDirection(Vector to, Vector up) {
             if (to == null || up == null) throw new IllegalArgumentException("Vectors cannot be null");
-
             camera.to = to.normalize();
             camera.up = up.normalize();
             camera.right = camera.to.crossProduct(camera.up).normalize();
@@ -162,7 +161,8 @@ public class Camera implements Cloneable {
          * @return the current Builder instance
          */
         public Builder setVpSize(double width, double height) {
-            if (width <= 0 || height <= 0) throw new IllegalArgumentException("View plane size must be positive");
+            if (alignZero(width) <= 0 || alignZero(height) <= 0)
+                throw new IllegalArgumentException("View plane size must be positive");
             camera.vpWidth = width;
             camera.vpHeight = height;
             return this;
@@ -175,7 +175,7 @@ public class Camera implements Cloneable {
          * @return the current Builder instance
          */
         public Builder setVpDistance(double distance) {
-            if (distance <= 0) throw new IllegalArgumentException("View plane distance must be positive");
+            if (alignZero(distance) <= 0) throw new IllegalArgumentException("View plane distance must be positive");
             camera.vpDistance = distance;
             return this;
         }
@@ -188,7 +188,8 @@ public class Camera implements Cloneable {
          * @return this Builder instance for method chaining
          */
         public Builder setResolution(int nX, int nY) {
-            if (nX <= 0 || nY <= 0) throw new IllegalArgumentException("Resolution must be positive");
+            if (alignZero(nX) <= 0 || alignZero(nY) <= 0)
+                throw new IllegalArgumentException("Resolution must be positive");
             this.camera.nX = nX;
             this.camera.nY = nY;
             return this;
@@ -214,16 +215,17 @@ public class Camera implements Cloneable {
                 throw new MissingResourceException(GENERAL_DESCRIPTION, CAMERA_CLASS_NAME, "Direction Up");
 
             // Additional validation: check if values are logical (non-negative and non-zero length)
-            if (camera.vpWidth <= 0)
+            if (alignZero(camera.vpWidth) <= 0)
                 throw new IllegalArgumentException("View Plane Width must be positive");
 
-            if (camera.vpHeight <= 0)
+            if (alignZero(camera.vpHeight) <= 0)
                 throw new IllegalArgumentException("View Plane Height must be positive");
 
-            if (camera.vpDistance <= 0)
+            if (alignZero(camera.vpDistance) <= 0)
                 throw new IllegalArgumentException("View Plane Distance must be positive");
 
-            if (camera.nX <= 0 || camera.nY <= 0) throw new IllegalArgumentException("Resolution must be positive");
+            if (alignZero(camera.nX) <= 0 || alignZero(camera.nY) <= 0)
+                throw new IllegalArgumentException("Resolution must be positive");
 
             if (camera.rayTracer == null) {
                 camera.rayTracer = new SimpleRayTracer(null); // no scene, placeholder
@@ -316,15 +318,10 @@ public class Camera implements Cloneable {
         for (int j = 0; j < nY; j++) {
             for (int i = 0; i < nX; i++) {
                 castRay(i, j);
-                if (i == 250 && j == 250) {
-                    int k = 10;
-                }
-
             }
         }
         return this;
     }
-
 
     /**
      * Overlays a grid on the rendered image, coloring every nth row and column.
@@ -354,5 +351,4 @@ public class Camera implements Cloneable {
         imageWriter.writeToImage(filename);
         return this;
     }
-
 }
