@@ -4,7 +4,6 @@ import primitives.Point;
 import primitives.Ray;
 import primitives.Vector;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import static primitives.Util.alignZero;
@@ -43,8 +42,8 @@ public class Tube extends RadialGeometry {
     @Override
     public List<Point> findIntersections(Ray ray) {
         // Get ray origin and direction
-        final Point rayOrigin = ray.getPoint(0);
-        final Point axisPoint = axis.getPoint(0); // Cylinder axis starting point
+        final Point rayOrigin = ray.getHead();
+        final Point axisPoint = axis.getHead(); // Cylinder axis starting point
         final Vector axisDir = axis.getDirection(); // Cylinder axis direction
         final Vector rayDir = ray.getDirection();
 
@@ -60,24 +59,24 @@ public class Tube extends RadialGeometry {
             isDeltaPZero = true;
         }
 
+        double rayDirDotAxis = rayDir.dotProduct(axisDir);
         // Compute quadratic coefficients for intersection equation
-        double a = rayDir.dotProduct(rayDir) - Math.pow(rayDir.dotProduct(axisDir), 2);
-
+        double a = rayDir.dotProduct(rayDir) - rayDirDotAxis * rayDirDotAxis;
         double b, c;
+
         if (isDeltaPZero) {
             // Special case handling if deltaP is zero
             b = 0;
             c = -radiusSquared;
         } else {
             // General case
-            double rayDirDotAxis = rayDir.dotProduct(axisDir);
             double deltaPDotAxis = deltaP.dotProduct(axisDir);
 
             // Coefficient b of quadratic equation
             b = 2 * (rayDir.dotProduct(deltaP) - rayDirDotAxis * deltaPDotAxis);
 
             // Coefficient c of quadratic equation
-            c = deltaP.dotProduct(deltaP) - Math.pow(deltaPDotAxis, 2) - radiusSquared;
+            c = deltaP.dotProduct(deltaP) - deltaPDotAxis * deltaPDotAxis - radiusSquared;
         }
 
         // Calculate discriminant to determine intersection existence
@@ -85,19 +84,15 @@ public class Tube extends RadialGeometry {
         if (discriminant <= 0) return null; // No real solutions → no intersection
 
         double sqrtDiscriminant = Math.sqrt(discriminant);
-        double denom = 2 * a;
+        double denominator = 2 * a;
 
+        // quadratic parameter 'a' is always positive in our equation, therefore t2 is always greater than t1
         // Calculate the intersection parameters (t values)
-        double t1 = alignZero((-b - sqrtDiscriminant) / denom);
-        double t2 = alignZero((-b + sqrtDiscriminant) / denom);
+        double t2 = alignZero((-b + sqrtDiscriminant) / denominator);
+        if (t2 <= 0) return null; // No valid intersection
 
-        List<Point> intersections = new LinkedList<>();
-        // Check valid positive t values and compute intersection points
-        if (alignZero(t1) > 0) intersections.add(ray.getPoint(t1));
-        if (alignZero(t2) > 0) intersections.add(ray.getPoint(t2));
-
-        // Return result or null if no intersections
-        return intersections.isEmpty() ? null : intersections;
+        double t1 = alignZero((-b - sqrtDiscriminant) / denominator);
+        return t1 <= 0 ? List.of(ray.getPoint(t2)) : List.of(ray.getPoint(t1), ray.getPoint(t2));
     }
 }
 

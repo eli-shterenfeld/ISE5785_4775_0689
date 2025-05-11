@@ -1,5 +1,6 @@
 package renderer;
 
+import org.junit.jupiter.api.Test;
 import primitives.Color;
 
 /**
@@ -14,12 +15,11 @@ public class ImageWriterTest {
     /**
      * Generates an image with a red grid over a yellow background and saves it to a file.
      * Demonstrates basic usage of the ImageWriter class.
-     *
-     * @param args command-line arguments (not used)
      */
-    public static void main(String[] args) {
-        int width = 800;
-        int height = 500;
+    @Test
+    void imageWriterTest() {
+        int width = 801;
+        int height = 501;
         int gridX = 16;
         int gridY = 10;
 
@@ -31,12 +31,9 @@ public class ImageWriterTest {
         Color gridColor = new Color(255, 0, 0);   // red
         Color fillColor = new Color(255, 255, 0);   // yellow
 
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                if (x % intervalX == 0 || y % intervalY == 0)
-                    writer.writePixel(x, y, gridColor);
-                else
-                    writer.writePixel(x, y, fillColor);
+        for (int x = 0; x < width; ++x) {
+            for (int y = 0; y < height; ++y) {
+                writer.writePixel(x, y, x % intervalX == 0 || y % intervalY == 0 ? gridColor : fillColor);
             }
         }
 

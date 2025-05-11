@@ -5,8 +5,6 @@ import primitives.Point;
 import primitives.Ray;
 import scene.Scene;
 
-import java.util.List;
-
 /**
  * A simple ray tracer implementation that extends RayTracerBase.
  * This class will eventually implement basic color computation for rays intersecting a scene.
@@ -33,15 +31,13 @@ public class SimpleRayTracer extends RayTracerBase {
     @Override
     public Color traceRay(Ray ray) {
         // Find intersections with the geometries in the scene
-        List<Point> intersections = scene.geometries.findIntersections(ray);
-
-        if (intersections == null || intersections.isEmpty()) {
+        var intersections = scene.geometries.findIntersections(ray);
+        if (intersections == null)
             // No intersections, return background color
             return scene.background;
-        }
 
-        // Find closest intersection point to the ray origin
-        Point closestPoint = ray.findClosestPoint(intersections);
+        // Find the closest intersection point to the ray origin
+        var closestPoint = ray.findClosestPoint(intersections);
 
         // Return the color at the closest point (currently ambient only)
         return calcColor(closestPoint);

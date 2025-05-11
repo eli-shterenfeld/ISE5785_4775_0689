@@ -188,7 +188,7 @@ public class Camera implements Cloneable {
          * @return this Builder instance for method chaining
          */
         public Builder setResolution(int nX, int nY) {
-            if (alignZero(nX) <= 0 || alignZero(nY) <= 0)
+            if (nX <= 0 || nY <= 0)
                 throw new IllegalArgumentException("Resolution must be positive");
             this.camera.nX = nX;
             this.camera.nY = nY;
@@ -207,24 +207,20 @@ public class Camera implements Cloneable {
             // Check that required fields exist
             if (camera.location == null)
                 throw new MissingResourceException(GENERAL_DESCRIPTION, CAMERA_CLASS_NAME, "Location");
-
             if (camera.to == null)
                 throw new MissingResourceException(GENERAL_DESCRIPTION, CAMERA_CLASS_NAME, "Direction To");
-
             if (camera.up == null)
                 throw new MissingResourceException(GENERAL_DESCRIPTION, CAMERA_CLASS_NAME, "Direction Up");
 
             // Additional validation: check if values are logical (non-negative and non-zero length)
             if (alignZero(camera.vpWidth) <= 0)
                 throw new IllegalArgumentException("View Plane Width must be positive");
-
             if (alignZero(camera.vpHeight) <= 0)
                 throw new IllegalArgumentException("View Plane Height must be positive");
-
             if (alignZero(camera.vpDistance) <= 0)
                 throw new IllegalArgumentException("View Plane Distance must be positive");
 
-            if (alignZero(camera.nX) <= 0 || alignZero(camera.nY) <= 0)
+            if (camera.nX <= 0 || camera.nY <= 0)
                 throw new IllegalArgumentException("Resolution must be positive");
 
             if (camera.rayTracer == null) {
@@ -300,13 +296,13 @@ public class Camera implements Cloneable {
      * Casts a ray through the center of a given pixel, traces it using the ray tracer,
      * and writes the resulting color to the image.
      *
-     * @param i pixel column index (X)
-     * @param j pixel row index (Y)
+     * @param j pixel column index (X)
+     * @param i pixel row index (Y)
      */
-    private void castRay(int i, int j) {
-        Ray ray = constructRay(nX, nY, i, j);
+    private void castRay(int j, int i) {
+        Ray ray = constructRay(nX, nY, j, i);
         Color color = rayTracer.traceRay(ray);
-        imageWriter.writePixel(i, j, color);
+        imageWriter.writePixel(j, i, color);
     }
 
     /**

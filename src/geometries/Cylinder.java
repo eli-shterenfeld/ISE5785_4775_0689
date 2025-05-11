@@ -22,6 +22,16 @@ public class Cylinder extends Tube {
     private final double height;  // Cylinder's height – unique to Cylinder, not present in Tube
 
     /**
+     * To represent bottomPlane of the cylinder.
+     */
+    private final Plane bottomPlane;
+
+    /**
+     * To represent topPlane of the cylinder.
+     */
+    private final Plane topPlane;
+
+    /**
      * Constructs a Cylinder with a given radius, axis, and height.
      *
      * @param radius the radius of the cylinder
@@ -31,6 +41,8 @@ public class Cylinder extends Tube {
     public Cylinder(double radius, Ray axis, double height) {
         super(radius, axis);     // Call the Tube constructor to set radius and axis
         this.height = height;    // Set the height specific to Cylinder
+        this.bottomPlane = new Plane(axis.getHead(), axis.getDirection());
+        this.topPlane = new Plane(axis.getPoint(height), axis.getDirection());
     }
 
     @Override
@@ -45,7 +57,7 @@ public class Cylinder extends Tube {
             return direction.scale(-1);            // Return normal pointing outward (opposite to the axis)
 
         // Compute the top base center by moving 'height' units along the axis
-        Point upperBase = head.add(direction.scale(height));
+        Point upperBase = axis.getPoint(height);
 
         // Check if the point lies on the top base
         if (upperBase.equals(point) || upperBase.subtract(point).dotProduct(direction) == 0)
@@ -59,9 +71,9 @@ public class Cylinder extends Tube {
     public List<Point> findIntersections(Ray ray) {
         final List<Point> intersections = new LinkedList<>();
         final Vector axisDir = axis.getDirection();
-        final Point baseCenter = axis.getPoint(0);
+        final Point baseCenter = axis.getHead();
         final Point topCenter = axis.getPoint(height);
-        final Point rayOrigin = ray.getPoint(0);
+        final Point rayOrigin = ray.getHead();
 
         // 1. Tube intersections
         List<Point> tubeIntersections = super.findIntersections(ray);
@@ -75,20 +87,18 @@ public class Cylinder extends Tube {
         }
 
         // 2. Bottom cap
-        Plane bottomPlane = new Plane(baseCenter, axisDir);
         List<Point> bottom = bottomPlane.findIntersections(ray);
         if (bottom != null) {
-            Point p = bottom.get(0);
+            Point p = bottom.getFirst();
             if (alignZero(p.distanceSquared(baseCenter) - radiusSquared) < 0) {
                 intersections.add(p);
             }
         }
 
         // 3. Top cap
-        Plane topPlane = new Plane(topCenter, axisDir);
         List<Point> top = topPlane.findIntersections(ray);
         if (top != null) {
-            Point p = top.get(0);
+            Point p = top.getFirst();
             if (alignZero(p.distanceSquared(topCenter) - radiusSquared) < 0) {
                 intersections.add(p);
             }
