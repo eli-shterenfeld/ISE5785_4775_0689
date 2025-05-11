@@ -75,9 +75,6 @@ class CylinderTest {
     /**
      * Test method for {@link geometries.Cylinder#findIntersections(primitives.Ray)}.
      */
-    /**
-     * Test method for {@link geometries.Cylinder#findIntersections(primitives.Ray)}.
-     */
     @Test
     void testFindIntersections() {
 
