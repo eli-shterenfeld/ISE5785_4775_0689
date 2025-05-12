@@ -25,7 +25,7 @@ public class Triangle extends Polygon {
     }
 
     @Override
-    public List<Point> findIntersections(Ray ray) {
+    protected List<Intersection> calculateIntersectionsHelper(Ray ray) {
         final Point origin = ray.getHead();
         final Vector direction = ray.getDirection();
 
@@ -104,7 +104,7 @@ public class Triangle extends Polygon {
             // Do nothing, just avoid crash on zero vector
         }
 
-        return List.of(intersectionPoint);
+        return List.of(new Intersection(this, intersectionPoint));
     }
 
 }

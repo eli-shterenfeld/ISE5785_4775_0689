@@ -40,7 +40,7 @@ public class Tube extends RadialGeometry {
     }
 
     @Override
-    public List<Point> findIntersections(Ray ray) {
+    protected List<Intersection> calculateIntersectionsHelper(Ray ray) {
         // Get ray origin and direction
         final Point rayOrigin = ray.getHead();
         final Point axisPoint = axis.getHead(); // Cylinder axis starting point
@@ -92,7 +92,10 @@ public class Tube extends RadialGeometry {
         if (t2 <= 0) return null; // No valid intersection
 
         double t1 = alignZero((-b - sqrtDiscriminant) / denominator);
-        return t1 <= 0 ? List.of(ray.getPoint(t2)) : List.of(ray.getPoint(t1), ray.getPoint(t2));
+        return t1 <= 0 ?
+                List.of(new Intersection(this, ray.getPoint(t2))) :
+                List.of(new Intersection(this, ray.getPoint(t1)),
+                        new Intersection(this, ray.getPoint(t2)));
     }
 }
 

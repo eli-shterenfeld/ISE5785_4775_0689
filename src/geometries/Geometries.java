@@ -1,6 +1,5 @@
 package geometries;
 
-import primitives.Point;
 import primitives.Ray;
 
 import java.util.ArrayList;
@@ -19,7 +18,7 @@ import java.util.List;
  *
  * @author eli and david
  */
-public class Geometries implements Intersectable {
+public class Geometries extends Intersectable {
 
     /**
      * List of intersectable geometries.
@@ -52,10 +51,10 @@ public class Geometries implements Intersectable {
     }
 
     @Override
-    public List<Point> findIntersections(Ray ray) {
-        List<Point> list = null;
+    protected List<Intersection> calculateIntersectionsHelper(Ray ray) {
+        List<Intersection> list = null;
         for (Intersectable item : geometries) {
-            List<Point> found = item.findIntersections(ray);
+            List<Intersection> found = item.calculateIntersections(ray);
             if (found != null) {
                 if (list == null)
                     list = new ArrayList<>(found);

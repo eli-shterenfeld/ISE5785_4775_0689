@@ -68,20 +68,20 @@ public class Cylinder extends Tube {
     }
 
     @Override
-    public List<Point> findIntersections(Ray ray) {
-        final List<Point> intersections = new LinkedList<>();
+    protected List<Intersection> calculateIntersectionsHelper(Ray ray) {
+        final List<Intersection> intersections = new LinkedList<>();
         final Vector axisDir = axis.getDirection();
         final Point baseCenter = axis.getHead();
         final Point topCenter = axis.getPoint(height);
         final Point rayOrigin = ray.getHead();
 
         // 1. Tube intersections
-        List<Point> tubeIntersections = super.findIntersections(ray);
+        List<Intersection> tubeIntersections = super.calculateIntersectionsHelper(ray);
         if (tubeIntersections != null) {
-            for (Point p : tubeIntersections) {
-                double axisProjection = axisDir.dotProduct(p.subtract(baseCenter));
+            for (Intersection p : tubeIntersections) {
+                double axisProjection = axisDir.dotProduct(p.point.subtract(baseCenter));
                 if (alignZero(axisProjection) >= 0 && alignZero(axisProjection - height) <= 0) {
-                    intersections.add(p);
+                    intersections.add(new Intersection(this, p.point));
                 }
             }
         }
@@ -91,7 +91,7 @@ public class Cylinder extends Tube {
         if (bottom != null) {
             Point p = bottom.getFirst();
             if (alignZero(p.distanceSquared(baseCenter) - radiusSquared) < 0) {
-                intersections.add(p);
+                intersections.add(new Intersection(this, p));
             }
         }
 
@@ -100,13 +100,13 @@ public class Cylinder extends Tube {
         if (top != null) {
             Point p = top.getFirst();
             if (alignZero(p.distanceSquared(topCenter) - radiusSquared) < 0) {
-                intersections.add(p);
+                intersections.add(new Intersection(this, p));
             }
         }
 
         // 4. Sort by distance
         intersections.sort(Comparator.comparingDouble(p ->
-                p.subtract(rayOrigin).dotProduct(ray.getDirection())));
+                p.point.subtract(rayOrigin).dotProduct(ray.getDirection())));
 
         return intersections.isEmpty() ? null : intersections;
     }

@@ -56,7 +56,7 @@ public class Plane extends Geometry {
     }
 
     @Override
-    public List<Point> findIntersections(Ray ray) {
+    protected List<Intersection> calculateIntersectionsHelper(Ray ray) {
         // Check if the ray is parallel to the plane
         double vn = ray.getDirection().dotProduct(normal);
         if (isZero(vn))
@@ -76,6 +76,6 @@ public class Plane extends Geometry {
 
         // If t is zero or negative (or very close to zero), consider no intersection
         // Return the intersection point as a list otherwise
-        return alignZero(t) <= 0 ? null : List.of(ray.getPoint(t));
+        return alignZero(t) <= 0 ? null : List.of(new Intersection(this, ray.getPoint(t)));
     }
 }
