@@ -83,6 +83,11 @@ public class SimpleRayTracer extends RayTracerBase {
         // Compute dot product between ray direction and normal
         intersection.dotProductRayNormal = intersection.rayDirection.dotProduct(intersection.normal);
 
+
+        if (intersection.dotProductRayNormal > 0) {
+            intersection.normal = intersection.normal.scale(-1);
+            intersection.dotProductRayNormal = -intersection.dotProductRayNormal;
+        }
         // If dot is 0, the ray is parallel to the surface → no local effects
         return !isZero(intersection.dotProductRayNormal);
     }
@@ -148,7 +153,7 @@ public class SimpleRayTracer extends RayTracerBase {
     private Double3 calcSpecular(Intersection intersection) {
         Vector n = intersection.normal;
         Vector l = intersection.lightDirection;
-        Vector v = intersection.rayDirection.scale(-1).normalize(); // inverse of ray direction
+        Vector v = intersection.rayDirection.normalize(); // inverse of ray direction
 
         // Calculate reflection vector R = L - 2 * (N·L) * N
         Vector r = l.subtract(n.scale(2 * intersection.nl)).normalize();
