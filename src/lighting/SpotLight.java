@@ -31,27 +31,6 @@ public class SpotLight extends PointLight {
         this.direction = direction.normalize();
     }
 
-    @Override
-    public Color getIntensity(Point p) {
-        return super.getIntensity(p);
-    }
-
-
-
-    /*
-    @Override
-    public Color getIntensity(Point p) {
-        Color baseIntensity = super.getIntensity(p);
-        Vector l = getL(p);
-        double cosAngle = direction.dotProduct(l);
-
-        if (cosAngle <= 0)
-            return Color.BLACK;
-
-        double factor = Math.pow(cosAngle, narrowBeam);
-        return baseIntensity.scale(factor);
-    }
-     */
 
     @Override
     public SpotLight setKc(double kC) {
@@ -78,4 +57,14 @@ public class SpotLight extends PointLight {
         this.narrowBeam = narrowBeam;
         return this;
     }
+
+    @Override
+    public Color getIntensity(Point p) {
+        Vector l = getL(p);
+        double factor = Math.max(0, direction.dotProduct(l));
+        if (narrowBeam != 1)
+            factor = Math.pow(factor, narrowBeam);
+        return super.getIntensity(p).scale(factor);
+    }
+
 }

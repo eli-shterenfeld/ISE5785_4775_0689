@@ -84,10 +84,10 @@ public class SimpleRayTracer extends RayTracerBase {
         intersection.dotProductRayNormal = intersection.rayDirection.dotProduct(intersection.normal);
 
 
-        if (intersection.dotProductRayNormal > 0) {
-            intersection.normal = intersection.normal.scale(-1);
-            intersection.dotProductRayNormal = -intersection.dotProductRayNormal;
-        }
+        // if (intersection.dotProductRayNormal > 0) {
+        //   intersection.normal = intersection.normal.scale(-1);
+        //   intersection.dotProductRayNormal = -intersection.dotProductRayNormal;
+        //}
         // If dot is 0, the ray is parallel to the surface → no local effects
         return !isZero(intersection.dotProductRayNormal);
     }
@@ -104,7 +104,7 @@ public class SimpleRayTracer extends RayTracerBase {
         intersection.lightSource = lightSource;
 
         // Calculate light direction from light source to intersection point
-        intersection.lightDirection = lightSource.getL(intersection.point);
+        intersection.lightDirection = lightSource.getL(intersection.point).scale(-1).normalize();
 
         // Calculate dot product of normal and light direction
         intersection.nl = intersection.normal.dotProduct(intersection.lightDirection);
@@ -118,6 +118,7 @@ public class SimpleRayTracer extends RayTracerBase {
 
         return true;
     }
+
 
     /**
      * Calculates the local lighting effects (diffusive + specular) at the intersection point.
