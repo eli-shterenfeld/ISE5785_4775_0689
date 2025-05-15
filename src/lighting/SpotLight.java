@@ -28,9 +28,22 @@ public class SpotLight extends PointLight {
      */
     public SpotLight(Color intensity, Point position, Vector direction) {
         super(intensity, position);
+        //this.direction = direction.scale(-1).normalize();
         this.direction = direction.normalize();
     }
 
+    /**
+     * Builder pattern - set the narrow beam factor.
+     *
+     * @param narrowBeam the narrow beam factor
+     * @return the spot light
+     */
+    public SpotLight setNarrowBeam(double narrowBeam) {
+        if (narrowBeam <= 0)
+            throw new IllegalArgumentException("Narrow beam must be positive");
+        this.narrowBeam = narrowBeam;
+        return this;
+    }
 
     @Override
     public SpotLight setKc(double kC) {
@@ -50,21 +63,12 @@ public class SpotLight extends PointLight {
         return this;
     }
 
-
-    public SpotLight setNarrowBeam(double narrowBeam) {
-        if (narrowBeam <= 0)
-            throw new IllegalArgumentException("Narrow beam must be positive");
-        this.narrowBeam = narrowBeam;
-        return this;
-    }
-
     @Override
     public Color getIntensity(Point p) {
         Vector l = getL(p);
-        double factor = Math.max(0, direction.scale(-1).dotProduct(l));
+        double factor = Math.max(0, direction.dotProduct(l));
         if (narrowBeam != 1)
             factor = Math.pow(factor, narrowBeam);
         return super.getIntensity(p).scale(factor);
     }
-
 }
