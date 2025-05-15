@@ -80,14 +80,13 @@ public class SimpleRayTracer extends RayTracerBase {
         // Calculate normal at intersection point
         intersection.normal = intersection.geometry.getNormal(intersection.point).normalize();
 
+        if (intersection.rayDirection.dotProduct(intersection.normal) > 0)
+            intersection.normal = intersection.normal.scale(-1);
+
         // Compute dot product between ray direction and normal
         intersection.dotProductRayNormal = intersection.rayDirection.dotProduct(intersection.normal);
 
 
-        // if (intersection.dotProductRayNormal > 0) {
-        //   intersection.normal = intersection.normal.scale(-1);
-        //   intersection.dotProductRayNormal = -intersection.dotProductRayNormal;
-        //}
         // If dot is 0, the ray is parallel to the surface → no local effects
         return !isZero(intersection.dotProductRayNormal);
     }
@@ -104,15 +103,16 @@ public class SimpleRayTracer extends RayTracerBase {
         intersection.lightSource = lightSource;
 
         // Calculate light direction from light source to intersection point
-        intersection.lightDirection = lightSource.getL(intersection.point).scale(-1).normalize();
+        intersection.lightDirection = lightSource.getL(intersection.point).normalize();
 
         // Calculate dot product of normal and light direction
         intersection.nl = intersection.normal.dotProduct(intersection.lightDirection);
 
-        // Calculate dot product of ray direction and normal (already in intersection)
-        // intersection.dotProduct is already set in preprocessIntersection
 
-        // If either dot products are zero → no local effects → return false
+        //Calculate dot product of ray direction and normal (already in intersection)
+        //intersection.dotProduct is already set in preprocessIntersection
+
+        //If either dot products are zero → no local effects → return false
         if (isZero(intersection.dotProductRayNormal) && isZero(intersection.nl))
             return false;
 
@@ -179,5 +179,4 @@ public class SimpleRayTracer extends RayTracerBase {
         double nl = Math.max(0, intersection.nl); // ensure non-negative
         return intersection.material.kD.scale(nl);
     }
-
 }

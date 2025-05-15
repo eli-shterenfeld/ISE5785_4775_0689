@@ -61,7 +61,7 @@ public class SpotLight extends PointLight {
     @Override
     public Color getIntensity(Point p) {
         Vector l = getL(p);
-        double factor = Math.max(0, direction.dotProduct(l));
+        double factor = Math.max(0, direction.scale(-1).dotProduct(l));
         if (narrowBeam != 1)
             factor = Math.pow(factor, narrowBeam);
         return super.getIntensity(p).scale(factor);
