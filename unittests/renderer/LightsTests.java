@@ -269,6 +269,9 @@ class LightsTests {
                 .writeToImage("lightTrianglesSpotSharp");
     }
 
+    /**
+     * Produce a picture of a sphere lighted by a directional light and a point light
+     */
     @Test
     void sphereMultiLights() {
         scene1.geometries.add(sphere);
@@ -284,6 +287,9 @@ class LightsTests {
                 .writeToImage("lightSphereMulti");
     }
 
+    /**
+     * Produce a picture of two triangles lighted by a directional light and a point light
+     */
     @Test
     void trianglesMultiLights() {
         scene2.geometries.add(triangle1, triangle2);
