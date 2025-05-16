@@ -275,8 +275,8 @@ class LightsTests {
     @Test
     void sphereMultiLights() {
         scene1.geometries.add(sphere);
-        scene1.lights.add(new DirectionalLight(new Color(600, 400, 200), new Vector(-1, -2, -2)));
-        scene1.lights.add(new PointLight(new Color(500, 300, 150), new Point(-60, -40, 30))
+        scene1.lights.add(new DirectionalLight(new Color(200, 200, 200), new Vector(0, -2, -2)));
+        scene1.lights.add(new PointLight(new Color(500, 300, 150), new Point(80, 50, 0))
                 .setKl(0.002).setKq(0.0003));
         scene1.lights.add(new SpotLight(new Color(400, 200, 100), new Point(-60, -40, 30), new Vector(1, 2, -1))
                 .setKl(0.002).setKq(0.0002));
@@ -293,10 +293,10 @@ class LightsTests {
     @Test
     void trianglesMultiLights() {
         scene2.geometries.add(triangle1, triangle2);
-        scene2.lights.add(new DirectionalLight(new Color(600, 400, 200), new Vector(-1, -2, -3)));
-        scene2.lights.add(new PointLight(new Color(500, 300, 150), new Point(40, -20, -80))
+        scene2.lights.add(new DirectionalLight(new Color(200, 150, 80), new Vector(-1, -2, -3)));
+        scene2.lights.add(new PointLight(new Color(500, 500, 500), new Point(10, -60, -80))
                 .setKl(0.002).setKq(0.0003));
-        scene2.lights.add(new SpotLight(new Color(400, 200, 100), new Point(40, -20, -80), new Vector(-2, -2, -2))
+        scene2.lights.add(new SpotLight(new Color(700, 700, 700), new Point(40, 80, 20), new Vector(-2, -2, -2))
                 .setKl(0.002).setKq(0.0002));
 
         camera2.setResolution(500, 500)
