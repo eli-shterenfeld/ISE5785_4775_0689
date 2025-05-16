@@ -8,6 +8,7 @@ import primitives.Ray;
 import primitives.Vector;
 import scene.Scene;
 
+import static primitives.Util.alignZero;
 import static primitives.Util.isZero;
 
 /**
@@ -36,14 +37,9 @@ public class SimpleRayTracer extends RayTracerBase {
     public Color traceRay(Ray ray) {
         // Find intersections with the geometries in the scene
         var intersections = scene.geometries.calculateIntersections(ray);
-        if (intersections == null)
-            return scene.background;
-
-        // Find the closest intersection point to the ray origin
-        var closestIntersection = ray.findClosestIntersection(intersections);
-
-        // Return the color at the closest point (currently ambient only)
-        return calcColor(closestIntersection, ray);
+        return intersections == null
+                ? scene.background
+                : calcColor(ray.findClosestIntersection(intersections), ray);
     }
 
     /**
@@ -57,13 +53,8 @@ public class SimpleRayTracer extends RayTracerBase {
         // Preprocess data: set normal, ray direction, dot product
         if (!preprocessIntersection(intersection, ray.getDirection()))
             return Color.BLACK; // No local effects → return black
-
         // Start with ambient light + emission
-        Color color = scene.ambientLight.getIntensity()
-                .scale(intersection.material.kA)
-                .add(calcColorLocalEffects(intersection));
-
-        return color;
+        return scene.ambientLight.getIntensity().scale(intersection.material.kA).add(calcColorLocalEffects(intersection));
     }
 
     /**
@@ -78,9 +69,6 @@ public class SimpleRayTracer extends RayTracerBase {
         intersection.rayDirection = RayIntersection.normalize();
         // Calculate normal at intersection point
         intersection.normal = intersection.geometry.getNormal(intersection.point).normalize();
-        if (intersection.rayDirection.dotProduct(intersection.normal) > 0)
-            intersection.normal = intersection.normal.scale(-1);
-
         // Compute dot product between ray direction and normal
         intersection.dotProductRayNormal = intersection.rayDirection.dotProduct(intersection.normal);
 
@@ -98,18 +86,12 @@ public class SimpleRayTracer extends RayTracerBase {
     private boolean setLightSource(Intersection intersection, LightSource lightSource) {
         // Set the light source
         intersection.lightSource = lightSource;
-
         // Calculate light direction from light source to intersection point
-        intersection.lightDirection = lightSource.getL(intersection.point).scale(-1).normalize();
-
+        intersection.lightDirection = lightSource.getL(intersection.point).normalize();
         // Calculate dot product of normal and light direction
         intersection.nl = intersection.normal.dotProduct(intersection.lightDirection);
-
-        //If either dot products are zero → no local effects → return false
-        if (isZero(intersection.dotProductRayNormal) && isZero(intersection.nl))
-            return false;
-
-        return true;
+        // If dot product is 0, the light source is parallel to the surface → no contribution
+        return alignZero(intersection.dotProductRayNormal * intersection.nl) > 0;
     }
 
     /**
@@ -122,16 +104,8 @@ public class SimpleRayTracer extends RayTracerBase {
         Color result = intersection.geometry.getEmission();
 
         for (var light : scene.lights) {
-            if (!setLightSource(intersection, light))
-                continue;
-
-            Color lightIntensity = light.getIntensity(intersection.point);
-            Double3 diffusive = calcDiffusive(intersection);
-            Double3 specular = calcSpecular(intersection);
-            Double3 totalComponents = diffusive.add(specular);
-
-            Color contribution = lightIntensity.scale(totalComponents);
-            result = result.add(contribution);
+            if (setLightSource(intersection, light))
+                result = result.add(light.getIntensity(intersection.point).scale(calcDiffusive(intersection).add(calcSpecular(intersection))));
         }
 
         return result;
@@ -144,20 +118,10 @@ public class SimpleRayTracer extends RayTracerBase {
      * @return the specular component as Double3
      */
     private Double3 calcSpecular(Intersection intersection) {
-        Vector n = intersection.normal;
-        Vector l = intersection.lightDirection;
-        Vector v = intersection.rayDirection.normalize(); // inverse of ray direction
-
         // Calculate reflection vector R = L - 2 * (N·L) * N
-        Vector r = l.subtract(n.scale(2 * intersection.nl)).normalize();
-
-        // Calculate R·V (viewer direction)
-        double rv = r.dotProduct(v);
-        if (rv <= 0)
-            return Double3.ZERO; // no specular if angle > 90 degrees
-
-        // Calculate specular component: kS * (R·V)^nShininess
-        return intersection.material.kS.scale(Math.pow(rv, intersection.material.nSh));
+        Vector r = intersection.lightDirection.subtract(intersection.normal.scale(2 * intersection.nl)).normalize();
+        // Calculate specular component: kS * max(0,-R·V)^nShininess
+        return intersection.material.kS.scale(Math.pow(Math.max(0, -r.dotProduct(intersection.rayDirection.normalize())), intersection.material.nSh));
     }
 
     /**
@@ -167,8 +131,6 @@ public class SimpleRayTracer extends RayTracerBase {
      * @return the diffusive component as Double3
      */
     private Double3 calcDiffusive(Intersection intersection) {
-        // According to Phong model: kD * max(0, N·L)
-        double nl = Math.max(0, intersection.nl); // ensure non-negative
-        return intersection.material.kD.scale(nl);
+        return intersection.material.kD.scale(Math.abs(intersection.nl));
     }
 }
