@@ -68,7 +68,7 @@ public class SimpleRayTracer extends RayTracerBase {
         // Save ray direction
         intersection.rayDirection = RayIntersection.normalize();
         // Calculate normal at intersection point
-        intersection.normal = intersection.geometry.getNormal(intersection.point).normalize();
+        intersection.normal = intersection.geometry.getNormal(intersection.point);
         // Compute dot product between ray direction and normal
         intersection.dotProductRayNormal = intersection.rayDirection.dotProduct(intersection.normal);
 
