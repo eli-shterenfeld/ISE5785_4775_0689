@@ -38,7 +38,7 @@ public class Material {
      * @param kA the coefficient
      * @return the current material object
      */
-    public Material setkA(Double3 kA) {
+    public Material setKA(Double3 kA) {
         this.kA = kA;
         return this;
     }
@@ -49,7 +49,7 @@ public class Material {
      * @param kA the coefficient
      * @return the current material object
      */
-    public Material setkA(double kA) {
+    public Material setKA(double kA) {
         this.kA = new Double3(kA);
         return this;
     }

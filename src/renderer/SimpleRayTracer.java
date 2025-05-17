@@ -52,7 +52,7 @@ public class SimpleRayTracer extends RayTracerBase {
     private Color calcColor(Intersection intersection, Ray ray) {
         // Preprocess data: set normal, ray direction, dot product
         if (!preprocessIntersection(intersection, ray.getDirection()))
-            return Color.BLACK; // No local effects → return black
+            return Color.BLACK;// No local effects → return black
         // Start with ambient light + emission
         return scene.ambientLight.getIntensity().scale(intersection.material.kA).add(calcColorLocalEffects(intersection));
     }
@@ -65,14 +65,9 @@ public class SimpleRayTracer extends RayTracerBase {
      * @return true if local effects can be calculated, false otherwise
      */
     private boolean preprocessIntersection(Intersection intersection, Vector RayIntersection) {
-        // Save ray direction
-        intersection.rayDirection = RayIntersection.normalize();
-        // Calculate normal at intersection point
-        intersection.normal = intersection.geometry.getNormal(intersection.point);
-        // Compute dot product between ray direction and normal
-        intersection.dotProductRayNormal = intersection.rayDirection.dotProduct(intersection.normal);
-
-        // If dot is 0, the ray is parallel to the surface → no local effects
+        intersection.rayDirection = RayIntersection.normalize();    // Save ray direction
+        intersection.normal = intersection.geometry.getNormal(intersection.point);  // Calculate normal at intersection point
+        intersection.dotProductRayNormal = intersection.rayDirection.dotProduct(intersection.normal); // Compute dot product between ray direction and normal
         return !isZero(intersection.dotProductRayNormal);
     }
 
@@ -84,13 +79,11 @@ public class SimpleRayTracer extends RayTracerBase {
      * @return false if both dot products are zero (no contribution), true otherwise
      */
     private boolean setLightSource(Intersection intersection, LightSource lightSource) {
-        // Set the light source
         intersection.lightSource = lightSource;
-        // Calculate light direction from light source to intersection point
-        intersection.lightDirection = lightSource.getL(intersection.point).normalize();
+        intersection.lightDirection = lightSource.getL(intersection.point);
         // Calculate dot product of normal and light direction
         intersection.nl = intersection.normal.dotProduct(intersection.lightDirection);
-        // If dot product is 0, the light source is parallel to the surface → no contribution
+        // If dot(n, l) * dot(n, v) <= 0 → light or viewer are on the wrong side → no contribution
         return alignZero(intersection.dotProductRayNormal * intersection.nl) > 0;
     }
 
@@ -102,12 +95,11 @@ public class SimpleRayTracer extends RayTracerBase {
      */
     private Color calcColorLocalEffects(Intersection intersection) {
         Color result = intersection.geometry.getEmission();
-
         for (var light : scene.lights) {
-            if (setLightSource(intersection, light))
-                result = result.add(light.getIntensity(intersection.point).scale(calcDiffusive(intersection).add(calcSpecular(intersection))));
+            if (!setLightSource(intersection, light))
+                continue; // No contribution from this light source
+            result = result.add(light.getIntensity(intersection.point).scale(calcDiffusive(intersection).add(calcSpecular(intersection))));
         }
-
         return result;
     }
 
@@ -121,7 +113,7 @@ public class SimpleRayTracer extends RayTracerBase {
         // Calculate reflection vector R = L - 2 * (N·L) * N
         Vector r = intersection.lightDirection.subtract(intersection.normal.scale(2 * intersection.nl)).normalize();
         // Calculate specular component: kS * max(0,-R·V)^nShininess
-        return intersection.material.kS.scale(Math.pow(Math.max(0, -r.dotProduct(intersection.rayDirection.normalize())), intersection.material.nSh));
+        return intersection.material.kS.scale(Math.pow(Math.max(0, -r.dotProduct(intersection.rayDirection)), intersection.material.nSh));
     }
 
     /**

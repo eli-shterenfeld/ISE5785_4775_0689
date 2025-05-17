@@ -20,12 +20,12 @@ public abstract class Intersectable {
         /**
          * The intersected geometry object
          */
-        public Geometry geometry;
+        public final Geometry geometry;
 
         /**
          * The intersection point
          */
-        public Point point;
+        public final Point point;
 
         /**
          * The material of the geometry
@@ -79,9 +79,6 @@ public abstract class Intersectable {
             this.material = (geometry != null) ? geometry.getMaterial() : null;
         }
 
-        /**
-         * String representation for debugging purposes.
-         */
         @Override
         public String toString() {
             return "Intersection{" +
@@ -94,9 +91,6 @@ public abstract class Intersectable {
                     '}';
         }
 
-        /**
-         * Equality check: same geometry reference and identical point.
-         */
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;

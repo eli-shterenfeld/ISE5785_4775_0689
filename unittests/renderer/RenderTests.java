@@ -99,28 +99,28 @@ class RenderTests {
                 .add(
                         // center sphere
                         new Sphere(50, new Point(0, 0, -100))
-                                .setMaterial(new Material().setkA(new Double3(0.4))),
+                                .setMaterial(new Material().setKA(new Double3(0.4))),
 
                         // up left triangle - green
                         new Triangle(
                                 new Point(-100, 0, -100),
                                 new Point(0, 100, -100),
                                 new Point(-100, 100, -100))
-                                .setMaterial(new Material().setkA(new Double3(0, 0.8, 0))),
+                                .setMaterial(new Material().setKA(new Double3(0, 0.8, 0))),
 
                         // down left triangle - red
                         new Triangle(
                                 new Point(-100, 0, -100),
                                 new Point(0, -100, -100),
                                 new Point(-100, -100, -100))
-                                .setMaterial(new Material().setkA(new Double3(0.8, 0, 0))),
+                                .setMaterial(new Material().setKA(new Double3(0.8, 0, 0))),
 
                         // down right triangle - blue
                         new Triangle(
                                 new Point(100, 0, -100),
                                 new Point(0, -100, -100),
                                 new Point(100, -100, -100))
-                                .setMaterial(new Material().setkA(new Double3(0, 0, 0.8)))
+                                .setMaterial(new Material().setKA(new Double3(0, 0, 0.8)))
                 );
 
         camera
