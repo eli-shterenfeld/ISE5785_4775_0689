@@ -2,7 +2,6 @@ package geometries;
 
 import primitives.Ray;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -57,7 +56,7 @@ public class Geometries extends Intersectable {
             List<Intersection> found = item.calculateIntersections(ray);
             if (found != null) {
                 if (list == null)
-                    list = new ArrayList<>(found);
+                    list = new LinkedList<>(found);
                 else
                     list.addAll(found);
             }

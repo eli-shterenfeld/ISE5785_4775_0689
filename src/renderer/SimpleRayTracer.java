@@ -51,10 +51,9 @@ public class SimpleRayTracer extends RayTracerBase {
      */
     private Color calcColor(Intersection intersection, Ray ray) {
         // Preprocess data: set normal, ray direction, dot product
-        if (!preprocessIntersection(intersection, ray.getDirection()))
-            return Color.BLACK;// No local effects → return black
-        // Start with ambient light + emission
-        return scene.ambientLight.getIntensity().scale(intersection.material.kA).add(calcColorLocalEffects(intersection));
+        return !preprocessIntersection(intersection, ray.getDirection()) ? Color.BLACK // No local effects → return black
+                // Start with ambient light + emission
+                : scene.ambientLight.getIntensity().scale(intersection.material.kA).add(calcColorLocalEffects(intersection));
     }
 
     /**
@@ -84,7 +83,7 @@ public class SimpleRayTracer extends RayTracerBase {
         // Calculate dot product of normal and light direction
         intersection.nl = intersection.normal.dotProduct(intersection.lightDirection);
         // If dot(n, l) * dot(n, v) <= 0 → light or viewer are on the wrong side → no contribution
-        return alignZero(intersection.dotProductRayNormal * intersection.nl) > 0;
+        return alignZero(intersection.dotProductRayNormal) * intersection.nl > 0;
     }
 
     /**
@@ -112,8 +111,10 @@ public class SimpleRayTracer extends RayTracerBase {
     private Double3 calcSpecular(Intersection intersection) {
         // Calculate reflection vector R = L - 2 * (N·L) * N
         Vector r = intersection.lightDirection.subtract(intersection.normal.scale(2 * intersection.nl)).normalize();
-        // Calculate specular component: kS * max(0,-R·V)^nShininess
-        return intersection.material.kS.scale(Math.pow(Math.max(0, -r.dotProduct(intersection.rayDirection)), intersection.material.nSh));
+        double vr = alignZero(intersection.rayDirection.dotProduct(r));
+        return vr >= 0 ? Double3.ZERO
+                // Calculate specular component: kS * max(0,-R·V)^nShininess
+                : intersection.material.kS.scale(Math.pow(-vr, intersection.material.nSh));
     }
 
     /**

@@ -76,19 +76,12 @@ public abstract class Intersectable {
         public Intersection(Geometry geometry, Point point) {
             this.geometry = geometry;
             this.point = point;
-            this.material = (geometry != null) ? geometry.getMaterial() : null;
+            this.material = (geometry == null) ? null : geometry.getMaterial();
         }
 
         @Override
         public String toString() {
-            return "Intersection{" +
-                    "geometry=" + geometry +
-                    ", point=" + point +
-                    ", material=" + material +
-                    ", normal=" + normal +
-                    ", distance=" + distance +
-                    ", lightSource=" + lightSource +
-                    '}';
+            return "Intersection{" + geometry + "," + point + '}';
         }
 
         @Override

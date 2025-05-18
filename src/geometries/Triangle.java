@@ -6,6 +6,7 @@ import primitives.Vector;
 
 import java.util.List;
 
+import static primitives.Util.alignZero;
 import static primitives.Util.isZero;
 
 /**
@@ -59,51 +60,51 @@ public class Triangle extends Polygon {
         final double v = f * direction.dotProduct(q);
 
         // Strict inside only: u, v strictly > 0 and < 1
-        if (u <= 0 || u >= 1) return null;
-        if (v <= 0 || v >= 1) return null;
-        if (u + v >= 1) return null;
+        if (alignZero(u) <= 0 || alignZero(u - 1) >= 0) return null;
+        if (alignZero(v) <= 0 || alignZero(v - 1) >= 0) return null;
+        if (alignZero(u + v - 1) >= 0) return null;
 
-        final double t = f * edge2.dotProduct(q);
+        final double t = alignZero(f * edge2.dotProduct(q));
         if (t <= 0) return null;
 
         final Point intersectionPoint = origin.add(direction.scale(t));
 
-        // === Check if intersection point is exactly on any vertex ===
-        if (intersectionPoint.equals(v0) || intersectionPoint.equals(v1) || intersectionPoint.equals(v2))
-            return null;
+//        // === Check if intersection point is exactly on any vertex ===
+//        if (intersectionPoint.equals(v0) || intersectionPoint.equals(v1) || intersectionPoint.equals(v2))
+//            return null;
 
         // === Check if intersection point lies on any edge ===
-        try {
-            // Edge v0-v1
-            final Vector ap1 = intersectionPoint.subtract(v0);
-            final Vector ab1 = v1.subtract(v0);
-            if (ap1.crossProduct(ab1).lengthSquared() == 0) {
-                final double dot = ap1.dotProduct(ab1);
-                if (dot >= 0 && dot <= ab1.lengthSquared())
-                    return null;
-            }
-
-            // Edge v1-v2
-            final Vector ap2 = intersectionPoint.subtract(v1);
-            final Vector ab2 = v2.subtract(v1);
-            if (ap2.crossProduct(ab2).lengthSquared() == 0) {
-                final double dot = ap2.dotProduct(ab2);
-                if (dot >= 0 && dot <= ab2.lengthSquared())
-                    return null;
-            }
-
-            // Edge v2-v0
-            final Vector ap3 = intersectionPoint.subtract(v2);
-            final Vector ab3 = v0.subtract(v2);
-            if (ap3.crossProduct(ab3).lengthSquared() == 0) {
-                final double dot = ap3.dotProduct(ab3);
-                if (dot >= 0 && dot <= ab3.lengthSquared())
-                    return null;
-            }
-
-        } catch (IllegalArgumentException e) {
-            // Do nothing, just avoid crash on zero vector
-        }
+//        try {
+//            // Edge v0-v1
+//            final Vector ap1 = intersectionPoint.subtract(v0);
+//            final Vector ab1 = v1.subtract(v0);
+//            if (ap1.crossProduct(ab1).lengthSquared() == 0) {
+//                final double dot = ap1.dotProduct(ab1);
+//                if (dot >= 0 && dot <= ab1.lengthSquared())
+//                    return null;
+//            }
+//
+//            // Edge v1-v2
+//            final Vector ap2 = intersectionPoint.subtract(v1);
+//            final Vector ab2 = v2.subtract(v1);
+//            if (ap2.crossProduct(ab2).lengthSquared() == 0) {
+//                final double dot = ap2.dotProduct(ab2);
+//                if (dot >= 0 && dot <= ab2.lengthSquared())
+//                    return null;
+//            }
+//
+//            // Edge v2-v0
+//            final Vector ap3 = intersectionPoint.subtract(v2);
+//            final Vector ab3 = v0.subtract(v2);
+//            if (ap3.crossProduct(ab3).lengthSquared() == 0) {
+//                final double dot = ap3.dotProduct(ab3);
+//                if (dot >= 0 && dot <= ab3.lengthSquared())
+//                    return null;
+//            }
+//
+//        } catch (IllegalArgumentException e) {
+//            // Do nothing, just avoid crash on zero vector
+//        }
 
         return List.of(new Intersection(this, intersectionPoint));
     }

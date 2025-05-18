@@ -97,9 +97,8 @@ public class Polygon extends Geometry {
     @Override
     protected List<Intersection> calculateIntersectionsHelper(Ray ray) {
         List<Point> intersection = plane.findIntersections(ray);
-        if (intersection == null) {
+        if (intersection == null)
             return null;
-        }
 
         Point q = intersection.getFirst(); // Intersection point
         Vector n = plane.getNormal(q);       // Normal vector to the plane
@@ -133,8 +132,6 @@ public class Polygon extends Geometry {
             }
         }
 
-        return intersection.stream()
-                .map(p -> new Intersection(this, p))
-                .toList();
+        return List.of(new Intersection(this, q)); // point is inside polygon
     }
 }

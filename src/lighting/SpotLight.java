@@ -4,6 +4,9 @@ import primitives.Color;
 import primitives.Point;
 import primitives.Vector;
 
+import static java.lang.Math.pow;
+import static primitives.Util.alignZero;
+
 /**
  * Spot light source - emits light in a specific direction with cone shape.
  */
@@ -64,10 +67,8 @@ public class SpotLight extends PointLight {
 
     @Override
     public Color getIntensity(Point p) {
-        Vector l = getL(p);
-        double factor = Math.max(0, direction.dotProduct(l));
-        if (narrowBeam != 1)
-            factor = Math.pow(factor, narrowBeam);
-        return super.getIntensity(p).scale(factor);
+        double factor = alignZero(direction.dotProduct(getL(p)));
+        if (factor <= 0) return Color.BLACK;
+        return super.getIntensity(p).scale(narrowBeam == 1 ? factor : pow(factor, narrowBeam));
     }
 }

@@ -76,12 +76,12 @@ public class Cylinder extends Tube {
         final Point rayOrigin = ray.getHead();
 
         // 1. Tube intersections
-        List<Intersection> tubeIntersections = super.calculateIntersectionsHelper(ray);
+        var tubeIntersections = super.findIntersections(ray);
         if (tubeIntersections != null) {
-            for (Intersection p : tubeIntersections) {
-                double axisProjection = axisDir.dotProduct(p.point.subtract(baseCenter));
+            for (var p : tubeIntersections) {
+                double axisProjection = axisDir.dotProduct(p.subtract(baseCenter));
                 if (alignZero(axisProjection) >= 0 && alignZero(axisProjection - height) <= 0) {
-                    intersections.add(new Intersection(this, p.point));
+                    intersections.add(new Intersection(this, p));
                 }
             }
         }
