@@ -6,7 +6,6 @@ import primitives.Vector;
 
 import java.util.List;
 
-import static primitives.Util.alignZero;
 import static primitives.Util.isZero;
 
 /**
@@ -97,12 +96,12 @@ public class Polygon extends Geometry {
 
     @Override
     protected List<Intersection> calculateIntersectionsHelper(Ray ray, double maxDistance) {
-        List<Point> intersection = plane.findIntersections(ray);
+        var intersection = plane.calculateIntersections(ray, maxDistance);
         if (intersection == null) {
             return null;
         }
 
-        Point q = intersection.getFirst(); // Intersection point
+        Point q = intersection.getFirst().point; // Intersection point
         Vector n = plane.getNormal(q);     // Normal vector to the plane
 
         int size = vertices.size();
@@ -133,12 +132,6 @@ public class Polygon extends Geometry {
                 return null; // sign changed, point is outside polygon
             }
         }
-
-        double t = ray.getHead().distance(q);
-        if (alignZero(t - maxDistance) >= 0) {
-            return null;
-        }
-
-        return List.of(new Intersection(this, q));
+        return List.of(new Intersection(this, q)); // point is inside polygon
     }
 }

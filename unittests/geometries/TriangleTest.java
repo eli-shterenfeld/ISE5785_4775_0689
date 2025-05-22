@@ -87,6 +87,10 @@ class TriangleTest {
         assertNull(t1.findIntersections(ray), "there should not be any intersections");
     }
 
+    /**
+     * Test method for {@link geometries.Polygon#calculateIntersections(primitives.Ray, double)}.
+     * This test verifies the intersection points of a ray with a polygon within a specified distance.
+     */
     @Test
     void testCalculateIntersectionsWithDistance() {
         // ============ Equivalence Partitions Tests ==============

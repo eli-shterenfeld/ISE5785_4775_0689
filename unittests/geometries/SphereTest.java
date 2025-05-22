@@ -150,6 +150,10 @@ class SphereTest {
         assertNull(intersections, "there should be 0 intersections");
     }
 
+    /**
+     * Test method for {@link geometries.Sphere#calculateIntersections(primitives.Ray, double)}.
+     * This test verifies the intersection points of a ray with the sphere within a specified distance.
+     */
     @Test
     public void testFindIntersectionsWithDistance() {
 

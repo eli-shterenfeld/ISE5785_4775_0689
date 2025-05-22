@@ -209,6 +209,12 @@ class CylinderTest {
         assertNull(result45, "Expected no intersection points");
     }
 
+    /**
+     * Test method for {@link geometries.Cylinder#calculateIntersections(primitives.Ray, double)}.
+     * This test verifies that the intersection points are correctly calculated
+     * for various cases, including when the ray is parallel to the cylinder axis,
+     * when it intersects the cylinder surface, and when it starts inside or outside the cylinder.
+     */
     @Test
     void testCalculateIntersectionsWithDistance() {
         // ============ Equivalence Partitions Tests ==============

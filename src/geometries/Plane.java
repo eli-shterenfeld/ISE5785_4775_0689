@@ -69,10 +69,8 @@ public class Plane extends Geometry {
         }
 
         double t = (normal.dotProduct(u)) / vn;
-        
-        if (alignZero(t) <= 0 || alignZero(t - maxDistance) >= 0)
-            return null;
 
-        return List.of(new Intersection(this, ray.getPoint(t)));
+        return alignZero(t) <= 0 || alignZero(t - maxDistance) >= 0 ?
+                null : List.of(new Intersection(this, ray.getPoint(t)));
     }
 }

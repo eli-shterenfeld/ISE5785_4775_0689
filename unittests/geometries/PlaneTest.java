@@ -151,6 +151,10 @@ class PlaneTest {
         assertNull(plane.findIntersections(ray), "Ray should not intersect the plane");
     }
 
+    /**
+     * Test method for {@link geometries.Plane#calculateIntersections(primitives.Ray, double)}.
+     * This test verifies the intersection points of a ray with the plane within a specified distance.
+     */
     @Test
     void testCalculateIntersectionsWithDistance() {
         // ============ Equivalence Partitions Tests ==============

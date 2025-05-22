@@ -78,22 +78,15 @@ public class Tube extends RadialGeometry {
         double t2 = alignZero((-b + sqrtDiscriminant) / denominator);
         double t1 = alignZero((-b - sqrtDiscriminant) / denominator);
 
-        boolean t1Valid = t1 > 0 && alignZero(t1 - maxDistance) <= 0;
-        boolean t2Valid = t2 > 0 && alignZero(t2 - maxDistance) <= 0;
+        if (t1 > 0 && alignZero(t1 - maxDistance) < 0) {
+            return (t2 > 0 && alignZero(t2 - maxDistance) < 0)
+                    ? List.of(new Intersection(this, ray.getPoint(t1)), new Intersection(this, ray.getPoint(t2)))
+                    : List.of(new Intersection(this, ray.getPoint(t1)));
+        }
 
-        if (t1Valid && t2Valid)
-            return List.of(
-                    new Intersection(this, ray.getPoint(t1)),
-                    new Intersection(this, ray.getPoint(t2))
-            );
-
-        if (t1Valid)
-            return List.of(new Intersection(this, ray.getPoint(t1)));
-
-        if (t2Valid)
-            return List.of(new Intersection(this, ray.getPoint(t2)));
-
-        return null;
+        return (t2 > 0 && alignZero(t2 - maxDistance) < 0)
+                ? List.of(new Intersection(this, ray.getPoint(t2)))
+                : null;
     }
 }
 

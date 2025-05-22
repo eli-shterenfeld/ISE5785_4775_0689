@@ -32,6 +32,11 @@ public class Cylinder extends Tube {
     private final Plane topPlane;
 
     /**
+     * Tube instance to use its methods for intersections.
+     */
+    private final Tube tube; // Tube instance to use its methods for intersections
+
+    /**
      * Constructs a Cylinder with a given radius, axis, and height.
      *
      * @param radius the radius of the cylinder
@@ -43,6 +48,7 @@ public class Cylinder extends Tube {
         this.height = height;    // Set the height specific to Cylinder
         this.bottomPlane = new Plane(axis.getHead(), axis.getDirection());
         this.topPlane = new Plane(axis.getPoint(height), axis.getDirection());
+        this.tube = new Tube(radius, axis); // Create a Tube instance for intersection calculations
     }
 
     @Override
@@ -76,33 +82,30 @@ public class Cylinder extends Tube {
         final Point rayOrigin = ray.getHead();
 
         // 1. Tube intersections
-        List<Intersection> tubeIntersections = super.calculateIntersectionsHelper(ray, maxDistance);
+        var tubeIntersections = tube.calculateIntersections(ray, maxDistance);
         if (tubeIntersections != null) {
             for (Intersection p : tubeIntersections) {
                 double axisProjection = axisDir.dotProduct(p.point.subtract(baseCenter));
                 if (alignZero(axisProjection) >= 0 && alignZero(axisProjection - height) <= 0) {
-                    if (alignZero(rayOrigin.distance(p.point) - maxDistance) <= 0)
-                        intersections.add(new Intersection(this, p.point));
+                    intersections.add(new Intersection(this, p.point));
                 }
             }
         }
 
         // 2. Bottom cap
-        List<Point> bottom = bottomPlane.findIntersections(ray);
+        var bottom = bottomPlane.calculateIntersections(ray, maxDistance);
         if (bottom != null) {
-            Point p = bottom.getFirst();
-            if (alignZero(p.distanceSquared(baseCenter) - radiusSquared) < 0 &&
-                    alignZero(rayOrigin.distance(p) - maxDistance) <= 0) {
+            Point p = bottom.getFirst().point;
+            if (alignZero(p.distanceSquared(baseCenter) - radiusSquared) < 0) {
                 intersections.add(new Intersection(this, p));
             }
         }
 
         // 3. Top cap
-        List<Point> top = topPlane.findIntersections(ray);
+        var top = topPlane.calculateIntersections(ray, maxDistance);
         if (top != null) {
-            Point p = top.getFirst();
-            if (alignZero(p.distanceSquared(topCenter) - radiusSquared) < 0 &&
-                    alignZero(rayOrigin.distance(p) - maxDistance) <= 0) {
+            Point p = top.getFirst().point;
+            if (alignZero(p.distanceSquared(topCenter) - radiusSquared) < 0) {
                 intersections.add(new Intersection(this, p));
             }
         }
@@ -114,5 +117,3 @@ public class Cylinder extends Tube {
         return intersections.isEmpty() ? null : intersections;
     }
 }
-
-

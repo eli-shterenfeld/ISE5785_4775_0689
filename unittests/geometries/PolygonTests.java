@@ -145,6 +145,10 @@ class PolygonTests {
         assertNull(polygon.findIntersections(ray), "Ray starting from the plane should not count as intersection");
     }
 
+    /**
+     * Test method for {@link geometries.Polygon#calculateIntersections(primitives.Ray, double)}.
+     * This test verifies the intersection points of a ray with a polygon within a specified distance.
+     */
     @Test
     void testCalculateIntersectionsWithDistance() {
         // ============ Equivalence Partitions Tests ==============

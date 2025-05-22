@@ -306,6 +306,10 @@ class TubeTest {
         assertNull(result, "Bad intersections");
     }
 
+    /**
+     * Test method for {@link geometries.Tube#calculateIntersections(primitives.Ray, double)}.
+     * This test verifies the intersection points of a ray with the tube within a specified distance.
+     */
     @Test
     void calculateIntersectionsWithDistance() {
         // ============ Equivalence Partitions Tests ==============
