@@ -18,6 +18,11 @@ import static primitives.Util.isZero;
 public class SimpleRayTracer extends RayTracerBase {
 
     /**
+     * A small delta value used for floating-point comparisons.
+     */
+    private static final double DELTA = 0.1;
+
+    /**
      * Constructs a SimpleRayTracer with the given scene.
      *
      * @param scene the scene to be rendered
@@ -97,6 +102,8 @@ public class SimpleRayTracer extends RayTracerBase {
         for (var light : scene.lights) {
             if (!setLightSource(intersection, light))
                 continue; // No contribution from this light source
+            if (!unshaded(intersection))
+                continue; // Shadowed by another object
             result = result.add(light.getIntensity(intersection.point).scale(calcDiffusive(intersection).add(calcSpecular(intersection))));
         }
         return result;
@@ -125,5 +132,17 @@ public class SimpleRayTracer extends RayTracerBase {
      */
     private Double3 calcDiffusive(Intersection intersection) {
         return intersection.material.kD.scale(Math.abs(intersection.nl));
+    }
+
+    /**
+     * Checks if the intersection point is unshaded (not occluded by other objects).
+     *
+     * @param intersection the intersection data
+     * @return true if unshaded, false otherwise
+     */
+    private boolean unshaded(Intersection intersection) {
+        Vector delta = intersection.normal.scale(intersection.dotProductRayNormal > 0 ? -DELTA : DELTA);
+        Ray shadowRay = new Ray(intersection.point.add(delta), intersection.lightSource.getL(intersection.point).scale(-1));
+        return scene.geometries.calculateIntersections(shadowRay, intersection.lightSource.getDistance(intersection.point)) == null;
     }
 }

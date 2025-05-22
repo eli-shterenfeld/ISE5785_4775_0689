@@ -7,7 +7,8 @@ import primitives.Vector;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Unit tests for {@link Sphere} class.
@@ -149,4 +150,35 @@ class SphereTest {
         assertNull(intersections, "there should be 0 intersections");
     }
 
+    @Test
+    public void testFindIntersectionsWithDistance() {
+
+        // ============ Equivalence Partitions Tests ==============
+        Sphere sphere = new Sphere(1d, new Point(100, 0, 0));
+        double maxDistance = 3.5;
+
+        // TC01: the ray is stop before the sphere (0 points)
+        assertNull(sphere.calculateIntersections(new Ray(new Point(95, 2, 0), new Vector(1, 0, 0)), maxDistance)
+                , "Ray's line out of sphere");
+
+        // TC02: the ray is stop inside the sphere (1 point)
+        var result2 = sphere.calculateIntersections(new Ray(new Point(97.4, 0, 0), new Vector(1, 0, 0)), maxDistance);
+        assertEquals(1, result2.size(), "Wrong number of points");
+
+        // Tc03: the ray start and stop at the sphere (0 point)
+        assertNull(sphere.calculateIntersections(new Ray(new Point(99, 0, 0), new Vector(1, 0, 0)), 0.3),
+                "Ray's line out of sphere");
+
+        // TC04: the ray start at the sphere and stop outside (1 point)
+        var result4 = sphere.calculateIntersections(new Ray(new Point(100, 0, 0), new Vector(1, 0, 0)), maxDistance);
+        assertEquals(1, result4.size(), "Wrong number of points");
+
+        // TC05: the ray start inside the sphere close to the end and stop outside (1 point)
+        var result5 = sphere.calculateIntersections(new Ray(new Point(100.8, -0.5, 0), new Vector(1, 0, 0)), maxDistance);
+        assertEquals(1, result5.size(), "Wrong number of points");
+
+        // TC06: the ray start after the sphere and stop outside (0 point)
+        assertNull(sphere.calculateIntersections(new Ray(new Point(98.5, -3.5, 0), new Vector(1, 0, 0)), maxDistance),
+                "Ray's line out of sphere");
+    }
 }

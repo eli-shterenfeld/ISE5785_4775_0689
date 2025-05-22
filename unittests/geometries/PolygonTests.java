@@ -1,10 +1,11 @@
 package geometries;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.junit.jupiter.api.Test;
+import primitives.Point;
+import primitives.Ray;
+import primitives.Vector;
 
-import primitives.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Testing Polygons
@@ -144,4 +145,26 @@ class PolygonTests {
         assertNull(polygon.findIntersections(ray), "Ray starting from the plane should not count as intersection");
     }
 
+    @Test
+    void testCalculateIntersectionsWithDistance() {
+        // ============ Equivalence Partitions Tests ==============
+        Polygon polygon = new Polygon(new Point(0, 0, 1), new Point(1, 0, 1), new Point(0, 1, 1));
+        double maxDistance = 3.5;
+
+        // TC01: Ray's line stops after the polygon (1 point)
+        Ray ray01 = new Ray(new Point(0.25, 0.25, 0), new Vector(0, 0, 1));
+        var result01 = polygon.calculateIntersections(ray01, maxDistance);
+        assertNotNull(result01, "Expected intersection points");
+        assertEquals(1, result01.size(), "Wrong number of intersection points");
+
+        // TC02: Ray's line stop before the polygon (0 points)
+        Ray ray02 = new Ray(new Point(0.5, -0.5, 0), new Vector(0, 0, 1));
+        var result02 = polygon.calculateIntersections(ray02, maxDistance);
+        assertNull(result02, "Expected no intersection points");
+
+        // TC03: Ray's line start and stop before the polygon (0 points)
+        Ray ray03 = new Ray(new Point(0.5, 0.5, 0), new Vector(0, 0, 1));
+        var result03 = polygon.calculateIntersections(ray03, maxDistance);
+        assertNull(result03, "Expected no intersection points");
+    }
 }

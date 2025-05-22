@@ -208,4 +208,38 @@ class CylinderTest {
         var result45 = cylinder.findIntersections(ray45);
         assertNull(result45, "Expected no intersection points");
     }
+
+    @Test
+    void testCalculateIntersectionsWithDistance() {
+        // ============ Equivalence Partitions Tests ==============
+        Cylinder cylinder = new Cylinder(1.0, new Ray(new Point(1, 1, 0), new Vector(0, 0, 1)), 2.0);
+        double maxDistance = 4;
+
+        // TC01: test when the ray crosses the cylinder surface (2 points)
+        Ray ray01 = new Ray(new Point(-0.5, 1, 1), new Vector(1, 0, 0));
+        var result01 = cylinder.calculateIntersections(ray01, maxDistance);
+        assertNotNull(result01, "Expected intersection points");
+        assertEquals(2, result01.size(), "Wrong number of intersection points");
+
+        // TC02: test when the ray stop before the cylinder surface (0 points)
+        Ray ray02 = new Ray(new Point(-0.5, 1, 1), new Vector(1, 0, 0));
+        var result02 = cylinder.calculateIntersections(ray02, 0.2);
+        assertNull(result02, "Expected no intersection points");
+
+        // TC03: test when the ray starts inside the cylinder (1 point)
+        Ray ray03 = new Ray(new Point(1, 1, 1), new Vector(0, 0, 1));
+        var result03 = cylinder.calculateIntersections(ray03, maxDistance);
+        assertNotNull(result03, "Expected intersection points");
+        assertEquals(1, result03.size(), "Wrong number of intersection points");
+
+        // TC04: test when the ray starts and stop inside the cylinder (0 points)
+        Ray ray04 = new Ray(new Point(1.5, 1, 1), new Vector(1, 0, 0));
+        var result04 = cylinder.calculateIntersections(ray04, 0.4);
+        assertNull(result04, "Expected no intersection points");
+
+        // TC05: test when the ray starts after the cylinder (0 points)
+        Ray ray05 = new Ray(new Point(1, 1, 3), new Vector(0, 0, 1));
+        var result05 = cylinder.calculateIntersections(ray05, maxDistance);
+        assertNull(result05, "Expected no intersection points");
+    }
 }

@@ -68,7 +68,7 @@ public class Cylinder extends Tube {
     }
 
     @Override
-    protected List<Intersection> calculateIntersectionsHelper(Ray ray) {
+    protected List<Intersection> calculateIntersectionsHelper(Ray ray, double maxDistance) {
         final List<Intersection> intersections = new LinkedList<>();
         final Vector axisDir = axis.getDirection();
         final Point baseCenter = axis.getHead();
@@ -76,12 +76,13 @@ public class Cylinder extends Tube {
         final Point rayOrigin = ray.getHead();
 
         // 1. Tube intersections
-        var tubeIntersections = super.findIntersections(ray);
+        List<Intersection> tubeIntersections = super.calculateIntersectionsHelper(ray, maxDistance);
         if (tubeIntersections != null) {
-            for (var p : tubeIntersections) {
-                double axisProjection = axisDir.dotProduct(p.subtract(baseCenter));
+            for (Intersection p : tubeIntersections) {
+                double axisProjection = axisDir.dotProduct(p.point.subtract(baseCenter));
                 if (alignZero(axisProjection) >= 0 && alignZero(axisProjection - height) <= 0) {
-                    intersections.add(new Intersection(this, p));
+                    if (alignZero(rayOrigin.distance(p.point) - maxDistance) <= 0)
+                        intersections.add(new Intersection(this, p.point));
                 }
             }
         }
@@ -90,7 +91,8 @@ public class Cylinder extends Tube {
         List<Point> bottom = bottomPlane.findIntersections(ray);
         if (bottom != null) {
             Point p = bottom.getFirst();
-            if (alignZero(p.distanceSquared(baseCenter) - radiusSquared) < 0) {
+            if (alignZero(p.distanceSquared(baseCenter) - radiusSquared) < 0 &&
+                    alignZero(rayOrigin.distance(p) - maxDistance) <= 0) {
                 intersections.add(new Intersection(this, p));
             }
         }
@@ -99,7 +101,8 @@ public class Cylinder extends Tube {
         List<Point> top = topPlane.findIntersections(ray);
         if (top != null) {
             Point p = top.getFirst();
-            if (alignZero(p.distanceSquared(topCenter) - radiusSquared) < 0) {
+            if (alignZero(p.distanceSquared(topCenter) - radiusSquared) < 0 &&
+                    alignZero(rayOrigin.distance(p) - maxDistance) <= 0) {
                 intersections.add(new Intersection(this, p));
             }
         }

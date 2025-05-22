@@ -85,6 +85,28 @@ class TriangleTest {
         // TC08: Ray starts inside the triangle
         ray = new Ray(new Point(2, 1, 0), new Vector(0, 0, -1));
         assertNull(t1.findIntersections(ray), "there should not be any intersections");
+    }
 
+    @Test
+    void testCalculateIntersectionsWithDistance() {
+        // ============ Equivalence Partitions Tests ==============
+        Triangle triangle = new Triangle(new Point(0, 0, 1), new Point(1, 0, 1), new Point(0, 1, 1));
+        double maxDistance = 3.5;
+
+        // TC01: Ray's line stop after the triangle (1 point)
+        Ray ray01 = new Ray(new Point(0.25, 0.25, 0), new Vector(0, 0, 1));
+        var result01 = triangle.calculateIntersections(ray01, maxDistance);
+        assertNotNull(result01, "Expected intersection points");
+        assertEquals(1, result01.size(), "Wrong number of intersection points");
+
+        // TC02: Ray's line stop before the triangle (0 point)
+        Ray ray02 = new Ray(new Point(0.25, 0.25, 0), new Vector(0, 0, -1));
+        var result02 = triangle.calculateIntersections(ray02, maxDistance);
+        assertNull(result02, "Expected no intersection points");
+
+        // TC03: Ray's line starts and stop after the triangle (0 point)
+        Ray ray03 = new Ray(new Point(0.25, 0.25, 0), new Vector(0, 0, 1));
+        var result03 = triangle.calculateIntersections(ray03, 0.5);
+        assertNull(result03, "Expected no intersection points");
     }
 }

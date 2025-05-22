@@ -7,9 +7,7 @@ import primitives.Vector;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit tests for {@link Tube} class.
@@ -306,5 +304,46 @@ class TubeTest {
         ray = new Ray(new Point(2, 1, 2), new Vector(2, 1, 1));
         result = tube2.findIntersections(ray);
         assertNull(result, "Bad intersections");
+    }
+
+    @Test
+    void calculateIntersectionsWithDistance() {
+        // ============ Equivalence Partitions Tests ==============
+        Tube tube = new Tube(1d, new Ray(new Point(0, 0, 0), new Vector(1, 0, 0)));
+        double maxDistance = 2.0;
+
+        // TC01: test when the ray is stop before the tube (0 points)
+        Ray ray1 = new Ray(new Point(-5, 3.6, 0), new Vector(1, 0, 0));
+        var result1 = tube.calculateIntersections(ray1, maxDistance);
+        assertNull(result1, "Expected no intersection points");
+
+        // TC02: test when the ray start and stop inside the tube (0 point)
+        Ray ray2 = new Ray(new Point(0, 0.5, 0), new Vector(0, 1, 0));
+        var result2 = tube.calculateIntersections(ray2, 0.4);
+        assertNull(result2, "Expected no intersection points");
+
+        // TC03: test when the ray is stop after the tube (1 point)
+        Ray ray3 = new Ray(new Point(0, 0.5, 0), new Vector(0, 1, 0));
+        var result3 = tube.calculateIntersections(ray3, 0.6);
+        assertNotNull(result3, "Expected intersection points");
+        assertEquals(1, result3.size(), "Wrong number of intersection points");
+
+        // TC04: test when the ray cross the tube (2 point)
+        Tube tube2 = new Tube(1, new Ray(new Point(1, 1, 0), new Vector(0, 0, 1)));
+        Ray ray4 = new Ray(new Point(3, 1, 1), new Vector(-2, 0, 1));
+        var result4 = tube2.calculateIntersections(ray4, 5);
+        assertNotNull(result4, "Expected intersection points");
+        assertEquals(2, result4.size(), "Wrong number of intersection points");
+
+        // TC05: test when the ray stop inside the tube (1 point)
+        Ray ray5 = new Ray(new Point(3, 1, 1), new Vector(-2, 0, 1));
+        var result5 = tube2.calculateIntersections(ray5, maxDistance);
+        assertNotNull(result5, "Expected intersection points");
+        assertEquals(1, result5.size(), "Wrong number of intersection points");
+
+        // TC06: test when the ray is start after the tube and stop outside (0 point)
+        Ray ray6 = new Ray(new Point(3, 1, 1), new Vector(2, 0, 1));
+        var result6 = tube2.calculateIntersections(ray6, maxDistance);
+        assertNull(result6, "Expected no intersection points");
     }
 }

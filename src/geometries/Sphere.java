@@ -36,14 +36,16 @@ public class Sphere extends RadialGeometry {
     }
 
     @Override
-    protected List<Intersection> calculateIntersectionsHelper(Ray ray) {
+    protected List<Intersection> calculateIntersectionsHelper(Ray ray, double maxDistance) {
         Vector u;
         try {
             // vector from ray head to the center of the sphere
             u = center.subtract(ray.getHead());
         } catch (IllegalArgumentException e) {
             // the ray origin is the center of the sphere
-            return List.of(new Intersection(this, ray.getPoint(radius)));
+            return alignZero(radius - maxDistance) < 0
+                    ? List.of(new Intersection(this, ray.getPoint(radius)))
+                    : null;
         }
 
         // projection of u on the ray direction
@@ -51,17 +53,29 @@ public class Sphere extends RadialGeometry {
         // squared distance from the center of the sphere to the ray
         double dSquared = u.lengthSquared() - tm * tm;
         double thSquared = radiusSquared - dSquared;
-        // if the distance is greater than or equal to the radius
         if (alignZero(thSquared) <= 0) return null;
+
         double th = Math.sqrt(thSquared);
-
-        double t2 = alignZero(tm + th);
-        if (t2 <= 0) return null;
-
         double t1 = alignZero(tm - th);
-        return t1 <= 0 ?
-                List.of(new Intersection(this, ray.getPoint(t2))) :
-                List.of(new Intersection(this, ray.getPoint(t1)),
-                        new Intersection(this, ray.getPoint(t2)));
+        double t2 = alignZero(tm + th);
+
+        // אין אף אחד מהם בטווח
+        if ((t1 <= 0 || alignZero(t1 - maxDistance) >= 0) &&
+                (t2 <= 0 || alignZero(t2 - maxDistance) >= 0))
+            return null;
+
+        // רק t2 בטווח
+        if (t1 <= 0 || alignZero(t1 - maxDistance) >= 0)
+            return List.of(new Intersection(this, ray.getPoint(t2)));
+
+        // רק t1 בטווח
+        if (t2 <= 0 || alignZero(t2 - maxDistance) >= 0)
+            return List.of(new Intersection(this, ray.getPoint(t1)));
+
+        // שניהם בטווח
+        return List.of(
+                new Intersection(this, ray.getPoint(t1)),
+                new Intersection(this, ray.getPoint(t2))
+        );
     }
 }

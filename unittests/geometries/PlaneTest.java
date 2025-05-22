@@ -2,10 +2,8 @@ package geometries;
 
 import org.junit.jupiter.api.Test;
 import primitives.Point;
-import primitives.Vector;
 import primitives.Ray;
-
-import java.util.List;
+import primitives.Vector;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -151,5 +149,26 @@ class PlaneTest {
         // TC08: Ray contained in the plane
         ray = new Ray(new Point(0, 1, 1), new Vector(0, 1, 1));
         assertNull(plane.findIntersections(ray), "Ray should not intersect the plane");
+    }
+
+    @Test
+    void testCalculateIntersectionsWithDistance() {
+        // ============ Equivalence Partitions Tests ==============
+        final Point p001 = new Point(0, 0, 1);
+        final Vector v001 = new Vector(0, 0, 1);
+        Plane plane = new Plane(p001, v001);
+        double maxDistance = 2;
+
+        // TC01: Ray's line stop before the plane (0 points)
+        Ray ray1 = new Ray(new Point(0, 0, 0), new Vector(0, 0, -1));
+        assertNull(plane.calculateIntersections(ray1, maxDistance), "Ray's line out of plane");
+
+        // TC02: Ray starts before and crosses the plane (1 point)
+        Ray ray2 = new Ray(new Point(0, 0, 0), new Vector(0, 0, 1));
+        assertEquals(1, plane.calculateIntersections(ray2, maxDistance).size(), "Wrong number of points");
+
+        // TC03: Ray starts after the plan (0 points)
+        Ray ray3 = new Ray(new Point(0, 0, 2), new Vector(0, 0, 1));
+        assertNull(plane.calculateIntersections(ray3, maxDistance), "Ray's line out of plane");
     }
 }

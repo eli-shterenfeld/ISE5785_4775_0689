@@ -85,17 +85,15 @@ public abstract class Intersectable {
         }
 
         @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Intersection that = (Intersection) o;
-            return geometry == that.geometry && point.equals(that.point);
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            return (obj instanceof Intersection other) && geometry == other.geometry && point.equals(other.point);
         }
     }
 
     /**
      * Template method (NVI pattern).
-     * This is the main public method to find intersections.
+     * This is the main public method to find intersection points only.
      *
      * @param ray the ray
      * @return list of intersection points or null
@@ -107,21 +105,32 @@ public abstract class Intersectable {
     }
 
     /**
-     * Secondary NVI method.
-     * Calls the helper which each subclass must implement.
+     * Public method to calculate intersections with unlimited distance.
      *
      * @param ray the ray
      * @return list of Intersection objects or null
      */
     public final List<Intersection> calculateIntersections(Ray ray) {
-        return calculateIntersectionsHelper(ray);
+        return calculateIntersections(ray, Double.POSITIVE_INFINITY);
     }
 
     /**
-     * Subclasses must implement this helper to find intersections.
+     * Public method to calculate intersections up to a given max distance.
      *
-     * @param ray the ray
+     * @param ray         the ray
+     * @param maxDistance maximum distance to consider
      * @return list of Intersection objects or null
      */
-    protected abstract List<Intersection> calculateIntersectionsHelper(Ray ray);
+    public final List<Intersection> calculateIntersections(Ray ray, double maxDistance) {
+        return calculateIntersectionsHelper(ray, maxDistance);
+    }
+
+    /**
+     * Subclasses must implement this helper to find intersections up to a max distance.
+     *
+     * @param ray         the ray
+     * @param maxDistance maximum distance from ray origin
+     * @return list of Intersection objects or null
+     */
+    protected abstract List<Intersection> calculateIntersectionsHelper(Ray ray, double maxDistance);
 }

@@ -40,8 +40,7 @@ public class Tube extends RadialGeometry {
     }
 
     @Override
-    protected List<Intersection> calculateIntersectionsHelper(Ray ray) {
-        // Get ray origin and direction
+    protected List<Intersection> calculateIntersectionsHelper(Ray ray, double maxDistance) {
         final Point rayOrigin = ray.getHead();
         final Point axisPoint = axis.getHead(); // Cylinder axis starting point
         final Vector axisDir = axis.getDirection(); // Cylinder axis direction
@@ -50,52 +49,51 @@ public class Tube extends RadialGeometry {
         Vector deltaP;
         boolean isDeltaPZero;
         try {
-            // Vector from cylinder axis point to ray origin
             deltaP = rayOrigin.subtract(axisPoint);
             isDeltaPZero = false;
         } catch (IllegalArgumentException e) {
-            // Special case: ray origin lies exactly on the axis line
             deltaP = null;
             isDeltaPZero = true;
         }
 
         double rayDirDotAxis = rayDir.dotProduct(axisDir);
-        // Compute quadratic coefficients for intersection equation
         double a = rayDir.dotProduct(rayDir) - rayDirDotAxis * rayDirDotAxis;
         double b, c;
 
         if (isDeltaPZero) {
-            // Special case handling if deltaP is zero
             b = 0;
             c = -radiusSquared;
         } else {
-            // General case
             double deltaPDotAxis = deltaP.dotProduct(axisDir);
-
-            // Coefficient b of quadratic equation
             b = 2 * (rayDir.dotProduct(deltaP) - rayDirDotAxis * deltaPDotAxis);
-
-            // Coefficient c of quadratic equation
             c = deltaP.dotProduct(deltaP) - deltaPDotAxis * deltaPDotAxis - radiusSquared;
         }
 
-        // Calculate discriminant to determine intersection existence
         double discriminant = alignZero(b * b - 4 * a * c);
-        if (discriminant <= 0) return null; // No real solutions → no intersection
+        if (discriminant <= 0) return null;
 
         double sqrtDiscriminant = Math.sqrt(discriminant);
         double denominator = 2 * a;
 
-        // quadratic parameter 'a' is always positive in our equation, therefore t2 is always greater than t1
-        // Calculate the intersection parameters (t values)
         double t2 = alignZero((-b + sqrtDiscriminant) / denominator);
-        if (t2 <= 0) return null; // No valid intersection
-
         double t1 = alignZero((-b - sqrtDiscriminant) / denominator);
-        return t1 <= 0 ?
-                List.of(new Intersection(this, ray.getPoint(t2))) :
-                List.of(new Intersection(this, ray.getPoint(t1)),
-                        new Intersection(this, ray.getPoint(t2)));
+
+        boolean t1Valid = t1 > 0 && alignZero(t1 - maxDistance) <= 0;
+        boolean t2Valid = t2 > 0 && alignZero(t2 - maxDistance) <= 0;
+
+        if (t1Valid && t2Valid)
+            return List.of(
+                    new Intersection(this, ray.getPoint(t1)),
+                    new Intersection(this, ray.getPoint(t2))
+            );
+
+        if (t1Valid)
+            return List.of(new Intersection(this, ray.getPoint(t1)));
+
+        if (t2Valid)
+            return List.of(new Intersection(this, ray.getPoint(t2)));
+
+        return null;
     }
 }
 

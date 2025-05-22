@@ -56,26 +56,23 @@ public class Plane extends Geometry {
     }
 
     @Override
-    protected List<Intersection> calculateIntersectionsHelper(Ray ray) {
-        // Check if the ray is parallel to the plane
+    protected List<Intersection> calculateIntersectionsHelper(Ray ray, double maxDistance) {
         double vn = ray.getDirection().dotProduct(normal);
         if (isZero(vn))
             return null;
 
         Vector u;
         try {
-            // vector from ray head to the plane's reference point
             u = p.subtract(ray.getHead());
         } catch (IllegalArgumentException e) {
-            // the ray origin is the same as the plane's reference point
             return null;
         }
 
-        // Calculate the scalar parameter t for the intersection point
         double t = (normal.dotProduct(u)) / vn;
+        
+        if (alignZero(t) <= 0 || alignZero(t - maxDistance) >= 0)
+            return null;
 
-        // If t is zero or negative (or very close to zero), consider no intersection
-        // Return the intersection point as a list otherwise
-        return alignZero(t) <= 0 ? null : List.of(new Intersection(this, ray.getPoint(t)));
+        return List.of(new Intersection(this, ray.getPoint(t)));
     }
 }
