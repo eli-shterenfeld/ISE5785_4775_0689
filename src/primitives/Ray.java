@@ -11,6 +11,11 @@ import java.util.List;
 public class Ray {
 
     /**
+     * A small value used to avoid numerical issues when calculating intersections.
+     */
+    private static final double DELTA = 0.1;
+
+    /**
      * The starting point (head) of the ray.
      */
     private final Point head;
@@ -29,6 +34,18 @@ public class Ray {
     public Ray(Point p, Vector v) {
         head = p;
         direction = v.normalize();
+    }
+
+    /**
+     * Constructs a Ray with a given starting point, direction vector, and normal vector.
+     * The starting point is adjusted slightly in the direction of the normal vector to avoid numerical issues.
+     *
+     * @param point     the starting point of the ray
+     * @param direction the direction vector of the ray
+     * @param normal    the normal vector to adjust the starting point
+     */
+    public Ray(Point point, Vector direction, Vector normal) {
+        this(point.add(normal.scale(direction.dotProduct(normal) > 0 ? DELTA : -DELTA)), direction);
     }
 
     @Override

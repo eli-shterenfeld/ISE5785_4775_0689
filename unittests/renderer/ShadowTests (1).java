@@ -146,5 +146,4 @@ class ShadowTests {
                 .renderImage() //
                 .writeToImage("shadowTrianglesSphere");
     }
-
 }
