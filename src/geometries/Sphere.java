@@ -54,7 +54,7 @@ public class Sphere extends RadialGeometry {
         double th = Math.sqrt(thSquared);
         double t1 = alignZero(tm - th);
         double t2 = alignZero(tm + th);
-
+        
         if (t1 > 0 && alignZero(t1 - maxDistance) < 0) {
             return (t2 > 0 && alignZero(t2 - maxDistance) < 0)
                     ? List.of(new Intersection(this, ray.getPoint(t1)), new Intersection(this, ray.getPoint(t2)))
