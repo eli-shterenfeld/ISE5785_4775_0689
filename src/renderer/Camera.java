@@ -16,6 +16,11 @@ import static primitives.Util.isZero;
 public class Camera implements Cloneable {
 
     /**
+     * The point the camera is looking at (look-at point).
+     * If null, the camera is looking in the direction of 'to' vector.
+     */
+    private Point lookAt = null;
+    /**
      * The location of the camera in 3D space.
      */
     private Point location = new Point(0, 0, 0);
@@ -91,6 +96,17 @@ public class Camera implements Cloneable {
     }
 
     /**
+     * Creates a builder initialized with the state of an existing camera.
+     * Useful for modifying a copy.
+     *
+     * @param cam the existing camera
+     * @return a new Builder initialized with the camera's parameters
+     */
+    public static Builder getBuilder(Camera cam) {
+        return new Builder(cam);
+    }
+
+    /**
      * Builder class for creating Camera instances.
      */
     public static class Builder {
@@ -98,7 +114,14 @@ public class Camera implements Cloneable {
         /**
          * The Camera object being constructed by this builder.
          */
-        private final Camera camera = new Camera();
+        private final Camera camera;
+
+        /**
+         * Default constructor initializes a new Camera instance.
+         */
+        public Builder() {
+            camera = new Camera();
+        }
 
         /**
          * Sets the location of the camera.
@@ -140,6 +163,7 @@ public class Camera implements Cloneable {
             this.camera.to = lookAt.subtract(this.camera.location).normalize();
             this.camera.right = this.camera.to.crossProduct(upApprox).normalize();
             this.camera.up = this.camera.right.crossProduct(this.camera.to).normalize();
+            this.camera.lookAt = lookAt;
             return this;
         }
 
@@ -150,6 +174,7 @@ public class Camera implements Cloneable {
          * @return the current Builder instance
          */
         public Builder setDirection(Point lookAt) {
+            this.camera.lookAt = lookAt;
             return setDirection(lookAt, new Vector(0, 1, 0));
         }
 
@@ -263,6 +288,62 @@ public class Camera implements Cloneable {
             }
             return this;
         }
+
+        /**
+         * Moves the camera by a specified offset vector.
+         *
+         * @param offset the vector to move the camera
+         * @return the current Builder instance
+         */
+        public Builder move(Vector offset) {
+            camera.location = camera.location.add(offset);
+            camera.to = camera.lookAt.subtract(camera.location).normalize();
+            camera.right = camera.to.crossProduct(camera.up).normalize();
+            camera.up = camera.right.crossProduct(camera.to).normalize();
+            return this;
+        }
+
+        /**
+         * Rotates the camera around the 'to' vector by a specified angle in degrees.
+         *
+         * @param angleDegrees the angle in degrees to rotate the camera
+         * @return the current Builder instance
+         */
+        public Builder rotateAroundTo(double angleDegrees) {
+            if (camera.up == null || camera.to == null)
+                throw new IllegalStateException("Cannot rotate camera before setting direction");
+
+            double angleRad = Math.toRadians(angleDegrees);
+            camera.up = camera.up.rotateAroundAxis(camera.to, angleRad).normalize();
+            camera.right = camera.to.crossProduct(camera.up).normalize();
+            return this;
+        }
+
+        /**
+         * Initializes the builder from an existing camera.
+         *
+         * @param original the original camera to copy
+         */
+        public Builder(Camera original) {
+            if (original == null)
+                throw new IllegalArgumentException("Camera cannot be null");
+
+            camera = new Camera(); // Create a new camera instance
+            // Copying fields from the original camera into a new one
+            camera.location = original.location;
+            camera.to = original.to;
+            camera.up = original.up;
+            camera.right = original.right;
+            camera.vpWidth = original.vpWidth;
+            camera.vpHeight = original.vpHeight;
+            camera.vpDistance = original.vpDistance;
+            camera.nX = original.nX;
+            camera.nY = original.nY;
+            camera.imageWriter = original.imageWriter;
+            camera.rayTracer = original.rayTracer;
+            camera.viewPlaneCenter = original.viewPlaneCenter;
+            camera.lookAt = original.location.add(original.to);
+        }
     }
 
     /**
@@ -346,5 +427,32 @@ public class Camera implements Cloneable {
     public Camera writeToImage(String filename) {
         imageWriter.writeToImage(filename);
         return this;
+    }
+
+    /**
+     * Returns the location of the camera.
+     *
+     * @return the camera's location point
+     */
+    Point getLocation() {
+        return location;
+    }
+
+    /**
+     * Returns the look-at point of the camera.
+     *
+     * @return the point the camera is looking at
+     */
+    Vector getTo() {
+        return to;
+    }
+
+    /**
+     * Returns the rightward direction vector of the camera.
+     *
+     * @return the right vector
+     */
+    Vector getUp() {
+        return up;
     }
 }

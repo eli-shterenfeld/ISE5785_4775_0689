@@ -1,10 +1,8 @@
 package renderer;
 
-import geometries.Plane;
 import geometries.Sphere;
 import geometries.Triangle;
 import lighting.AmbientLight;
-import lighting.DirectionalLight;
 import lighting.SpotLight;
 import org.junit.jupiter.api.Test;
 import primitives.*;
@@ -12,6 +10,7 @@ import scene.Scene;
 
 import static java.awt.Color.BLUE;
 import static java.awt.Color.RED;
+
 
 /**
  * Tests for reflection and transparency functionality, test for partial
@@ -121,74 +120,5 @@ class ReflectionRefractionTests {
                 .build() //
                 .renderImage() //
                 .writeToImage("refractionShadow");
-    }
-
-
-    /**
-     * Produce a picture of a two triangles lighted by a spot light with a
-     * partially
-     * transparent Sphere producing partial shadow
-     */
-    @Test
-    void beautifulGlassAndFireball() {
-        scene.geometries.add(
-
-                new Sphere(400d, new Point(-500, -400, -1000))
-                        .setEmission(new Color(30, 80, 150))
-                        .setMaterial(new Material()
-                                .setKD(0.2).setKS(0.9).setShininess(300)
-                                .setKT(0.6).setKR(0.25)),
-
-
-                new Sphere(400d, new Point(300, -400, -1000))
-                        .setEmission(new Color(150, 40, 20))
-                        .setMaterial(new Material()
-                                .setKD(0.3).setKS(0.8).setShininess(250)),
-
-
-                new Triangle(
-                        new Point(-1500, -1000, -1500),
-                        new Point(1500, -1000, -1500),
-                        new Point(0, 1200, -1700))
-                        .setEmission(new Color(80, 30, 120))
-                        .setMaterial(new Material()
-                                .setKD(0.15)
-                                .setKS(0.9)
-                                .setShininess(250)
-                                .setKR(0.75)),
-
-
-                new Plane(new Point(0, -800, 0), new Vector(0, 1, 0))
-                        .setMaterial(new Material()
-                                .setKR(0.2).setKD(0.4).setKS(0.6).setShininess(100))
-                        .setEmission(new Color(20, 20, 20))
-        );
-
-
-        scene.setAmbientLight(new AmbientLight(new Color(20, 20, 20)));
-
-        scene.lights.add(
-                new SpotLight(new Color(1000, 600, 800),
-                        new Point(0, 800, 1000),
-                        new Vector(0, -1, -2).normalize())
-                        .setKl(0.00001).setKq(0.000005)
-        );
-
-
-        scene.lights.add(
-                new DirectionalLight(new Color(200, 200, 250),
-                        new Vector(1, -0.5, -1))
-        );
-
-
-        cameraBuilder
-                .setLocation(new Point(600, 650, 2000))
-                .setDirection(new Point(100, -400, -1000), new Vector(0, 1, 0))
-                .setVpDistance(2000)
-                .setVpSize(2500, 2500)
-                .setResolution(800, 800)
-                .build()
-                .renderImage()
-                .writeToImage("beautifulGlassAndFireball");
     }
 }
