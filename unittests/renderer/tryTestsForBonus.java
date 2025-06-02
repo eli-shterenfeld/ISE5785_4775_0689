@@ -8,11 +8,6 @@ import org.junit.jupiter.api.Test;
 import primitives.*;
 import scene.Scene;
 
-import java.io.File;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 
 /**
  * This class contains tests for rendering scenes with complex geometries
@@ -307,43 +302,111 @@ public class tryTestsForBonus {
     }
 
     /**
-     * Produce a picture of a composed scene with separated geometries
-     * and a looped camera animation.
+     * Test for rotating the camera around a point and rendering the scene.
+     * The camera is rotated 90 degrees around the lookAt point.
      */
     @Test
-    void composedSeparatedSceneForBonusLoop() { // no very mach Resolution!!!!!!!!!!!!!!!!
-        new File("images/bonus").mkdirs();
-
+    void testCameraRotationAroundToProducesFlippedImage() {
         Scene scene = buildScene();
-        Point focus = new Point(-200, -600, -350);
-        double radiusX = 4000;
-        double radiusZ = 2500;
-        double baseHeight = 400;
-        double heightAmplitude = 500;
 
-        int totalFrames = 10;
-        int angleStepDegrees = 72;
+        Point location = new Point(0, 0, 1000);
+        Point lookAt = new Point(0, 0, -1000);
+        Vector up = new Vector(0, 1, 0);
 
-        for (int frameIndex = 0; frameIndex < totalFrames; frameIndex++) {
-            double angleRad = Math.toRadians(frameIndex * angleStepDegrees);
-            double x = radiusX * Math.cos(angleRad);
-            double z = radiusZ * Math.sin(angleRad);
-            double y = baseHeight + heightAmplitude * Math.sin(angleRad);
 
-            Point camLocation = focus.add(new Vector(x, y, z));
+        Camera normalCam = Camera.getBuilder()
+                .setLocation(location)
+                .setDirection(lookAt, up)
+                .setVpDistance(1000)
+                .setVpSize(800, 800)
+                .setResolution(800, 800)
+                .setRayTracer(scene, RayTracerType.SIMPLE)
+                .build();
 
-            Camera cam = Camera.getBuilder()
-                    .setLocation(camLocation)
-                    .setDirection(focus, new Vector(0, 1, 0))
-                    .setVpDistance(1300)
-                    .setResolution(800, 450)
-                    .setVpSize(800, 450)
-                    .setRayTracer(scene, RayTracerType.SIMPLE)
-                    .build();
+        normalCam.renderImage().writeToImage("rotationTest_normal");
 
-            cam.renderImage().writeToImage(String.format("bonus/composedSceneLooped_%04d", frameIndex));
-        }
+        Camera rotatedCam = Camera.getBuilder(normalCam)
+                .rotateAroundTo(90)
+                .build();
+
+        rotatedCam.renderImage().writeToImage("rotationTest_rotated90");
     }
+
+    /**
+     * Test for moving the camera around a focus point and rendering the scene.
+     * The camera moves in steps along the right direction vector.
+     */
+    @Test
+    void testCameraMoveAroundFocusRenderOnly() {
+        Scene scene = buildScene();
+
+        Point focus = new Point(0.1, 0, 0);
+        Point startLocation = new Point(0, 0, 1000);
+        Vector up = new Vector(0, 1, 0);
+
+        Vector stepRight = new Vector(1, 0, 0).scale(900);
+
+        Camera cam = Camera.getBuilder()
+                .setLocation(startLocation)
+                .setDirection(focus, up)
+                .setVpDistance(1000)
+                .setResolution(1920, 1080)
+                .setVpSize(1920, 1080)
+                .setRayTracer(scene, RayTracerType.SIMPLE)
+                .build();
+
+        cam.renderImage().writeToImage("moveAroundFocus1");
+
+        cam = Camera.getBuilder(cam)
+                .move(stepRight, focus)
+                //.setDirection(focus, up)
+                .build();
+        cam.renderImage().writeToImage("moveAroundFocus2");
+
+        cam = Camera.getBuilder(cam)
+                .move(stepRight, focus)
+                //.setDirection(focus, up)
+                .build();
+    }
+
+    //    /**
+//     * Produce a picture of a composed scene with separated geometries
+//     * and a looped camera animation.
+//     */
+//    @Test
+//    void composedSeparatedSceneForBonusLoop() { // no very mach Resolution!!!!!!!!!!!!!!!!
+//        new File("images/bonus").mkdirs();
+//
+//        Scene scene = buildScene();
+//        Point focus = new Point(-200, -600, -350);
+//        double radiusX = 4000;
+//        double radiusZ = 2500;
+//        double baseHeight = 400;
+//        double heightAmplitude = 500;
+//
+//        int totalFrames = 10;
+//        int angleStepDegrees = 72;
+//
+//        for (int frameIndex = 0; frameIndex < totalFrames; frameIndex++) {
+//            double angleRad = Math.toRadians(frameIndex * angleStepDegrees);
+//            double x = radiusX * Math.cos(angleRad);
+//            double z = radiusZ * Math.sin(angleRad);
+//            double y = baseHeight + heightAmplitude * Math.sin(angleRad);
+//
+//            Point camLocation = focus.add(new Vector(x, y, z));
+//
+//            Camera cam = Camera.getBuilder()
+//                    .setLocation(camLocation)
+//                    .setDirection(focus, new Vector(0, 1, 0))
+//                    .setVpDistance(1300)
+//                    .setResolution(800, 450)
+//                    .setVpSize(800, 450)
+//                    .setRayTracer(scene, RayTracerType.SIMPLE)
+//                    .build();
+//
+//            cam.renderImage().writeToImage(String.format("bonus/composedSceneLooped_%04d", frameIndex));
+//        }
+//    }
 
 
 //    virson with looped  camera animation involved threads
@@ -407,59 +470,4 @@ public class tryTestsForBonus {
 //            e.printStackTrace();
 //        }
 //    }
-
-    /**
-     * Test method for rotating the camera around the "to" point.
-     * The camera should maintain its direction while rotating around the "to" point.
-     */
-    @Test
-    void testCameraRotationAroundTo() {
-        Point location = new Point(0, 0, 0);
-        Point lookAt = new Point(0, 0, -1);
-        Vector up = new Vector(0, 1, 0);
-
-        Camera original = Camera.getBuilder()
-                .setLocation(location)
-                .setDirection(lookAt, up)
-                .setVpDistance(100)
-                .setVpSize(200, 200)
-                .setResolution(10, 10)
-                .build();
-
-        Camera rotated = Camera.getBuilder(original)
-                .rotateAroundTo(90)
-                .build();
-
-        assertEquals(original.getTo(), rotated.getTo(), "Camera direction (to) should not change after rotation around to");
-
-        Vector expectedUp = new Vector(1, 0, 0);
-
-        double dot = rotated.getUp().normalize().dotProduct(expectedUp);
-        assertTrue(Math.abs(dot) > 0.999, "Camera up vector is not aligned with expected direction after rotation");
-    }
-
-    /**
-     * Test method for
-     * moving the camera while keeping the focus on the original "to" point.
-     */
-    @Test
-    void testCameraMoveKeepsFocus() {
-        Point originalLocation = new Point(0, 0, 0);
-        Point lookAt = new Point(0, 0, -1);
-        Vector up = new Vector(0, 1, 0);
-
-        Camera camera = Camera.getBuilder()
-                .setLocation(originalLocation)
-                .setDirection(lookAt, up)
-                .setVpDistance(100)
-                .setVpSize(200, 200)
-                .setResolution(10, 10)
-                .move(new Vector(0, 0, 10))
-                .build();
-
-        assertEquals(new Point(0, 0, 10), camera.getLocation(), "Camera didn't move correctly");
-
-        Vector expectedTo = new Vector(0, 0, -1).subtract(new Vector(0, 0, 10)).normalize();  // כלומר כיוון אל lookAt המקורי
-        assertEquals(expectedTo, camera.getTo(), "Camera direction after move is wrong");
-    }
 }

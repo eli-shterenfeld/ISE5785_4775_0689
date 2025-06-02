@@ -1,7 +1,5 @@
 package primitives;
 
-import static primitives.Util.alignZero;
-
 /**
  * Represents a vector in 3D space, extending the Point class.
  * A vector has both a direction and a magnitude but no fixed position.
@@ -129,46 +127,6 @@ public class Vector extends Point {
         if (this == obj) return true;
         return (obj instanceof Vector other)
                 && super.xyz.equals(other.xyz);
-    }
-
-    /**
-     * Rotates the vector around a given axis by a specified angle (in radians).
-     *
-     * @param axis  the axis to rotate around
-     * @param angle the angle in radians to rotate
-     * @return the rotated vector
-     */
-    /**
-     * Rotates this vector around a given axis by a specified angle (in radians),
-     * using Rodrigues' rotation formula.
-     *
-     * @param axis  the axis to rotate around (must not be zero vector)
-     * @param angle the angle to rotate, in radians
-     * @return the rotated vector
-     */
-    public Vector rotateAroundAxis(Vector axis, double angle) {
-        if (this == null || alignZero(this.lengthSquared()) == 0)
-            throw new IllegalStateException("Cannot rotate the zero vector (this is null or zero)");
-
-        if (axis == null || alignZero(axis.lengthSquared()) == 0)
-            throw new IllegalArgumentException("Cannot rotate around a zero axis");
-
-        axis = axis.normalize();
-
-        double cos = Math.cos(angle);
-        double sin = Math.sin(angle);
-        double dot = this.dotProduct(axis);
-
-        Vector part1 = (alignZero(cos) == 0) ? null : this.scale(cos);
-        Vector part2 = (alignZero(sin) == 0) ? null : axis.crossProduct(this).scale(sin);
-        Vector part3 = (alignZero(dot * (1 - cos)) == 0) ? null : axis.scale(dot * (1 - cos));
-
-        Vector rotated = null;
-
-        if (part1 != null) rotated = part1;
-        if (part2 != null) rotated = (rotated == null) ? part2 : rotated.add(part2);
-        if (part3 != null) rotated = (rotated == null) ? part3 : rotated.add(part3);
-        return rotated;
     }
 }
 

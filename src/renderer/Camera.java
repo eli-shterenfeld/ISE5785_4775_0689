@@ -16,11 +16,6 @@ import static primitives.Util.isZero;
 public class Camera implements Cloneable {
 
     /**
-     * The point the camera is looking at (look-at point).
-     * If null, the camera is looking in the direction of 'to' vector.
-     */
-    private Point lookAt = null;
-    /**
      * The location of the camera in 3D space.
      */
     private Point location = new Point(0, 0, 0);
@@ -163,7 +158,6 @@ public class Camera implements Cloneable {
             this.camera.to = lookAt.subtract(this.camera.location).normalize();
             this.camera.right = this.camera.to.crossProduct(upApprox).normalize();
             this.camera.up = this.camera.right.crossProduct(this.camera.to).normalize();
-            this.camera.lookAt = lookAt;
             return this;
         }
 
@@ -174,7 +168,6 @@ public class Camera implements Cloneable {
          * @return the current Builder instance
          */
         public Builder setDirection(Point lookAt) {
-            this.camera.lookAt = lookAt;
             return setDirection(lookAt, new Vector(0, 1, 0));
         }
 
@@ -290,14 +283,15 @@ public class Camera implements Cloneable {
         }
 
         /**
-         * Moves the camera by a specified offset vector.
+         * Moves the camera by a specified offset vector and updates the focus point.
          *
          * @param offset the vector to move the camera
+         * @param focus  the new focus point for the camera
          * @return the current Builder instance
          */
-        public Builder move(Vector offset) {
+        public Builder move(Vector offset, Point focus) {
             camera.location = camera.location.add(offset);
-            camera.to = camera.lookAt.subtract(camera.location).normalize();
+            camera.to = focus.subtract(camera.location).normalize();
             camera.right = camera.to.crossProduct(camera.up).normalize();
             camera.up = camera.right.crossProduct(camera.to).normalize();
             return this;
@@ -314,8 +308,34 @@ public class Camera implements Cloneable {
                 throw new IllegalStateException("Cannot rotate camera before setting direction");
 
             double angleRad = Math.toRadians(angleDegrees);
-            camera.up = camera.up.rotateAroundAxis(camera.to, angleRad).normalize();
+
+            Vector axis = camera.to;
+            Vector vector = camera.up;
+
+            if (vector == null || alignZero(vector.lengthSquared()) == 0)
+                throw new IllegalStateException("Cannot rotate the zero vector");
+
+            if (axis == null || alignZero(axis.lengthSquared()) == 0)
+                throw new IllegalArgumentException("Cannot rotate around a zero axis");
+
+            axis = axis.normalize();
+
+            double cos = Math.cos(angleRad);
+            double sin = Math.sin(angleRad);
+            double dot = vector.dotProduct(axis);
+
+            Vector part1 = (alignZero(cos) == 0) ? null : vector.scale(cos);
+            Vector part2 = (alignZero(sin) == 0) ? null : axis.crossProduct(vector).scale(sin);
+            Vector part3 = (alignZero(dot * (1 - cos)) == 0) ? null : axis.scale(dot * (1 - cos));
+
+            Vector rotated = null;
+            if (part1 != null) rotated = part1;
+            if (part2 != null) rotated = (rotated == null) ? part2 : rotated.add(part2);
+            if (part3 != null) rotated = (rotated == null) ? part3 : rotated.add(part3);
+
+            camera.up = rotated.normalize();
             camera.right = camera.to.crossProduct(camera.up).normalize();
+
             return this;
         }
 
@@ -342,7 +362,6 @@ public class Camera implements Cloneable {
             camera.imageWriter = original.imageWriter;
             camera.rayTracer = original.rayTracer;
             camera.viewPlaneCenter = original.viewPlaneCenter;
-            camera.lookAt = original.location.add(original.to);
         }
     }
 
@@ -427,32 +446,5 @@ public class Camera implements Cloneable {
     public Camera writeToImage(String filename) {
         imageWriter.writeToImage(filename);
         return this;
-    }
-
-    /**
-     * Returns the location of the camera.
-     *
-     * @return the camera's location point
-     */
-    Point getLocation() {
-        return location;
-    }
-
-    /**
-     * Returns the look-at point of the camera.
-     *
-     * @return the point the camera is looking at
-     */
-    Vector getTo() {
-        return to;
-    }
-
-    /**
-     * Returns the rightward direction vector of the camera.
-     *
-     * @return the right vector
-     */
-    Vector getUp() {
-        return up;
     }
 }
