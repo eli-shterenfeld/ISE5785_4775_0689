@@ -1,23 +1,20 @@
 package renderer;
 
 import geometries.*;
-import lighting.AmbientLight;
-import lighting.DirectionalLight;
-import lighting.SpotLight;
+import lighting.*;
 import org.junit.jupiter.api.Test;
 import primitives.*;
 import scene.Scene;
 
-
 /**
  * This class contains tests for rendering scenes with complex geometries
  */
-public class tryTestsForBonus {
+class TryForBonusTests {
 
     /**
      * Default constructor to satisfy JavaDoc generator
      */
-    tryTestsForBonus() { /* to satisfy JavaDoc generator */ }
+    TryForBonusTests() { /* to satisfy JavaDoc generator */ }
 
     /**
      * Scene for the tests
@@ -97,7 +94,6 @@ public class tryTestsForBonus {
                                 .setShininess(100)
                         ),
 
-
                 new Tube(
                         60,
                         new Ray(new Point(-1000, -1000, -4050), new Vector(1, 1, 0))
@@ -105,7 +101,6 @@ public class tryTestsForBonus {
                         .setEmission(new Color(120, 20, 30))
                         .setMaterial(new Material()
                                 .setKD(0.3).setKS(0.6).setShininess(200)),
-
 
                 new Tube(
                         60,
@@ -215,7 +210,7 @@ public class tryTestsForBonus {
     }
 
     /**
-     * Produce a picture of a two triangles lighted by a spot light with a
+     * Produce a picture of two triangles lighted by a spotlight with a
      * partially
      * transparent Sphere producing partial shadow
      */
@@ -229,12 +224,10 @@ public class tryTestsForBonus {
                                 .setKD(0.2).setKS(0.9).setShininess(300)
                                 .setKT(0.6).setKR(0.25)),
 
-
                 new Sphere(400d, new Point(300, -400, -1000))
                         .setEmission(new Color(150, 40, 20))
                         .setMaterial(new Material()
                                 .setKD(0.3).setKS(0.8).setShininess(250)),
-
 
                 new Triangle(
                         new Point(-1500, -1000, -1500),
@@ -247,13 +240,11 @@ public class tryTestsForBonus {
                                 .setShininess(250)
                                 .setKR(0.75)),
 
-
                 new Plane(new Point(0, -800, 0), new Vector(0, 1, 0))
                         .setMaterial(new Material()
                                 .setKR(0.2).setKD(0.4).setKS(0.6).setShininess(100))
                         .setEmission(new Color(20, 20, 20))
         );
-
 
         scene.setAmbientLight(new AmbientLight(new Color(20, 20, 20)));
 
@@ -264,12 +255,10 @@ public class tryTestsForBonus {
                         .setKl(0.00001).setKq(0.000005)
         );
 
-
         scene.lights.add(
                 new DirectionalLight(new Color(200, 200, 250),
                         new Vector(1, -0.5, -1))
         );
-
 
         cameraBuilder
                 .setLocation(new Point(600, 650, 2000))
@@ -312,7 +301,6 @@ public class tryTestsForBonus {
         Point location = new Point(0, 0, 1000);
         Point lookAt = new Point(0, 0, -1000);
         Vector up = new Vector(0, 1, 0);
-
 
         Camera normalCam = Camera.getBuilder()
                 .setLocation(location)
@@ -408,10 +396,8 @@ public class tryTestsForBonus {
 //        }
 //    }
 
-
-//    virson with looped  camera animation involved threads
+//    version with looped  camera animation involved threads
 //
-    //
 //    /**
 //     * Produce a picture of a composed scene with separated geometries
 //     * and a looped camera animation.

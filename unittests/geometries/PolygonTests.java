@@ -1,9 +1,9 @@
 package geometries;
 
 import org.junit.jupiter.api.Test;
-import primitives.Point;
-import primitives.Ray;
-import primitives.Vector;
+import primitives.*;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -112,7 +112,7 @@ class PolygonTests {
 
         // TC01: Ray intersects inside the polygon
         ray = new Ray(new Point(2, 2, 1), new Vector(0, 0, -1));
-        assertEquals(new Point(2, 2, 0), polygon.findIntersections(ray).getFirst(), "Incorrect intersection inside polygon");
+        assertEquals(List.of(new Point(2, 2, 0)), polygon.findIntersections(ray), "Incorrect intersection inside polygon");
 
         // TC02: Ray misses the polygon (crosses plane outside polygon)
         ray = new Ray(new Point(4, 4, 1), new Vector(0, 0, -1));

@@ -1,15 +1,10 @@
 package renderer;
 
-import geometries.Intersectable;
-import geometries.Sphere;
-import geometries.Triangle;
+import geometries.*;
 import lighting.AmbientLight;
 import lighting.SpotLight;
 import org.junit.jupiter.api.Test;
-import primitives.Color;
-import primitives.Material;
-import primitives.Point;
-import primitives.Vector;
+import primitives.*;
 import scene.Scene;
 
 import static java.awt.Color.BLUE;

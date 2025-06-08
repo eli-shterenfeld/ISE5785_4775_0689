@@ -1,9 +1,9 @@
 package geometries;
 
 import org.junit.jupiter.api.Test;
-import primitives.Point;
-import primitives.Ray;
-import primitives.Vector;
+import primitives.*;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -85,7 +85,6 @@ class PlaneTest {
     @Test
     void testGetNormal() {
         // ============ Equivalence Partitions Tests ==============
-        double DELTA = 0.000001; // Allowed margin of error for floating-point comparisons
 
         //Define three non-collinear points to construct the plane
         Point p1 = new Point(1, 0, 0);
@@ -112,7 +111,7 @@ class PlaneTest {
         // ============ Equivalence Partitions Tests ==============
         // TC01: Ray is not parallel nor orthogonal and intersects
         Ray ray = new Ray(new Point(0, 1, 0), new Vector(0, 1, 1));
-        assertEquals(new Point(0, 2, 1), plane.findIntersections(ray).getFirst(), "Ray should intersect the plane");
+        assertEquals(List.of(new Point(0, 2, 1)), plane.findIntersections(ray), "Ray should intersect the plane");
 
         // TC02: Ray is not parallel nor orthogonal and does not intersect
         ray = new Ray(new Point(0, 1, 0), new Vector(0, -1, -1));
@@ -139,7 +138,7 @@ class PlaneTest {
 
         // TC07: Ray is orthogonal and starts before the plane
         ray = new Ray(new Point(0, 1, 0), new Vector(0, 0, 1));
-        assertEquals(new Point(0, 1, 1), plane.findIntersections(ray).getFirst(), "incorrect intersections");
+        assertEquals(List.of(new Point(0, 1, 1)), plane.findIntersections(ray), "incorrect intersections");
 
         // **** Group 3: Ray is not parallel nor orthogonal but starts in the plane
         // TC05: Ray contained in the plane

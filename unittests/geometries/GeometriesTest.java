@@ -1,9 +1,7 @@
 package geometries;
 
 import org.junit.jupiter.api.Test;
-import primitives.Point;
-import primitives.Ray;
-import primitives.Vector;
+import primitives.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,11 +19,11 @@ class GeometriesTest {
     @Test
     void findIntersections() {
 
-        Geometries geo = null;
-        Plane plane = null;
-        Triangle triangle = null;
-        Sphere sphere = null;
-        Ray ray = null;
+        Geometries geo;
+        Plane plane;
+        Triangle triangle;
+        Sphere sphere;
+        Ray ray;
 
         // ============ Equivalence Partitions Tests ==============
         // TC01: some shapes are intersected but not all

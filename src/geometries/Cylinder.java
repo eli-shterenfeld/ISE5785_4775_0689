@@ -1,15 +1,11 @@
 package geometries;
 
-import primitives.Point;
-import primitives.Ray;
+import primitives.*;
 import primitives.Vector;
 
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import static primitives.Util.alignZero;
-
 
 /**
  * Represents a cylinder, which extends a Tube and has a specific height.

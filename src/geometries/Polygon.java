@@ -1,8 +1,6 @@
 package geometries;
 
-import primitives.Point;
-import primitives.Ray;
-import primitives.Vector;
+import primitives.*;
 
 import java.util.List;
 
@@ -92,7 +90,6 @@ public class Polygon extends Geometry {
     public Vector getNormal(Point point) {
         return plane.getNormal(point);
     }
-
 
     @Override
     protected List<Intersection> calculateIntersectionsHelper(Ray ray, double maxDistance) {

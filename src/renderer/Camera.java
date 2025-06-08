@@ -1,14 +1,10 @@
 package renderer;
 
-import primitives.Color;
-import primitives.Point;
-import primitives.Ray;
-import primitives.Vector;
+import primitives.*;
 
 import java.util.MissingResourceException;
 
-import static primitives.Util.alignZero;
-import static primitives.Util.isZero;
+import static primitives.Util.*;
 
 /**
  * Represents a camera in a 3D rendering system.
@@ -311,14 +307,6 @@ public class Camera implements Cloneable {
 
             Vector axis = camera.to;
             Vector vector = camera.up;
-
-            if (vector == null || alignZero(vector.lengthSquared()) == 0)
-                throw new IllegalStateException("Cannot rotate the zero vector");
-
-            if (axis == null || alignZero(axis.lengthSquared()) == 0)
-                throw new IllegalArgumentException("Cannot rotate around a zero axis");
-
-            axis = axis.normalize();
 
             double cos = Math.cos(angleRad);
             double sin = Math.sin(angleRad);

@@ -1,8 +1,5 @@
 package geometries;
 
-import primitives.Point;
-import primitives.Vector;
-
 /**
  * Represents a geometric object with a radial dimension, extending Geometry.
  */

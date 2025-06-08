@@ -4,7 +4,6 @@ import geometries.Intersectable.Intersection;
 
 import java.util.List;
 
-
 /**
  * Represents a ray in 3D space, defined by a starting point (head) and a direction.
  */

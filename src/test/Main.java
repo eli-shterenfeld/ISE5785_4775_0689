@@ -1,10 +1,9 @@
 package test;
 
-import static java.lang.System.out;
-
-import static primitives.Util.isZero;
-
 import primitives.*;
+
+import static java.lang.System.out;
+import static primitives.Util.isZero;
 
 /**
  * Test program for the 1st stage
@@ -125,7 +124,7 @@ public final class Main {
         try { // test that the vectors are co-lined
             v.crossProduct(u);
             out.println("ERROR: the normalized vector is not parallel to the original one");
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
         if (v.dotProduct(u) < 0)
             out.println("ERROR: the normalized vector is opposite to the original one");
@@ -165,7 +164,7 @@ public final class Main {
         try { // test zero vector
             V1.crossProduct(V2);
             out.println("ERROR: crossProduct() for parallel vectors does not throw an exception");
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
         Vector vr = V1.crossProduct(V3);
         if (!isZero(vr.length() - V1.length() * V3.length()))

@@ -1,13 +1,10 @@
 package geometries;
 
-import primitives.Point;
-import primitives.Ray;
-import primitives.Vector;
+import primitives.*;
 
 import java.util.List;
 
 import static primitives.Util.alignZero;
-
 
 /**
  * Represents a sphere in 3D space, defined by a center point and a radius.

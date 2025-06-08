@@ -2,15 +2,10 @@ package renderer;
 
 import geometries.Intersectable.Intersection;
 import lighting.LightSource;
-import primitives.Color;
-import primitives.Double3;
-import primitives.Ray;
-import primitives.Vector;
+import primitives.*;
 import scene.Scene;
 
-import static primitives.Util.alignZero;
-import static primitives.Util.isZero;
-
+import static primitives.Util.*;
 
 /**
  * A simple ray tracer implementation that extends RayTracerBase.
@@ -226,6 +221,7 @@ public class SimpleRayTracer extends RayTracerBase {
      * @param intersection the intersection data
      * @return true if unshaded, false otherwise
      */
+    @SuppressWarnings("unused")
     private boolean unshaded(Intersection intersection) {
         Ray shadowRay = new Ray(
                 intersection.point,

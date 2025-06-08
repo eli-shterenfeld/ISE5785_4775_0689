@@ -1,9 +1,9 @@
 package geometries;
 
 import org.junit.jupiter.api.Test;
-import primitives.Point;
-import primitives.Ray;
-import primitives.Vector;
+import primitives.*;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,7 +21,6 @@ class TriangleTest {
     @Test
     void testGetNormal() {
         // ============ Equivalence Partitions Tests ==============
-        double DELTA = 0.000001;
 
         // TC01: Define three points of the triangle
         Point p1 = new Point(4, 0, 0);
@@ -50,12 +49,12 @@ class TriangleTest {
     public void testFindIntersections() {
 
         Triangle t1 = new Triangle(new Point(1, 0, 0), new Point(1, 2, 0), new Point(5, 0, 0));
-        Ray ray = null;
+        Ray ray;
 
         // ============ Equivalence Partitions Tests ==============
         // TC01: Ray intersects the triangle
         ray = new Ray(new Point(2, 1, 1), new Vector(0, 0, -1));
-        assertEquals(new Point(2, 1, 0), t1.findIntersections(ray).getFirst(), "incorrect intersection");
+        assertEquals(List.of(new Point(2, 1, 0)), t1.findIntersections(ray), "incorrect intersection");
 
         // TC02: Ray passes between one of the triangle's points
         ray = new Ray(new Point(6, -1, 1), new Vector(0, 0, -1));
