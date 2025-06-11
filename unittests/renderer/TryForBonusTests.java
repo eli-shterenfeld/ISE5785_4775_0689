@@ -72,7 +72,7 @@ class TryForBonusTests {
                 new Triangle(rightBase1, rightBase2, topRight)
                         .setEmission(new Color(80, 30, 120))
                         .setMaterial(new Material()
-                                .setKD(0.15).setKS(0.9).setShininess(250).setKR(0.75)),
+                                .setKD(0.15).setKS(0.9).setShininess(250).setKR(0.75).setGlossiness(0.4, 3, 100)),
 
                 new Triangle(topLeft, topRight, rightBase1)
                         .setEmission(new Color(80, 30, 120))
@@ -350,11 +350,6 @@ class TryForBonusTests {
                 //.setDirection(focus, up)
                 .build();
         cam.renderImage().writeToImage("moveAroundFocus2");
-
-        cam = Camera.getBuilder(cam)
-                .move(stepRight, focus)
-                //.setDirection(focus, up)
-                .build();
     }
 
     //    /**
@@ -456,4 +451,647 @@ class TryForBonusTests {
 //            e.printStackTrace();
 //        }
 //    }
+
+//    @Test
+//    void glossyReflectionTest() {
+//        Scene scene = new Scene("Glossy Reflection Test")
+//                .setBackground(new Color(30, 70, 120))
+//                .setAmbientLight(new AmbientLight(new Color(WHITE)));
+//
+//        scene.geometries.add(
+//                new Sphere(100d, new Point(0, 0, -1000))
+//                        .setEmission(new Color(50, 80, 150))
+//                        .setMaterial(new Material()
+//                                .setKT(0.9)
+//                                .setKR(0.1)
+//                                .setKS(0.8)
+//                                .setKD(0.1)
+//                                .setShininess(300)
+//                                .setGlossiness(0.1, 50)
+//                        ),
+//
+//                new Plane(new Point(0, -100, 0), new Vector(0, 1, 0))
+//                        .setEmission(new Color(20, 50, 100))
+//                        .setMaterial(new Material()
+//                                .setKR(0.7)
+//                                .setKS(0.5)
+//                                .setShininess(150)
+//                                .setGlossiness(0.2, 80)
+//                        )
+//
+//        );
+//
+//        scene.lights.add(
+//                new SpotLight(new Color(1000, 600, 600),
+//                        new Point(0, 300, -800),
+//                        new Vector(0, -1, -1))
+//        );
+//
+//        Camera camera = Camera.getBuilder()
+//                .setLocation(new Point(0, 0, 1000))
+//                .setDirection(new Vector(0, 0, -1), new Vector(0, 1, 0))
+//                .setVpDistance(1000)
+//                .setVpSize(500, 500)
+//                .setResolution(800, 800)
+//                .setRayTracer(scene, RayTracerType.SIMPLE)
+//                .build();
+//
+//        camera.renderImage()
+//                .writeToImage("glossyReflectionTest");
+//    }
+
+//    @Test
+//    void reflectiveSpheresOnWater() {
+//
+//        scene.geometries.add(
+//                // Main sphere with deep burgundy color and strong highlight band
+//                new Sphere(280d, new Point(0, -150, -800))
+//                        .setEmission(new Color(60, 10, 30)) // כהה יותר — כמו יין
+//                        .setMaterial(new Material()
+//                                .setKD(0.2)
+//                                .setKS(1.0)
+//                                .setShininess(1000)
+//                                .setKR(0.2)
+//                                .setGlossiness(0.15, 4, 100)), // הרבה יותר קרניים
+//
+//                new Plane(new Point(0, -600, 0), new Vector(0, 1, 0.07))
+//                        .setEmission(new Color(60, 120, 180))
+//                        .setMaterial(new Material()
+//                                .setKR(0.1)              // לא גבוה מדי - אחרת זה ראי
+//                                .setKD(0)             // מים לא מפזרים הרבה
+//                                .setKS(0)
+//                                .setShininess(0)),
+//                //.setGlossiness(0.2, 200)),// טשטוש החזרה
+//
+//                new Plane(new Point(0, 0, -5000), new Vector(0, 0, 1)) // מישור מאחור
+//                        .setEmission(new Color(30, 60, 90))
+//                        .setMaterial(new Material()
+//                                .setKD(0.8)        // פיזור טוב
+//                                .setKS(0.1)        // לא מבריק מדי
+//                                .setShininess(50)  // ברק עדין
+//                                .setKR(0.0)        // לא מחזיר כלל
+//                                .setKT(0.0))     // לא שקוף
+//        );
+//
+//        scene.lights.add(
+//                new SpotLight(new Color(600, 600, 600),
+//                        new Point(0, 0, 1400),
+//                        new Vector(0, 0, -1))
+//                        .setKl(0.0002).setKq(0.0001)
+//        );
+//
+//        // Lower ambient light for contrast
+//        scene.setAmbientLight(new AmbientLight(new Color(4, 6, 10)));
+//
+//        scene.lights.add(
+//                new SpotLight(new Color(1200, 1000, 1000),
+//                        new Point(0, 400, -1000),
+//                        new Vector(0, -1, 0.1)) // פוגע בחלק העליון בזווית שטוחה
+//                        .setKl(0.0003).setKq(0.0001)
+//        );
+//
+//        scene.lights.add(
+//                new SpotLight(new Color(1200, 1200, 1000),
+//                        new Point(-120, 150, -1200),
+//                        new Vector(120, -150, 400).normalize())
+//                        .setKl(0.00005).setKq(0.00001)
+//        );
+//        scene.lights.add(
+//                new DirectionalLight(new Color(100, 100, 150), new Vector(-1, -0.3, -1))
+//        );
+//
+//        scene.lights.add(
+//                new SpotLight(new Color(1200, 1200, 1000),
+//                        new Point(120, 150, -1200),
+//                        new Vector(-120, -150, 400).normalize())
+//                        .setKl(0.00005).setKq(0.00001)
+//        );
+//        scene.lights.add(
+//                new SpotLight(new Color(1500, 1500, 1500),
+//                        new Point(-200, 200, -1200),
+//                        new Vector(200, -350, 400).normalize())  // אל הכדור
+//                        .setKl(0.0003).setKq(0.0001));
+//
+//        scene.lights.add(
+//                new SpotLight(new Color(1500, 1500, 1500),
+//                        new Point(-200, 200, -1200),
+//                        new Vector(200, -350, 400).normalize())  // אל הכדור
+//                        .setKl(0.0003).setKq(0.0001));
+//
+//        // Light panel polygon behind the camera, acting as an area light source
+//        scene.geometries.add(
+//                new Polygon(
+//                        new Point(-50000, 250, 1500),   // Much wider
+//                        new Point(50000, 250, 1500),
+//                        new Point(50000, -2000, 1500),    // Narrower height for band effect
+//                        new Point(-50000, -2000, 1500)
+//                )
+//                        .setEmission(new Color(1200, 1200, 1200)) // Higher intensity
+//                        .setMaterial(new Material()
+//                                .setKD(0.0)
+//                                .setKS(0.0)
+//                                .setKR(0.0)
+//                                .setKT(0.0))
+//        );
+//
+//        // Camera
+//        cameraBuilder
+//                .setLocation(new Point(0, -200, 1000))
+//                .setDirection(new Point(0, 0, -800), new Vector(0, 1, 0))
+//                .setVpDistance(1000)
+//                .setVpSize(1600, 1600)
+//                .setResolution(800, 800)
+//                .build()
+//                .renderImage()
+//                .writeToImage("reflectiveSpheresOnWater_Final_Attempt");
+//    }
+
+    /**
+     * Test for rendering a scene with glass and fireball reflections.
+     * The scene includes a background with gradual layers and reflective geometries.
+     */
+    @Test
+    void GlassAndFireballReflectedWithBackground() {
+//        scene.setBackground(new Color(180, 210, 255));
+
+        // שכבות רקע הדרגתיות (10 שכבות רחוקות ורחבות)
+        scene.geometries.add(
+                new Polygon(
+                        new Point(-50000, -5000, -30000),
+                        new Point(50000, -5000, -30000),
+                        new Point(50000, -4000, -30000),
+                        new Point(-50000, -4000, -30000))
+                        .setEmission(new Color(180, 180, 190))
+                        .setMaterial(new Material().setKD(0.2).setKS(0.1).setShininess(100)),
+
+                new Polygon(
+                        new Point(-50000, -4000, -30000),
+                        new Point(50000, -4000, -30000),
+                        new Point(50000, -3000, -30000),
+                        new Point(-50000, -3000, -30000))
+                        .setEmission(new Color(177, 184, 196))
+                        .setMaterial(new Material().setKD(0.2).setKS(0.1).setShininess(100)),
+
+                new Polygon(
+                        new Point(-50000, -3000, -30000),
+                        new Point(50000, -3000, -30000),
+                        new Point(50000, -2000, -30000),
+                        new Point(-50000, -2000, -30000))
+                        .setEmission(new Color(174, 188, 202))
+                        .setMaterial(new Material().setKD(0.2).setKS(0.1).setShininess(100)),
+
+                new Polygon(
+                        new Point(-50000, -2000, -30000),
+                        new Point(50000, -2000, -30000),
+                        new Point(50000, -1000, -30000),
+                        new Point(-50000, -1000, -30000))
+                        .setEmission(new Color(171, 192, 208))
+                        .setMaterial(new Material().setKD(0.2).setKS(0.1).setShininess(100)),
+
+                new Polygon(
+                        new Point(-50000, -1000, -30000),
+                        new Point(50000, -1000, -30000),
+                        new Point(50000, 0, -30000),
+                        new Point(-50000, 0, -30000))
+                        .setEmission(new Color(168, 196, 214))
+                        .setMaterial(new Material().setKD(0.2).setKS(0.1).setShininess(100)),
+
+                new Polygon(
+                        new Point(-50000, 0, -30000),
+                        new Point(50000, 0, -30000),
+                        new Point(50000, 1000, -30000),
+                        new Point(-50000, 1000, -30000))
+                        .setEmission(new Color(165, 200, 220))
+                        .setMaterial(new Material().setKD(0.2).setKS(0.1).setShininess(100)),
+
+                new Polygon(
+                        new Point(-50000, 1000, -30000),
+                        new Point(50000, 1000, -30000),
+                        new Point(50000, 2000, -30000),
+                        new Point(-50000, 2000, -30000))
+                        .setEmission(new Color(162, 204, 226))
+                        .setMaterial(new Material().setKD(0.2).setKS(0.1).setShininess(100)),
+
+                new Polygon(
+                        new Point(-50000, 2000, -30000),
+                        new Point(50000, 2000, -30000),
+                        new Point(50000, 3000, -30000),
+                        new Point(-50000, 3000, -30000))
+                        .setEmission(new Color(159, 208, 232))
+                        .setMaterial(new Material().setKD(0.2).setKS(0.1).setShininess(100)),
+
+                new Polygon(
+                        new Point(-50000, 3000, -30000),
+                        new Point(50000, 3000, -30000),
+                        new Point(50000, 4000, -30000),
+                        new Point(-50000, 4000, -30000))
+                        .setEmission(new Color(156, 212, 238))
+                        .setMaterial(new Material().setKD(0.2).setKS(0.1).setShininess(100)),
+
+                new Polygon(
+                        new Point(-50000, 4000, -30000),
+                        new Point(50000, 4000, -30000),
+                        new Point(50000, 5000, -30000),
+                        new Point(-50000, 5000, -30000))
+                        .setEmission(new Color(153, 216, 244))
+                        .setMaterial(new Material().setKD(0.2).setKS(0.1).setShininess(100))
+        );
+
+        ;
+        scene.geometries.add(
+
+                // משולש גדול מרכזי (זכוכית או משטח)
+                new Polygon(
+                        new Point(300, -150, 1000), // שמאל תחתון
+                        new Point(600, -150, 1000),  // ימין תחתון
+                        new Point(600, 150, 1000),   // ימין עליון
+                        new Point(300, 150, 1000))   // שמאל עליון
+                        .setMaterial(new Material()
+                                .setKS(0.4)
+                                .setKD(0.05)
+                                .setShininess(200)
+                                .setKR(0.8)
+                                .setKT(0.85)),
+
+                new Polygon(
+                        new Point(-100, -150, 1000), // שמאל תחתון
+                        new Point(200, -150, 1000),  // ימין תחתון
+                        new Point(200, 150, 1000),   // ימין עליון
+                        new Point(-100, 150, 1000))   // שמאל עליון
+                        .setMaterial(new Material()
+                                .setKS(0.6)
+                                .setKD(0.)
+                                .setShininess(300)
+                                .setKR(0.03)
+                                .setKT(0.9).setGlossiness(0.3, 4, 100)),
+
+                // מרובע עם מסגרץ
+                new Polygon(
+                        new Point(-500, -150, 1000), // שמאל תחתון
+                        new Point(-200, -150, 1000),  // ימין תחתון
+                        new Point(-200, 150, 1000),   // ימין עליון
+                        new Point(-500, 150, 1000))   // שמאל עליון
+                        // .setEmission(new Color(50, 90, 115))
+                        .setMaterial(new Material()
+                                .setKS(0.6)
+                                .setKD(0)
+                                .setShininess(300)
+                                .setKR(0.03)
+                                .setKT(0.9)),
+                // מסגרת
+                new Polygon(
+                        new Point(-500, 150, 1000),      // שמאל תחתון של המסגרת העליונה
+                        new Point(-200, 150, 1000),      // ימין תחתון
+                        new Point(-200, 153, 1000),      // ימין עליון (מעל ב־10)
+                        new Point(-500, 153, 1000))      // שמאל עליון
+                        .setEmission(new Color(25, 25, 25)) // צבע המסגרת
+                        .setMaterial(new Material()
+                                .setKD(0.6)
+                                .setKS(0.2)
+                                .setShininess(100)),
+
+                new Polygon(
+                        new Point(-200, -150, 1000),     // שמאל תחתון
+                        new Point(-196, -150, 1000),
+                        new Point(-196, 153, 1000),      // ימין עליון
+                        new Point(-200, 153, 1000))      // שמאל עליון
+                        .setEmission(new Color(25, 25, 25))
+                        .setMaterial(new Material()
+                                .setKD(0.6)
+                                .setKS(0.2)
+                                .setShininess(100)),
+
+                new Polygon(
+                        new Point(-503, -150, 1000),     // שמאל תחתון (3 יחידות שמאלה)
+                        new Point(-500, -150, 1000),     // ימין תחתון
+                        new Point(-500, 153, 1000),      // ימין עליון
+                        new Point(-503, 153, 1000))      // שמאל עליון
+                        .setEmission(new Color(25, 25, 25))
+                        .setMaterial(new Material()
+                                .setKD(0.6)
+                                .setKS(0.2)
+                                .setShininess(100)),
+                new Polygon(
+                        new Point(-503, -153, 1000),     // שמאל תחתון (3 יחידות שמאלה)
+                        new Point(-196, -153, 1000),     // ימין תחתון
+                        new Point(-196, -150, 1000),      // ימין עליון
+                        new Point(-503, -150, 1000))      // שמאל עליון
+                        .setEmission(new Color(25, 25, 25))
+                        .setMaterial(new Material()
+                                .setKD(0.6)
+                                .setKS(0.2)
+                                .setShininess(100)),
+
+                // דור תכלת מאחורי משולש שמאלי
+                new Sphere(50d, new Point(-400, -130, 800))
+                        .setEmission(new Color(30, 80, 100))
+                        .setMaterial(new Material()
+                                .setKD(0.2).setKS(0.7).setShininess(200)
+                                .setKT(0.6).setKR(0.25)),
+
+                new Plane(new Point(0, -1000, 0), new Vector(0, 1, 0))
+                        .setMaterial(new Material()
+                                .setKR(0.1).setKD(0.1).setKS(0.1).setShininess(100))
+                        .setEmission(new Color(150, 150, 150))
+        );
+
+        scene.setAmbientLight(new AmbientLight(new Color(50, 50, 50)));
+
+        scene.lights.add(
+                new DirectionalLight(new Color(270, 270, 270),
+                        new Vector(1, -0.2, -1))
+        );
+
+        cameraBuilder
+                .setLocation(new Point(0, 1, 1500)) // כמעט על הציר – זז הצידה טיפה
+                .setDirection(new Point(0, 0, -3000), new Vector(0, 1, 0)) // מסתכל קדימה
+                .setVpDistance(2000)
+                .setVpSize(5000, 2000)
+                .setResolution(800, 800)
+                .setDebugPrint(1)
+                .setMultithreading(4)
+                .build()
+                .renderImage()
+                .writeToImage("GlassAndFireballReflected1");
+    }
+
+    /**
+     * Test for rendering a scene with glass and fireball reflections.
+     * This test sets up a scene with a glass sphere and a fireball, checking the reflections.
+     */
+    @Test
+    void GlassAndFireballReflected() {
+        scene.geometries.add(
+
+                new Sphere(400d, new Point(0, -400, -500))
+                        .setEmission(new Color(110, 40, 20))
+                        .setMaterial(new Material()
+                                .setKD(0.25)        // פיזור עדין – לא שטוח
+                                .setKS(0.7)        // ברק מקסימלי
+                                .setShininess(250) // ברק חד ואלגנטי
+                                .setKR(0.0)        // טיפה השתקפות – משדר יוקרה
+                        ),
+
+                new Triangle(
+                        new Point(-1500, -1000, -1500),
+                        new Point(1500, -1000, -1500),
+                        new Point(0, 1200, -1700))
+                        .setEmission(new Color(50, 90, 115))
+                        .setMaterial(new Material()
+                                .setKS(0.4)
+                                .setKD(0.05)   // קצת יותר ברק – מים משקפים יותר
+                                .setShininess(200)      // ברק חד יותר
+                                .setKR(0.8)             // לא נוגע – משאיר טיפה השתקפות
+                                .setKT(0.85)        // מעלה שקיפות – כמו מים כמעט שקופים
+                                .setGlossiness(0.2, 4, 100)),
+
+                // משולש אחרון שמאל
+                new Triangle(
+                        new Point(-5000, -1000, -1500),
+                        new Point(-3000, -1000, -1500),
+                        new Point(-4000, 1200, -1700))
+                        .setEmission(new Color(50, 90, 115))
+                        .setMaterial(new Material()
+                                .setKS(0.4)
+                                .setKD(0.05)   // קצת יותר ברק – מים משקפים יותר
+                                .setShininess(200)      // ברק חד יותר
+                                .setKR(0.8)             // לא נוגע – משאיר טיפה השתקפות
+                                .setKT(0.85)        // מעלה שקיפות – כמו מים כמעט שקופים
+                        ),
+
+                new Sphere(300d, new Point(-4000, -500, -2000))
+                        .setEmission(new Color(110, 40, 20))
+                        .setMaterial(new Material()
+                                .setKD(0.25)
+                                .setKS(0.7)
+                                .setShininess(250)
+                                .setKR(0.0)),
+
+                // משולש זכוכית בצד שמאל
+                new Triangle(
+                        new Point(-3000, -1000, -1500),
+                        new Point(-1000, -1000, -1500),
+                        new Point(-2000, 1200, -1700))
+                        .setEmission(new Color(50, 90, 115))
+                        .setMaterial(new Material()
+                                .setKS(0.4)
+                                .setKD(0.05)
+                                .setShininess(200)
+                                .setKR(0.8)
+                                .setKT(0.85)
+                                .setGlossiness(0.6, 4, 100)),
+                // משולש שלישי בשמאל
+
+                new Polygon(
+                        new Point(1500, -1000, -1200),
+                        new Point(3000, -1000, -1200),
+                        new Point(3000, 1200, -1200),
+                        new Point(1500, 1200, -1200))
+                        .setEmission(new Color(50, 90, 115))
+                        .setMaterial(new Material()
+                                .setKS(0.4)
+                                .setKD(0.05)
+                                .setShininess(200)
+                                .setKR(0.8)
+                                .setKT(0.85)
+                                .setGlossiness(0.5, 4, 100)),
+
+                // כדור מאחורי המשולש
+                new Sphere(300d, new Point(-2000, -500, -2000))
+                        .setEmission(new Color(110, 40, 20))
+                        .setMaterial(new Material()
+                                .setKD(0.25)
+                                .setKS(0.7)
+                                .setShininess(250)
+                                .setKR(0.0)),
+                // כדור מאחורי המשולש הקיצוני חצי חצי
+                new Sphere(300d, new Point(3200, -400, -1550))
+                        .setEmission(new Color(110, 40, 20))
+                        .setMaterial(new Material()
+                                .setKD(0.25)
+                                .setKS(0.7)
+                                .setShininess(250)
+                                .setKR(0.0)),
+
+                new Plane(new Point(0, -800, 0), new Vector(0, 1, 0))
+                        .setMaterial(new Material()
+                                .setKR(0.2).setKD(0.4).setKS(0.6).setShininess(100))
+                        .setEmission(new Color(20, 20, 20))
+        );
+
+        scene.setAmbientLight(new AmbientLight(new Color(20, 20, 20)));
+
+        scene.lights.add(
+                new SpotLight(new Color(1000, 600, 800),
+                        new Point(0, 800, 1000),
+                        new Vector(0, -1, -2).normalize())
+                        .setKl(0.00001).setKq(0.000005)
+        );
+
+        scene.lights.add(
+                new SpotLight(new Color(1000, 600, 800),
+                        new Point(1.1, -400.2, -1200.2),
+                        new Vector(0.2, 0, 1).normalize())
+                        .setKl(0.00001).setKq(0.000005)
+        );
+
+        scene.lights.add(
+                new DirectionalLight(new Color(200, 200, 250),
+                        new Vector(1, -0.5, -1))
+        );
+
+        cameraBuilder
+                .setLocation(new Point(-2500, 650, 8000))
+                .setDirection(new Point(-500, -400, -1000), new Vector(0, 1, 0))
+                .setVpDistance(2000)
+                //.setVpSize(2500, 2500)
+                //.setResolution(800, 800)
+                .setVpSize(2560, 1440)
+                .setResolution(2560, 1440)
+                .setDebugPrint(1)
+                .setMultithreading(4)
+                .build()
+                .renderImage()
+                .writeToImage("GlassAndFireballReflected");
+    }
+    
+    /**
+     * Test for rendering a scene with glass and fireball reflections without glossiness.
+     * This test sets up a scene with a glass sphere and a fireball, checking the reflections without glossiness.
+     */
+    @Test
+    void GlassAndFireballReflectedNoGlossiness() {
+        scene.geometries.add(
+
+                new Sphere(400d, new Point(0, -400, -500))
+                        .setEmission(new Color(110, 40, 20))
+                        .setMaterial(new Material()
+                                .setKD(0.25)        // פיזור עדין – לא שטוח
+                                .setKS(0.7)        // ברק מקסימלי
+                                .setShininess(250) // ברק חד ואלגנטי
+                                .setKR(0.0)        // טיפה השתקפות – משדר יוקרה
+                        ),
+
+                new Triangle(
+                        new Point(-1500, -1000, -1500),
+                        new Point(1500, -1000, -1500),
+                        new Point(0, 1200, -1700))
+                        .setEmission(new Color(50, 90, 115))
+                        .setMaterial(new Material()
+                                .setKS(0.4)
+                                .setKD(0.05)   // קצת יותר ברק – מים משקפים יותר
+                                .setShininess(200)      // ברק חד יותר
+                                .setKR(0.8)             // לא נוגע – משאיר טיפה השתקפות
+                                .setKT(0.85)        // מעלה שקיפות – כמו מים כמעט שקופים
+                        ),
+
+                // משולש אחרון שמאל
+                new Triangle(
+                        new Point(-5000, -1000, -1500),
+                        new Point(-3000, -1000, -1500),
+                        new Point(-4000, 1200, -1700))
+                        .setEmission(new Color(50, 90, 115))
+                        .setMaterial(new Material()
+                                .setKS(0.4)
+                                .setKD(0.05)   // קצת יותר ברק – מים משקפים יותר
+                                .setShininess(200)      // ברק חד יותר
+                                .setKR(0.8)             // לא נוגע – משאיר טיפה השתקפות
+                                .setKT(0.85)        // מעלה שקיפות – כמו מים כמעט שקופים
+                        ),
+
+                new Sphere(300d, new Point(-4000, -500, -2000))
+                        .setEmission(new Color(110, 40, 20))
+                        .setMaterial(new Material()
+                                .setKD(0.25)
+                                .setKS(0.7)
+                                .setShininess(250)
+                                .setKR(0.0)),
+
+                // משולש זכוכית בצד שמאל
+                new Triangle(
+                        new Point(-3000, -1000, -1500),
+                        new Point(-1000, -1000, -1500),
+                        new Point(-2000, 1200, -1700))
+                        .setEmission(new Color(50, 90, 115))
+                        .setMaterial(new Material()
+                                .setKS(0.4)
+                                .setKD(0.05)
+                                .setShininess(200)
+                                .setKR(0.8)
+                                .setKT(0.85)
+                        ),
+                // משולש שלישי בשמאל
+
+                new Polygon(
+                        new Point(1500, -1000, -1200),
+                        new Point(3000, -1000, -1200),
+                        new Point(3000, 1200, -1200),
+                        new Point(1500, 1200, -1200))
+                        .setEmission(new Color(50, 90, 115))
+                        .setMaterial(new Material()
+                                .setKS(0.4)
+                                .setKD(0.05)
+                                .setShininess(200)
+                                .setKR(0.8)
+                                .setKT(0.85)
+                        ),
+
+                // כדור מאחורי המשולש
+                new Sphere(300d, new Point(-2000, -500, -2000))
+                        .setEmission(new Color(110, 40, 20))
+                        .setMaterial(new Material()
+                                .setKD(0.25)
+                                .setKS(0.7)
+                                .setShininess(250)
+                                .setKR(0.0)),
+                // כדור מאחורי המשולש הקיצוני חצי חצי
+                new Sphere(300d, new Point(3200, -400, -1550))
+                        .setEmission(new Color(110, 40, 20))
+                        .setMaterial(new Material()
+                                .setKD(0.25)
+                                .setKS(0.7)
+                                .setShininess(250)
+                                .setKR(0.0)),
+
+                new Plane(new Point(0, -800, 0), new Vector(0, 1, 0))
+                        .setMaterial(new Material()
+                                .setKR(0.2).setKD(0.4).setKS(0.6).setShininess(100))
+                        .setEmission(new Color(20, 20, 20))
+        );
+
+        scene.setAmbientLight(new AmbientLight(new Color(20, 20, 20)));
+
+        scene.lights.add(
+                new SpotLight(new Color(1000, 600, 800),
+                        new Point(0, 800, 1000),
+                        new Vector(0, -1, -2).normalize())
+                        .setKl(0.00001).setKq(0.000005)
+        );
+
+        scene.lights.add(
+                new SpotLight(new Color(1000, 600, 800),
+                        new Point(1.1, -400.2, -1200.2),
+                        new Vector(0.2, 0, 1).normalize())
+                        .setKl(0.00001).setKq(0.000005)
+        );
+
+        scene.lights.add(
+                new DirectionalLight(new Color(200, 200, 250),
+                        new Vector(1, -0.5, -1))
+        );
+
+        cameraBuilder
+                .setLocation(new Point(-2500, 650, 8000))
+                .setDirection(new Point(-500, -400, -1000), new Vector(0, 1, 0))
+                .setVpDistance(2000)
+                //.setVpSize(2500, 2500)
+                //.setResolution(800, 800)
+                .setVpSize(2560, 1440)
+                .setResolution(2560, 1440)
+                .setDebugPrint(1)
+                .setMultithreading(4)
+                .build()
+                .renderImage()
+                .writeToImage("GlassAndFireballReflectedNoGlossiness");
+    }
 }

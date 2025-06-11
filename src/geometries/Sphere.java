@@ -55,15 +55,12 @@ public class Sphere extends RadialGeometry {
         double th = Math.sqrt(thSquared);
         double t1 = alignZero(tm - th);
         double t2 = alignZero(tm + th);
+        if (t2 <= 0 || alignZero(t1 - maxDistance) >= 0) return null;
 
-        if (t1 > 0 && alignZero(t1 - maxDistance) < 0) {
-            return (t2 > 0 && alignZero(t2 - maxDistance) < 0)
-                    ? List.of(new Intersection(this, ray.getPoint(t1)), new Intersection(this, ray.getPoint(t2)))
-                    : List.of(new Intersection(this, ray.getPoint(t1)));
-        }
-
-        return (t2 > 0 && alignZero(t2 - maxDistance) < 0)
-                ? List.of(new Intersection(this, ray.getPoint(t2)))
-                : null;
+        if (alignZero(t2 - maxDistance) >= 0)
+            return t1 <= 0 ? null : List.of(new Intersection(this, ray.getPoint(t1)));
+        else
+            return t1 <= 0 ? List.of(new Intersection(this, ray.getPoint(t2)))
+                    : List.of(new Intersection(this, ray.getPoint(t1)), new Intersection(this, ray.getPoint(t2)));
     }
 }

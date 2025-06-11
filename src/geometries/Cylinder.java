@@ -28,11 +28,6 @@ public class Cylinder extends Tube {
     private final Plane topPlane;
 
     /**
-     * Tube instance to use its methods for intersections.
-     */
-    private final Tube tube; // Tube instance to use its methods for intersections
-
-    /**
      * Constructs a Cylinder with a given radius, axis, and height.
      *
      * @param radius the radius of the cylinder
@@ -44,7 +39,6 @@ public class Cylinder extends Tube {
         this.height = height;    // Set the height specific to Cylinder
         this.bottomPlane = new Plane(axis.getHead(), axis.getDirection());
         this.topPlane = new Plane(axis.getPoint(height), axis.getDirection());
-        this.tube = new Tube(radius, axis); // Create a Tube instance for intersection calculations
     }
 
     @Override
@@ -78,7 +72,7 @@ public class Cylinder extends Tube {
         final Point rayOrigin = ray.getHead();
 
         // 1. Tube intersections
-        var tubeIntersections = tube.calculateIntersections(ray, maxDistance);
+        var tubeIntersections = super.calculateIntersectionsHelper(ray, maxDistance);
         if (tubeIntersections != null) {
             for (Intersection p : tubeIntersections) {
                 double axisProjection = axisDir.dotProduct(p.point.subtract(baseCenter));

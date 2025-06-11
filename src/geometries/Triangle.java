@@ -64,7 +64,6 @@ public class Triangle extends Polygon {
         if (t <= 0 || alignZero(t - maxDistance) >= 0) return null;
 
         final Point intersectionPoint = origin.add(direction.scale(t));
-
         return List.of(new Intersection(this, intersectionPoint));
     }
 }

@@ -1,5 +1,7 @@
 package primitives;
 
+import static primitives.Util.isZero;
+
 /**
  * Represents a vector in 3D space, extending the Point class.
  * A vector has both a direction and a magnitude but no fixed position.
@@ -127,6 +129,20 @@ public class Vector extends Point {
         if (this == obj) return true;
         return (obj instanceof Vector other)
                 && super.xyz.equals(other.xyz);
+    }
+
+    /**
+     * Returns any vector orthogonal to this one.
+     * The result is normalized.
+     *
+     * @return a normalized orthogonal vector
+     */
+    public Vector findAnyOrthogonal() {
+        double x = this.xyz.d1();
+        double y = this.xyz.d2();
+
+        return !isZero(x) || !isZero(y) ? new Vector(-y, x, 0) :
+                new Vector(0, -this.xyz.d3(), y);
     }
 }
 

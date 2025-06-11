@@ -14,6 +14,11 @@ import static primitives.Util.*;
 public class SimpleRayTracer extends RayTracerBase {
 
     /**
+     * Distance from the camera to the screen.
+     * Used to calculate the screen position for glossy ray generation.
+     */
+    private static final double screenDistance = 4;
+    /**
      * Maximum recursion level for color calculation.
      * Limits the depth of recursive calls to prevent infinite recursion.
      */
@@ -42,11 +47,9 @@ public class SimpleRayTracer extends RayTracerBase {
 
     @Override
     public Color traceRay(Ray ray) {
-        // Find intersections with the geometries in the scene
-        var intersections = scene.geometries.calculateIntersections(ray);
-        return intersections == null
-                ? scene.background
-                : calcColor(ray.findClosestIntersection(intersections), ray);
+        // Find the closest intersections with the geometries in the scene
+        var intersection = findClosestIntersection(ray);
+        return intersection == null ? scene.background : calcColor(intersection, ray);
     }
 
     /**
@@ -57,7 +60,7 @@ public class SimpleRayTracer extends RayTracerBase {
      */
     private Intersection findClosestIntersection(Ray ray) {
         var intersections = scene.geometries.calculateIntersections(ray);
-        return intersections == null ? null : ray.findClosestIntersection(intersections);
+        return ray.findClosestIntersection(intersections);
     }
 
     /**
@@ -96,9 +99,81 @@ public class SimpleRayTracer extends RayTracerBase {
      * @param k            attenuation factor for each color component
      * @return the color contribution from global effects
      */
+//    private Color calcGlobalEffects(Intersection intersection, int level, Double3 k) {
+//        return calcGlobalEffect(constructReflectedRay(intersection), level, k, intersection.material.kR)
+//                .add(calcGlobalEffect(constructRefractedRay(intersection), level, k, intersection.material.kT));
+//    }
+
+//    private Color calcGlobalEffects(Intersection intersection, int level, Double3 k) {
+//        Material m = intersection.material;
+//
+//        return (m.glossinessRadius > 0 && m.glossinessRays > 1) ?
+//                averageGlossyEffect(constructReflectedRay(intersection), intersection.normal, m, m.kR, level, k)
+//                        .add(averageGlossyEffect(constructRefractedRay(intersection), intersection.normal, m, m.kT, level, k)) :
+//                calcGlobalEffect(constructReflectedRay(intersection), level, k, m.kR)
+//                        .add(calcGlobalEffect(constructRefractedRay(intersection), level, k, m.kT));
+//    }
+//
+//    /**
+//     * Calculates the average color contribution from glossy effects.
+//     *
+//     * @param baseRay  the base ray (reflection or refraction)
+//     * @param normal   the surface normal at the intersection point
+//     * @param material the material of the intersected geometry
+//     * @param kX       attenuation factor for the current color component
+//     * @param level    the recursive level (decreasing with each call)
+//     * @param k        attenuation factor for each color component
+//     * @return the average color contribution from glossy effects
+//     */
+//    private Color averageGlossyEffect(Ray baseRay, Vector normal, Material material, Double3 kX, int level, Double3 k) {
+//        var rayList = RaySpreadGenerator.generateDiskSampleRays(baseRay, normal, material.glossinessRadius,
+//                material.glossinessDistance, material.glossinessRays);
+//        Color sum = Color.BLACK;
+//        for (Ray r : rayList)
+//            sum = sum.add(calcGlobalEffect(r, level, k, kX));
+//        return sum.reduce(material.glossinessRays);
+//    }
+
+    /**
+     * Calculates the global effects (reflection and refraction) at the intersection point.
+     * This method is used when glossiness is not applied.
+     *
+     * @param intersection the intersection object
+     * @param level        the recursive level (decreasing with each call)
+     * @param k            attenuation factor for each color component
+     * @return the color contribution from global effects
+     */
     private Color calcGlobalEffects(Intersection intersection, int level, Double3 k) {
-        return calcGlobalEffect(constructReflectedRay(intersection), level, k, intersection.material.kR)
-                .add(calcGlobalEffect(constructRefractedRay(intersection), level, k, intersection.material.kT));
+        Material m = intersection.material;
+        return traceBeamAverage(constructReflectedRay(intersection), intersection.normal, m, m.kR, level, k)
+                .add(traceBeamAverage(constructRefractedRay(intersection), intersection.normal.scale(-1), m, m.kT, level, k));
+    }
+
+    /**
+     * Traces a beam of rays for glossy reflection or refraction.
+     * This method averages the color contributions from multiple rays.
+     *
+     * @param baseRay  the base ray (reflection or refraction)
+     * @param normal   the surface normal at the intersection point
+     * @param material the material of the intersected geometry
+     * @param kX       attenuation factor for the current color component
+     * @param level    the recursive level (decreasing with each call)
+     * @param k        attenuation factor for each color component
+     * @return the average color contribution from glossy effects
+     */
+    private Color traceBeamAverage(Ray baseRay, Vector normal, Material material, Double3 kX, int level, Double3 k) {
+        if (material.glossinessRadius <= 0 || material.glossinessRays <= 1)
+            return calcGlobalEffect(baseRay, level, k, kX);
+
+        var rayList = RaySpreadGenerator.generateDiskSampleRays(
+                baseRay, normal, material.glossinessRadius,
+                material.glossinessDistance, material.glossinessRays
+        );
+
+        Color sum = Color.BLACK;
+        for (Ray r : rayList)
+            sum = sum.add(calcGlobalEffect(r, level, k, kX));
+        return sum.reduce(material.glossinessRays);
     }
 
     /**
@@ -108,9 +183,8 @@ public class SimpleRayTracer extends RayTracerBase {
      * @return the reflected ray
      */
     private Ray constructReflectedRay(Intersection intersection) {
-        Vector n = intersection.normal;
-        Vector r = intersection.rayDirection.subtract(n.scale(2 * intersection.dotProductRayNormal));
-        return new Ray(intersection.point, r, n);
+        Vector r = intersection.rayDirection.subtract(intersection.normal.scale(2 * intersection.dotProductRayNormal));
+        return new Ray(intersection.point, r, intersection.normal);
     }
 
     /**
@@ -232,7 +306,7 @@ public class SimpleRayTracer extends RayTracerBase {
         if (intersections == null) return true;
 
         for (var i : intersections) {
-            if (i.geometry.getMaterial().kT.lowerThan(MIN_CALC_COLOR_K))
+            if (i.material.kT.lowerThan(MIN_CALC_COLOR_K))
                 return false;
         }
         return true;
@@ -260,7 +334,7 @@ public class SimpleRayTracer extends RayTracerBase {
         if (shadowIntersections == null) return ktr;
 
         for (var shadowI : shadowIntersections) {
-            ktr = ktr.product(shadowI.geometry.getMaterial().kT);
+            ktr = ktr.product(shadowI.material.kT);
             if (ktr.lowerThan(MIN_CALC_COLOR_K))
                 return Double3.ZERO;
         }

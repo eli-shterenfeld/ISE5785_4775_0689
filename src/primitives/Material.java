@@ -7,6 +7,26 @@ package primitives;
 public class Material {
 
     /**
+     * Glossiness radius for specular reflection.
+     * If set to 0, the material is perfectly shiny.
+     * If greater than 0, it simulates a glossy surface with a certain radius.
+     */
+    public double glossinessRadius = 0;
+
+    /**
+     * Distance for glossy reflection.
+     * Determines how far the glossy effect extends.
+     * A value of 1 means the glossy effect is applied at the intersection point.
+     */
+    public double glossinessDistance = 1;
+
+    /**
+     * Number of rays to be used for glossy reflection.
+     * Determines the quality of the glossy effect.
+     */
+    public int glossinessRays = 1;
+
+    /**
      * Reflection coefficient.
      */
     public Double3 kT = Double3.ZERO;
@@ -160,6 +180,20 @@ public class Material {
      */
     public Material setKR(Double kR) {
         this.kR = new Double3(kR);
+        return this;
+    }
+
+    /**
+     * Sets the glossiness properties of the material.
+     *
+     * @param radius the radius for glossiness
+     * @param rays   the number of rays for glossiness
+     * @return the current material object
+     */
+    public Material setGlossiness(double radius, double distance, int rays) {
+        this.glossinessRadius = radius;
+        this.glossinessRays = rays;
+        this.glossinessDistance = distance;
         return this;
     }
 }
