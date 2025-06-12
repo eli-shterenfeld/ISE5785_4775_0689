@@ -14,6 +14,12 @@ import static primitives.Util.*;
 public class SimpleRayTracer extends RayTracerBase {
 
     /**
+     * RaySampler instance used for generating rays with jittered disk sampling.
+     * This sampler is used for glossy reflections and refractions.
+     */
+    private static final RaySampler raySampler = new JitteredDiskSampler();
+
+    /**
      * Distance from the camera to the screen.
      * Used to calculate the screen position for glossy ray generation.
      */
@@ -104,36 +110,6 @@ public class SimpleRayTracer extends RayTracerBase {
 //                .add(calcGlobalEffect(constructRefractedRay(intersection), level, k, intersection.material.kT));
 //    }
 
-//    private Color calcGlobalEffects(Intersection intersection, int level, Double3 k) {
-//        Material m = intersection.material;
-//
-//        return (m.glossinessRadius > 0 && m.glossinessRays > 1) ?
-//                averageGlossyEffect(constructReflectedRay(intersection), intersection.normal, m, m.kR, level, k)
-//                        .add(averageGlossyEffect(constructRefractedRay(intersection), intersection.normal, m, m.kT, level, k)) :
-//                calcGlobalEffect(constructReflectedRay(intersection), level, k, m.kR)
-//                        .add(calcGlobalEffect(constructRefractedRay(intersection), level, k, m.kT));
-//    }
-//
-//    /**
-//     * Calculates the average color contribution from glossy effects.
-//     *
-//     * @param baseRay  the base ray (reflection or refraction)
-//     * @param normal   the surface normal at the intersection point
-//     * @param material the material of the intersected geometry
-//     * @param kX       attenuation factor for the current color component
-//     * @param level    the recursive level (decreasing with each call)
-//     * @param k        attenuation factor for each color component
-//     * @return the average color contribution from glossy effects
-//     */
-//    private Color averageGlossyEffect(Ray baseRay, Vector normal, Material material, Double3 kX, int level, Double3 k) {
-//        var rayList = RaySpreadGenerator.generateDiskSampleRays(baseRay, normal, material.glossinessRadius,
-//                material.glossinessDistance, material.glossinessRays);
-//        Color sum = Color.BLACK;
-//        for (Ray r : rayList)
-//            sum = sum.add(calcGlobalEffect(r, level, k, kX));
-//        return sum.reduce(material.glossinessRays);
-//    }
-
     /**
      * Calculates the global effects (reflection and refraction) at the intersection point.
      * This method is used when glossiness is not applied.
@@ -165,7 +141,7 @@ public class SimpleRayTracer extends RayTracerBase {
         if (material.glossinessRadius <= 0 || material.glossinessRays <= 1)
             return calcGlobalEffect(baseRay, level, k, kX);
 
-        var rayList = RaySpreadGenerator.generateDiskSampleRays(
+        var rayList = raySampler.sample(
                 baseRay, normal, material.glossinessRadius,
                 material.glossinessDistance, material.glossinessRays
         );

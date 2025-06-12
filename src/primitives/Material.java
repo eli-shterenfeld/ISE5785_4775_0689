@@ -191,9 +191,9 @@ public class Material {
      * @return the current material object
      */
     public Material setGlossiness(double radius, double distance, int rays) {
-        this.glossinessRadius = radius;
-        this.glossinessRays = rays;
-        this.glossinessDistance = distance;
+        this.glossinessRadius = radius <= 0 ? 0 : radius;
+        this.glossinessRays = rays <= 0 ? 1 : rays;
+        this.glossinessDistance = distance <= 0 ? 1 : distance;
         return this;
     }
 }
