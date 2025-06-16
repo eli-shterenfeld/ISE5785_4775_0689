@@ -20,11 +20,6 @@ public class SimpleRayTracer extends RayTracerBase {
     private static final RaySampler raySampler = new JitteredDiskSampler();
 
     /**
-     * Distance from the camera to the screen.
-     * Used to calculate the screen position for glossy ray generation.
-     */
-    private static final double screenDistance = 4;
-    /**
      * Maximum recursion level for color calculation.
      * Limits the depth of recursive calls to prevent infinite recursion.
      */
