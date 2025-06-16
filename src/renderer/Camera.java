@@ -462,7 +462,6 @@ public class Camera implements Cloneable {
      * @return the camera object itself
      */
     public Camera renderImage() {
-        //pixelManager = new PixelManager(nY, nX, printInterval);
         pixelManager = new PixelManager(nX, nY, printInterval);
         return switch (threadsCount) {
             case 0 -> renderImageNoThreads();

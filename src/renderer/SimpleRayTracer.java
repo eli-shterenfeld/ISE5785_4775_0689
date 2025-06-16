@@ -99,19 +99,6 @@ public class SimpleRayTracer extends RayTracerBase {
 
     /**
      * Calculates the global effects (reflection and refraction) at the intersection point.
-     *
-     * @param intersection the intersection object
-     * @param level        the recursive level (decreasing with each call)
-     * @param k            attenuation factor for each color component
-     * @return the color contribution from global effects
-     */
-//    private Color calcGlobalEffects(Intersection intersection, int level, Double3 k) {
-//        return calcGlobalEffect(constructReflectedRay(intersection), level, k, intersection.material.kR)
-//                .add(calcGlobalEffect(constructRefractedRay(intersection), level, k, intersection.material.kT));
-//    }
-
-    /**
-     * Calculates the global effects (reflection and refraction) at the intersection point.
      * This method is used when glossiness is not applied.
      *
      * @param intersection the intersection object
@@ -138,7 +125,7 @@ public class SimpleRayTracer extends RayTracerBase {
      * @return the average color contribution from glossy effects
      */
     private Color traceBeamAverage(Ray baseRay, Vector normal, Material material, Double3 kX, int level, Double3 k) {
-        if (material.glossinessRadius <= 0 || material.glossinessRays <= 1)
+        if (material.glossinessRadius <= 0 && material.glossinessRays <= 1)
             return calcGlobalEffect(baseRay, level, k, kX);
 
         var rayList = raySampler.sample(

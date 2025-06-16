@@ -184,10 +184,11 @@ public class Material {
     }
 
     /**
-     * Sets the glossiness properties of the material.
+     * Sets the glossiness parameters for the material.
      *
-     * @param radius the radius for glossiness
-     * @param rays   the number of rays for glossiness
+     * @param radius   the radius of the glossy effect (0 for perfect reflection)
+     * @param distance the distance from the intersection point to the screen
+     * @param rays     number of rays to generate for glossy reflection
      * @return the current material object
      */
     public Material setGlossiness(double radius, double distance, int rays) {

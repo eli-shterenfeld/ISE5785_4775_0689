@@ -5,6 +5,10 @@ import primitives.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * JitteredDiskSampler generates rays in a jittered disk pattern around a base ray.
+ * This is useful for anti-aliasing and soft shadows in rendering.
+ */
 public class JitteredDiskSampler implements RaySampler {
 
     /**
