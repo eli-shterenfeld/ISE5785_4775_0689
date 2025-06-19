@@ -1,9 +1,12 @@
 package renderer;
 
 import geometries.Intersectable.Intersection;
+import lighting.AreaLight;
 import lighting.LightSource;
 import primitives.*;
 import scene.Scene;
+
+import java.util.List;
 
 import static primitives.Util.*;
 
@@ -17,7 +20,7 @@ public class SimpleRayTracer extends RayTracerBase {
      * RaySampler instance used for generating rays with jittered disk sampling.
      * This sampler is used for glossy reflections and refractions.
      */
-    private static final RaySampler raySampler = new JitteredDiskSampler();
+    private static final RaySampler raySampler = new JitterDiskSampler();
 
     /**
      * Maximum recursion level for color calculation.
@@ -120,7 +123,7 @@ public class SimpleRayTracer extends RayTracerBase {
      * @return the average color contribution from glossy effects
      */
     private Color traceBeamAverage(Ray baseRay, Vector normal, Material material, Double3 kX, int level, Double3 k) {
-        if (material.glossinessRadius <= 0 && material.glossinessRays <= 1)
+        if (material.glossinessRadius <= 0 || material.glossinessRays <= 1)
             return calcGlobalEffect(baseRay, level, k, kX);
 
         var rayList = raySampler.sample(
@@ -131,7 +134,7 @@ public class SimpleRayTracer extends RayTracerBase {
         Color sum = Color.BLACK;
         for (Ray r : rayList)
             sum = sum.add(calcGlobalEffect(r, level, k, kX));
-        return sum.reduce(material.glossinessRays);
+        return sum.reduce(rayList.size());
     }
 
     /**
@@ -276,26 +279,147 @@ public class SimpleRayTracer extends RayTracerBase {
      * @param intersection the intersection data
      * @return the transparency factor as Double3
      */
+//    private Double3 transparency(Intersection intersection) {
+//        if (intersection.lightSource.getShadowRayCount() > 1) return transparencyWithManyRays(intersection);
+//
+//        Ray shadowRay = new Ray(
+//                intersection.point,
+//                intersection.lightSource.getL(intersection.point).scale(-1),
+//                intersection.normal
+//        );
+//
+//        var shadowIntersections = scene.geometries.calculateIntersections(
+//                shadowRay,
+//                intersection.lightSource.getDistance(intersection.point)
+//        );
+//
+//        var ktr = Double3.ONE;
+//        if (shadowIntersections == null) return ktr;
+//
+//        for (var shadowI : shadowIntersections) {
+//            ktr = ktr.product(shadowI.material.kT);
+//            if (ktr.lowerThan(MIN_CALC_COLOR_K))
+//                return Double3.ZERO;
+//        }
+//        return ktr;
+//    }
+
+// Fixed transparency methods
+
+    /**
+     * Calculates the transparency of the intersection point.
+     * Automatically chooses between hard and soft shadow transparency
+     * based on the light source type and properties.
+     *
+     * @param intersection the intersection data
+     * @return the transparency factor as Double3
+     */
     private Double3 transparency(Intersection intersection) {
+        return supportsAreaLighting(intersection.lightSource)
+                ? transparencySoft(intersection)
+                : transparencyHard(intersection);
+    }
+
+    /**
+     * Determines if a light source supports area lighting (soft shadows).
+     *
+     * @param light the light source to check
+     * @return true if the light supports soft shadows with multiple rays
+     */
+    private boolean supportsAreaLighting(LightSource light) {
+        return light instanceof AreaLight areaLight
+                && areaLight.getRadius() > 0
+                && areaLight.getShadowRayCount() > 1;
+    }
+
+    /**
+     * Hard shadow transparency calculation (original logic).
+     * Uses a single shadow ray toward the light center.
+     *
+     * @param intersection the intersection data
+     * @return the transparency factor as Double3
+     */
+    private Double3 transparencyHard(Intersection intersection) {
         Ray shadowRay = new Ray(
                 intersection.point,
                 intersection.lightSource.getL(intersection.point).scale(-1),
                 intersection.normal
         );
+        return calculateRayTransparency(shadowRay, intersection.lightSource.getDistance(intersection.point));
+    }
 
-        var shadowIntersections = scene.geometries.calculateIntersections(
-                shadowRay,
-                intersection.lightSource.getDistance(intersection.point)
+    /**
+     * Soft shadow transparency calculation using beam sampling.
+     * Samples multiple rays toward the light's disk area and averages the results.
+     *
+     * @param intersection the intersection data
+     * @return the transparency factor as Double3
+     */
+    private Double3 transparencySoft(Intersection intersection) {
+        LightSource light = intersection.lightSource;
+
+        // Assumes caller verified that light is an AreaLight (see supportsAreaLighting)
+        AreaLight areaLight = (AreaLight) light;
+
+        // Create base shadow ray toward light center
+        Ray baseShadowRay = new Ray(
+                intersection.point,
+                light.getL(intersection.point).scale(-1),
+                intersection.normal);
+
+        // Sample rays toward the light's disk area
+        var shadowRays = raySampler.sample(
+                baseShadowRay,
+                intersection.normal,
+                areaLight.getRadius(),
+                light.getDistance(intersection.point),
+                areaLight.getShadowRayCount()
         );
 
+        // Average transparency across all shadow rays
+        Double3 totalTransparency = Double3.ZERO;
+        for (Ray shadowRay : shadowRays) {
+            totalTransparency = totalTransparency.add(
+                    calculateRayTransparency(shadowRay, light.getDistance(intersection.point))
+            );
+        }
+        return totalTransparency.reduce(shadowRays.size());
+    }
+
+    /**
+     * Calculates transparency for a single shadow ray.
+     * Extracted helper method to eliminate code duplication between hard and soft methods.
+     *
+     * @param shadowRay   the shadow ray to test
+     * @param maxDistance the maximum distance to test for intersections
+     * @return the transparency factor as Double3
+     */
+    private Double3 calculateRayTransparency(Ray shadowRay, double maxDistance) {
+        var shadowIntersections = scene.geometries.calculateIntersections(
+                shadowRay,
+                maxDistance
+        );
+        return calculateTransparencyFromIntersections(shadowIntersections);
+    }
+
+    /**
+     * Calculates the final transparency value from a list of shadow intersections.
+     * Common logic extracted from both hard and soft transparency calculations.
+     *
+     * @param shadowIntersections the list of intersections along the shadow ray
+     * @return the transparency factor as Double3
+     */
+    private Double3 calculateTransparencyFromIntersections(List<Intersection> shadowIntersections) {
         var ktr = Double3.ONE;
         if (shadowIntersections == null) return ktr;
 
         for (var shadowI : shadowIntersections) {
             ktr = ktr.product(shadowI.material.kT);
-            if (ktr.lowerThan(MIN_CALC_COLOR_K))
+            if (ktr.lowerThan(MIN_CALC_COLOR_K)) {
                 return Double3.ZERO;
+            }
         }
+
         return ktr;
     }
 }

@@ -5,7 +5,19 @@ import primitives.*;
 /**
  * Point light source - emits light from a point in space.
  */
-public class PointLight extends Light implements LightSource {
+public class PointLight extends Light implements LightSource, AreaLight {
+
+    /**
+     * The radius of the point light, used for area light calculations.
+     * In this case, it is set to 0.0 as PointLight does not have a physical radius.
+     */
+    private double radius = 0.0;
+
+    /**
+     * The number of shadow rays to cast for this light source.
+     * PointLight typically casts one shadow ray.
+     */
+    private int shadowRayCount = 1;
 
     /**
      * The position of the point light in 3D space.
@@ -86,5 +98,28 @@ public class PointLight extends Light implements LightSource {
     @Override
     public double getDistance(Point p) {
         return position.distance(p);
+    }
+
+    @Override
+    public double getRadius() {
+        return radius;
+    }
+
+    @Override
+    public int getShadowRayCount() {
+        return shadowRayCount;
+    }
+
+    /**
+     * Sets the radius and shadow ray count for the area light.
+     *
+     * @param radius         the radius of the area light
+     * @param shadowRayCount the number of shadow rays to cast
+     * @return the area light instance
+     */
+    public PointLight setAreaLightRadius(double radius, int shadowRayCount) {
+        this.radius = radius < 0 ? 0 : radius;
+        this.shadowRayCount = Math.max(shadowRayCount, 1);
+        return this;
     }
 }

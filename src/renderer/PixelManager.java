@@ -61,7 +61,7 @@ class PixelManager {
     /**
      * Printing format
      */
-    private static final String PRINT_FORMAT = "%5.1f%%\n";
+    private static final String PRINT_FORMAT = "%5.1f%%\r";
     /**
      * Mutual exclusion object for synchronizing next pixel allocation between
      * threads
@@ -106,12 +106,12 @@ class PixelManager {
 
             ++cCol;
             if (cCol < maxCols)
-                return new Pixel(cRow, cCol);
+                return new Pixel(cCol, cRow);
 
             cCol = 0;
             ++cRow;
             if (cRow < maxRows)
-                return new Pixel(cRow, cCol);
+                return new Pixel(cCol, cRow);
         }
         return null;
     }

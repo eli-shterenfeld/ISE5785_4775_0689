@@ -474,35 +474,15 @@ class TryForBonusTests {
 
         cameraBuilder
                 .setLocation(new Point(-2500, 650, 8000))
-                .setDirection(new Point(-500, -400, -1000), new Vector(0, 1, 0))
+                .setDirection(new Point(-500, -400, -1000))
                 .setVpDistance(2000)
                 .setVpSize(2560, 1440)
                 .setResolution(2560, 1440)
-                .setDebugPrint(1);
-
-        // ====== RAW_THREADS ======
-        System.out.println("🔧 Running with RAW THREADS (4 threads)...");
-        long startRaw = System.currentTimeMillis();
-
-        cameraBuilder.setMultithreading(4)
+                .setDebugPrint(0.1)
+                .setMultithreading(-1)
                 .build()
                 .renderImage()
-                .writeToImage("GlassAndFireball_RAW_THREADS");
-
-        long endRaw = System.currentTimeMillis();
-        System.out.println("✅ Done RAW THREADS. Time: " + (endRaw - startRaw) + " ms\n");
-
-        // ======  Java Streams ======
-        System.out.println("🔧 Running with STREAMS...");
-        long startStream = System.currentTimeMillis();
-
-        cameraBuilder.setMultithreading(-1)
-                .build()
-                .renderImage()
-                .writeToImage("GlassAndFireball_STREAMS");
-
-        long endStream = System.currentTimeMillis();
-        System.out.println("✅ Done STREAMS. Time: " + (endStream - startStream) + " ms\n");
+                .writeToImage("GlassAndFireball");
     }
 
     /**
@@ -628,271 +608,207 @@ class TryForBonusTests {
 
         cameraBuilder
                 .setLocation(new Point(-2500, 650, 8000))
-                .setDirection(new Point(-500, -400, -1000), new Vector(0, 1, 0))
+                .setDirection(new Point(-500, -400, -1000), Vector.AXIS_Y)
                 .setVpDistance(2000)
-                //.setVpSize(2500, 2500)
-                //.setResolution(800, 800)
                 .setVpSize(2560, 1440)
                 .setResolution(2560, 1440)
                 .setDebugPrint(1)
-                .setMultithreading(4)
+                .setMultithreading(-1)
                 .build()
                 .renderImage()
                 .writeToImage("GlassAndFireballReflectedNoGlossiness");
     }
 
-    //    /**
-//     * Produce a picture of a composed scene with separated geometries
-//     * and a looped camera animation.
-//     */
-//    @Test
-//    void composedSeparatedSceneForBonusLoop() { // no very mach Resolution!!!!!!!!!!!!!!!!
-//        new File("images/bonus").mkdirs();
-//
-//        Scene scene = buildScene();
-//        Point focus = new Point(-200, -600, -350);
-//        double radiusX = 4000;
-//        double radiusZ = 2500;
-//        double baseHeight = 400;
-//        double heightAmplitude = 500;
-//
-//        int totalFrames = 10;
-//        int angleStepDegrees = 72;
-//
-//        for (int frameIndex = 0; frameIndex < totalFrames; frameIndex++) {
-//            double angleRad = Math.toRadians(frameIndex * angleStepDegrees);
-//            double x = radiusX * Math.cos(angleRad);
-//            double z = radiusZ * Math.sin(angleRad);
-//            double y = baseHeight + heightAmplitude * Math.sin(angleRad);
-//
-//            Point camLocation = focus.add(new Vector(x, y, z));
-//
-//            Camera cam = Camera.getBuilder()
-//                    .setLocation(camLocation)
-//                    .setDirection(focus, new Vector(0, 1, 0))
-//                    .setVpDistance(1300)
-//                    .setResolution(800, 450)
-//                    .setVpSize(800, 450)
-//                    .setRayTracer(scene, RayTracerType.SIMPLE)
-//                    .build();
-//
-//            cam.renderImage().writeToImage(String.format("bonus/composedSceneLooped_%04d", frameIndex));
-//        }
-//    }
+    /**
+     * Produce a picture of a box, sphere and cylinder
+     * The scene includes a floor, a sphere, a box (cube), and a cylinder,
+     * all with specific materials and lighting.
+     */
+    @Test
+    void boxSphereCylinderNoSoftShadow() {
+        // Add floor (plane)
+        scene.geometries.add(
+                new Plane(new Point(0, 0, 0), new Vector(0, 0, 1))
+                        .setEmission(new Color(70, 70, 70))
+                        .setMaterial(new Material().setKD(0.8).setKS(0.2).setShininess(20))
+        );
 
-//    version with looped  camera animation involved threads
-//
-//    /**
-//     * Produce a picture of a composed scene with separated geometries
-//     * and a looped camera animation.
-//     */
-//    @Test
-//    void composedSeparatedSceneForBonusLoopWithThreads() {
-//        new File("images/bonus").mkdirs();
-//
-//        Scene scene = buildScene();
-//        Point focus = new Point(-200, -600, -350);
-//
-//        double radiusX = 4000;
-//        double radiusZ = 2500;
-//        double baseHeight = 400;
-//        double heightAmplitude = 500;
-//
-//        int totalFrames = 60;
-//        int totalRenderFrames = 2 * totalFrames - 2;
-//        ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-//
-//        for (int frameIndex = 0; frameIndex < totalRenderFrames; frameIndex++) {
-//            final int i = (frameIndex < totalFrames)
-//                    ? frameIndex
-//                    : totalFrames * 2 - 2 - frameIndex;
-//
-//            final int currentFrame = frameIndex;
-//
-//            executor.submit(() -> {
-//                double angleRad = Math.toRadians(i * 6);
-//                double x = radiusX * Math.cos(angleRad);
-//                double z = radiusZ * Math.sin(angleRad);
-//                double y = baseHeight + heightAmplitude * Math.sin(angleRad);
-//
-//                Point camLocation = focus.add(new Vector(x, y, z));
-//
-//                Camera cam = Camera.getBuilder()
-//                        .setLocation(camLocation)
-//                        .setDirection(focus, new Vector(0, 1, 0))
-//                        .setVpDistance(1300)
-//                        .setVpSize(2560, 1440)
-//                        .setResolution(2560, 1440)
-//                        .setRayTracer(scene, RayTracerType.SIMPLE)
-//                        .build();
-//
-//                String filename = String.format("bonus/composedSceneLooped_%04d", currentFrame);
-//                cam.renderImage().writeToImage(filename);
-//            });
-//
-//        }
-//        executor.shutdown();
-//        try {
-//            if (!executor.awaitTermination(1, TimeUnit.HOURS)) {
-//                System.err.println("Timeout! Some frames may not have finished rendering.");
-//            }
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//    }
+        // Add sphere
+        scene.geometries.add(
+                new Sphere(40, new Point(-40, -60, 50))
+                        .setEmission(new Color(80, 80, 80))
+                        .setMaterial(new Material().setKD(0.7).setKS(0.3).setShininess(40))
+        );
 
-//    @Test
-//    void glossyReflectionTest() {
-//        Scene scene = new Scene("Glossy Reflection Test")
-//                .setBackground(new Color(30, 70, 120))
-//                .setAmbientLight(new AmbientLight(new Color(WHITE)));
-//
-//        scene.geometries.add(
-//                new Sphere(100d, new Point(0, 0, -1000))
-//                        .setEmission(new Color(50, 80, 150))
-//                        .setMaterial(new Material()
-//                                .setKT(0.9)
-//                                .setKR(0.1)
-//                                .setKS(0.8)
-//                                .setKD(0.1)
-//                                .setShininess(300)
-//                                .setGlossiness(0.1, 50)
-//                        ),
-//
-//                new Plane(new Point(0, -100, 0), new Vector(0, 1, 0))
-//                        .setEmission(new Color(20, 50, 100))
-//                        .setMaterial(new Material()
-//                                .setKR(0.7)
-//                                .setKS(0.5)
-//                                .setShininess(150)
-//                                .setGlossiness(0.2, 80)
-//                        )
-//
-//        );
-//
-//        scene.lights.add(
-//                new SpotLight(new Color(1000, 600, 600),
-//                        new Point(0, 300, -800),
-//                        new Vector(0, -1, -1))
-//        );
-//
-//        Camera camera = Camera.getBuilder()
-//                .setLocation(new Point(0, 0, 1000))
-//                .setDirection(new Vector(0, 0, -1), new Vector(0, 1, 0))
-//                .setVpDistance(1000)
-//                .setVpSize(500, 500)
-//                .setResolution(800, 800)
-//                .setRayTracer(scene, RayTracerType.SIMPLE)
-//                .build();
-//
-//        camera.renderImage()
-//                .writeToImage("glossyReflectionTest");
-//    }
+        // Add box (cube, 6 polygons)
+        double cubeSize = 70;
+        Point cubeBase = new Point(40, 30, cubeSize / 2);
+        scene.geometries.add(
+                // Front face
+                new Polygon(
+                        cubeBase.add(new Vector(-cubeSize / 2, -cubeSize / 2, -cubeSize / 2)),
+                        cubeBase.add(new Vector(cubeSize / 2, -cubeSize / 2, -cubeSize / 2)),
+                        cubeBase.add(new Vector(cubeSize / 2, cubeSize / 2, -cubeSize / 2)),
+                        cubeBase.add(new Vector(-cubeSize / 2, cubeSize / 2, -cubeSize / 2))
+                ).setEmission(new Color(80, 80, 80)).setMaterial(new Material().setKD(0.7).setKS(0.3).setShininess(40)),
+                // Back face
+                new Polygon(
+                        cubeBase.add(new Vector(-cubeSize / 2, -cubeSize / 2, cubeSize / 2)),
+                        cubeBase.add(new Vector(cubeSize / 2, -cubeSize / 2, cubeSize / 2)),
+                        cubeBase.add(new Vector(cubeSize / 2, cubeSize / 2, cubeSize / 2)),
+                        cubeBase.add(new Vector(-cubeSize / 2, cubeSize / 2, cubeSize / 2))
+                ).setEmission(new Color(80, 80, 80)).setMaterial(new Material().setKD(0.7).setKS(0.3).setShininess(40)),
+                // 4 sides
+                new Polygon(
+                        cubeBase.add(new Vector(-cubeSize / 2, -cubeSize / 2, -cubeSize / 2)),
+                        cubeBase.add(new Vector(cubeSize / 2, -cubeSize / 2, -cubeSize / 2)),
+                        cubeBase.add(new Vector(cubeSize / 2, -cubeSize / 2, cubeSize / 2)),
+                        cubeBase.add(new Vector(-cubeSize / 2, -cubeSize / 2, cubeSize / 2))
+                ).setEmission(new Color(80, 80, 80)).setMaterial(new Material().setKD(0.7).setKS(0.3).setShininess(40)),
+                new Polygon(
+                        cubeBase.add(new Vector(-cubeSize / 2, cubeSize / 2, -cubeSize / 2)),
+                        cubeBase.add(new Vector(cubeSize / 2, cubeSize / 2, -cubeSize / 2)),
+                        cubeBase.add(new Vector(cubeSize / 2, cubeSize / 2, cubeSize / 2)),
+                        cubeBase.add(new Vector(-cubeSize / 2, cubeSize / 2, cubeSize / 2))
+                ).setEmission(new Color(80, 80, 80)).setMaterial(new Material().setKD(0.7).setKS(0.3).setShininess(40)),
+                new Polygon(
+                        cubeBase.add(new Vector(-cubeSize / 2, -cubeSize / 2, -cubeSize / 2)),
+                        cubeBase.add(new Vector(-cubeSize / 2, cubeSize / 2, -cubeSize / 2)),
+                        cubeBase.add(new Vector(-cubeSize / 2, cubeSize / 2, cubeSize / 2)),
+                        cubeBase.add(new Vector(-cubeSize / 2, -cubeSize / 2, cubeSize / 2))
+                ).setEmission(new Color(80, 80, 80)).setMaterial(new Material().setKD(0.7).setKS(0.3).setShininess(40)),
+                new Polygon(
+                        cubeBase.add(new Vector(cubeSize / 2, -cubeSize / 2, -cubeSize / 2)),
+                        cubeBase.add(new Vector(cubeSize / 2, cubeSize / 2, -cubeSize / 2)),
+                        cubeBase.add(new Vector(cubeSize / 2, cubeSize / 2, cubeSize / 2)),
+                        cubeBase.add(new Vector(cubeSize / 2, -cubeSize / 2, cubeSize / 2))
+                ).setEmission(new Color(80, 80, 80)).setMaterial(new Material().setKD(0.7).setKS(0.3).setShininess(40))
+        );
 
-//    @Test
-//    void reflectiveSpheresOnWater() {
-//
-//        scene.geometries.add(
-//                // Main sphere with deep burgundy color and strong highlight band
-//                new Sphere(280d, new Point(0, -150, -800))
-//                        .setEmission(new Color(60, 10, 30)) // כהה יותר — כמו יין
-//                        .setMaterial(new Material()
-//                                .setKD(0.2)
-//                                .setKS(1.0)
-//                                .setShininess(1000)
-//                                .setKR(0.2)
-//                                .setGlossiness(0.15, 4, 100)), // הרבה יותר קרניים
-//
-//                new Plane(new Point(0, -600, 0), new Vector(0, 1, 0.07))
-//                        .setEmission(new Color(60, 120, 180))
-//                        .setMaterial(new Material()
-//                                .setKR(0.1)              // לא גבוה מדי - אחרת זה ראי
-//                                .setKD(0)             // מים לא מפזרים הרבה
-//                                .setKS(0)
-//                                .setShininess(0)),
-//                //.setGlossiness(0.2, 200)),// טשטוש החזרה
-//
-//                new Plane(new Point(0, 0, -5000), new Vector(0, 0, 1)) // מישור מאחור
-//                        .setEmission(new Color(30, 60, 90))
-//                        .setMaterial(new Material()
-//                                .setKD(0.8)        // פיזור טוב
-//                                .setKS(0.1)        // לא מבריק מדי
-//                                .setShininess(50)  // ברק עדין
-//                                .setKR(0.0)        // לא מחזיר כלל
-//                                .setKT(0.0))     // לא שקוף
-//        );
-//
-//        scene.lights.add(
-//                new SpotLight(new Color(600, 600, 600),
-//                        new Point(0, 0, 1400),
-//                        new Vector(0, 0, -1))
-//                        .setKl(0.0002).setKq(0.0001)
-//        );
-//
-//        // Lower ambient light for contrast
-//        scene.setAmbientLight(new AmbientLight(new Color(4, 6, 10)));
-//
-//        scene.lights.add(
-//                new SpotLight(new Color(1200, 1000, 1000),
-//                        new Point(0, 400, -1000),
-//                        new Vector(0, -1, 0.1)) // פוגע בחלק העליון בזווית שטוחה
-//                        .setKl(0.0003).setKq(0.0001)
-//        );
-//
-//        scene.lights.add(
-//                new SpotLight(new Color(1200, 1200, 1000),
-//                        new Point(-120, 150, -1200),
-//                        new Vector(120, -150, 400).normalize())
-//                        .setKl(0.00005).setKq(0.00001)
-//        );
-//        scene.lights.add(
-//                new DirectionalLight(new Color(100, 100, 150), new Vector(-1, -0.3, -1))
-//        );
-//
-//        scene.lights.add(
-//                new SpotLight(new Color(1200, 1200, 1000),
-//                        new Point(120, 150, -1200),
-//                        new Vector(-120, -150, 400).normalize())
-//                        .setKl(0.00005).setKq(0.00001)
-//        );
-//        scene.lights.add(
-//                new SpotLight(new Color(1500, 1500, 1500),
-//                        new Point(-200, 200, -1200),
-//                        new Vector(200, -350, 400).normalize())  // אל הכדור
-//                        .setKl(0.0003).setKq(0.0001));
-//
-//        scene.lights.add(
-//                new SpotLight(new Color(1500, 1500, 1500),
-//                        new Point(-200, 200, -1200),
-//                        new Vector(200, -350, 400).normalize())  // אל הכדור
-//                        .setKl(0.0003).setKq(0.0001));
-//
-//        // Light panel polygon behind the camera, acting as an area light source
-//        scene.geometries.add(
-//                new Polygon(
-//                        new Point(-50000, 250, 1500),   // Much wider
-//                        new Point(50000, 250, 1500),
-//                        new Point(50000, -2000, 1500),    // Narrower height for band effect
-//                        new Point(-50000, -2000, 1500)
-//                )
-//                        .setEmission(new Color(1200, 1200, 1200)) // Higher intensity
-//                        .setMaterial(new Material()
-//                                .setKD(0.0)
-//                                .setKS(0.0)
-//                                .setKR(0.0)
-//                                .setKT(0.0))
-//        );
-//
-//        // Camera
-//        cameraBuilder
-//                .setLocation(new Point(0, -200, 1000))
-//                .setDirection(new Point(0, 0, -800), new Vector(0, 1, 0))
-//                .setVpDistance(1000)
-//                .setVpSize(1600, 1600)
-//                .setResolution(800, 800)
-//                .build()
-//                .renderImage()
-//                .writeToImage("reflectiveSpheresOnWater_Final_Attempt");
-//    }
+        // Add cylinder
+        scene.geometries.add(
+                new Cylinder(
+                        25, new Ray(new Point(130, -30, 0), new Vector(0, 0, 1))
+                        , 110
+                ).setEmission(new Color(80, 80, 80))
+                        .setMaterial(new Material().setKD(0.7).setKS(0.3).setShininess(40))
+        );
 
+        // Light source with soft shadow
+        scene.lights.add(
+                new PointLight(new Color(500, 500, 500), new Point(100, 150, 200))
+                        .setKl(0.0008).setKq(0.0001)
+        );
+
+        // Ambient light
+        scene.setAmbientLight(new AmbientLight(new Color(30, 30, 30).scale(0.03)));
+
+        cameraBuilder
+                .setLocation(new Point(600, 650, 2000))
+                .setLocation(new Point(70, 80, 320))
+                .setDirection(new Point(0, 0, 0), new Vector(0, 0, 1))
+                .setVpDistance(330)
+                .setVpSize(350, 350)
+                .setResolution(500, 500)
+                .build()
+                .renderImage()
+                .writeToImage("beautifulGlassAndFireballNoSoft");
+    }
+
+    /**
+     * Produce a picture of a box, sphere and cylinder but with soft shadows.
+     * The scene includes a floor, a sphere, a box (cube), and a cylinder,
+     * all with specific materials and lighting.
+     */
+    @Test
+    void boxSphereCylinderSoftShadow() {
+        // Add floor (plane)
+        scene.geometries.add(
+                new Plane(new Point(0, 0, 0), new Vector(0, 0, 1))
+                        .setEmission(new Color(70, 70, 70))
+                        .setMaterial(new Material().setKD(0.8).setKS(0.2).setShininess(20))
+        );
+
+        // Add sphere
+        scene.geometries.add(
+                new Sphere(40, new Point(-40, -60, 50))
+                        .setEmission(new Color(80, 80, 80))
+                        .setMaterial(new Material().setKD(0.7).setKS(0.3).setShininess(40))
+        );
+
+        // Add box (cube, 6 polygons)
+        double cubeSize = 70;
+        Point cubeBase = new Point(40, 30, cubeSize / 2);
+        scene.geometries.add(
+                // Front face
+                new Polygon(
+                        cubeBase.add(new Vector(-cubeSize / 2, -cubeSize / 2, -cubeSize / 2)),
+                        cubeBase.add(new Vector(cubeSize / 2, -cubeSize / 2, -cubeSize / 2)),
+                        cubeBase.add(new Vector(cubeSize / 2, cubeSize / 2, -cubeSize / 2)),
+                        cubeBase.add(new Vector(-cubeSize / 2, cubeSize / 2, -cubeSize / 2))
+                ).setEmission(new Color(80, 80, 80)).setMaterial(new Material().setKD(0.7).setKS(0.3).setShininess(40)),
+                // Back face
+                new Polygon(
+                        cubeBase.add(new Vector(-cubeSize / 2, -cubeSize / 2, cubeSize / 2)),
+                        cubeBase.add(new Vector(cubeSize / 2, -cubeSize / 2, cubeSize / 2)),
+                        cubeBase.add(new Vector(cubeSize / 2, cubeSize / 2, cubeSize / 2)),
+                        cubeBase.add(new Vector(-cubeSize / 2, cubeSize / 2, cubeSize / 2))
+                ).setEmission(new Color(80, 80, 80)).setMaterial(new Material().setKD(0.7).setKS(0.3).setShininess(40)),
+                // 4 sides
+                new Polygon(
+                        cubeBase.add(new Vector(-cubeSize / 2, -cubeSize / 2, -cubeSize / 2)),
+                        cubeBase.add(new Vector(cubeSize / 2, -cubeSize / 2, -cubeSize / 2)),
+                        cubeBase.add(new Vector(cubeSize / 2, -cubeSize / 2, cubeSize / 2)),
+                        cubeBase.add(new Vector(-cubeSize / 2, -cubeSize / 2, cubeSize / 2))
+                ).setEmission(new Color(80, 80, 80)).setMaterial(new Material().setKD(0.7).setKS(0.3).setShininess(40)),
+                new Polygon(
+                        cubeBase.add(new Vector(-cubeSize / 2, cubeSize / 2, -cubeSize / 2)),
+                        cubeBase.add(new Vector(cubeSize / 2, cubeSize / 2, -cubeSize / 2)),
+                        cubeBase.add(new Vector(cubeSize / 2, cubeSize / 2, cubeSize / 2)),
+                        cubeBase.add(new Vector(-cubeSize / 2, cubeSize / 2, cubeSize / 2))
+                ).setEmission(new Color(80, 80, 80)).setMaterial(new Material().setKD(0.7).setKS(0.3).setShininess(40)),
+                new Polygon(
+                        cubeBase.add(new Vector(-cubeSize / 2, -cubeSize / 2, -cubeSize / 2)),
+                        cubeBase.add(new Vector(-cubeSize / 2, cubeSize / 2, -cubeSize / 2)),
+                        cubeBase.add(new Vector(-cubeSize / 2, cubeSize / 2, cubeSize / 2)),
+                        cubeBase.add(new Vector(-cubeSize / 2, -cubeSize / 2, cubeSize / 2))
+                ).setEmission(new Color(80, 80, 80)).setMaterial(new Material().setKD(0.7).setKS(0.3).setShininess(40)),
+                new Polygon(
+                        cubeBase.add(new Vector(cubeSize / 2, -cubeSize / 2, -cubeSize / 2)),
+                        cubeBase.add(new Vector(cubeSize / 2, cubeSize / 2, -cubeSize / 2)),
+                        cubeBase.add(new Vector(cubeSize / 2, cubeSize / 2, cubeSize / 2)),
+                        cubeBase.add(new Vector(cubeSize / 2, -cubeSize / 2, cubeSize / 2))
+                ).setEmission(new Color(80, 80, 80)).setMaterial(new Material().setKD(0.7).setKS(0.3).setShininess(40))
+        );
+
+        // Add cylinder
+        scene.geometries.add(
+                new Cylinder(
+                        25, new Ray(new Point(130, -30, 0), new Vector(0, 0, 1))
+                        , 110
+                ).setEmission(new Color(80, 80, 80))
+                        .setMaterial(new Material().setKD(0.7).setKS(0.3).setShininess(40))
+        );
+
+        // Light source with soft shadow
+        scene.lights.add(
+                new PointLight(new Color(500, 500, 500), new Point(100, 150, 200))
+                        .setAreaLightRadius(50, 100) // soft shadow radius
+                        .setKl(0.0008).setKq(0.0001)
+        );
+
+        // Ambient light
+        scene.setAmbientLight(new AmbientLight(new Color(30, 30, 30).scale(0.03)));
+
+        cameraBuilder
+                .setLocation(new Point(600, 650, 2000))
+                .setLocation(new Point(70, 80, 320))
+                .setDirection(new Point(0, 0, 0), new Vector(0, 0, 1))
+                .setVpDistance(330)
+                .setVpSize(350, 350)
+                .setResolution(500, 500)
+                .build()
+                .renderImage()
+                .writeToImage("beautifulGlassAndFireballWithSoft");
+    }
 }
