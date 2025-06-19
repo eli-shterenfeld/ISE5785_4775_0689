@@ -1,5 +1,6 @@
 package geometries;
 
+import primitives.Point;
 import primitives.Ray;
 
 import java.util.LinkedList;
@@ -62,5 +63,33 @@ public class Geometries extends Intersectable {
             }
         }
         return list;
+    }
+
+    @Override
+    public void setBoundingBox() {
+        if (geometries.isEmpty()) {
+            this.box = null;
+            return;
+        }
+
+        double minX = Double.POSITIVE_INFINITY, minY = Double.POSITIVE_INFINITY, minZ = Double.POSITIVE_INFINITY;
+        double maxX = Double.NEGATIVE_INFINITY, maxY = Double.NEGATIVE_INFINITY, maxZ = Double.NEGATIVE_INFINITY;
+
+        for (Intersectable geo : geometries) {
+            geo.setBoundingBox();
+            Box b = geo.getBoundingBox();
+            if (b == null) continue;
+
+            Point min = b.getMin(), max = b.getMax();
+            if (min.getX() < minX) minX = min.getX();
+            if (min.getY() < minY) minY = min.getY();
+            if (min.getZ() < minZ) minZ = min.getZ();
+
+            if (max.getX() > maxX) maxX = max.getX();
+            if (max.getY() > maxY) maxY = max.getY();
+            if (max.getZ() > maxZ) maxZ = max.getZ();
+        }
+
+        this.box = new Box(new Point(minX, minY, minZ), new Point(maxX, maxY, maxZ));
     }
 }

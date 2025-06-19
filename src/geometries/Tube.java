@@ -86,5 +86,10 @@ public class Tube extends RadialGeometry {
                 ? List.of(new Intersection(this, ray.getPoint(t2)))
                 : null;
     }
+
+    @Override
+    public void setBoundingBox() {
+        this.box = null;
+    }
 }
 

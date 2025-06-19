@@ -11,6 +11,12 @@ import java.util.List;
 public abstract class Intersectable {
 
     /**
+     * The bounding box of the intersectable geometry.
+     * It is used for quick rejection of rays that do not intersect the geometry.
+     */
+    protected Box box = null;
+
+    /**
      * Passive Data Structure (PDS) to contain intersection information.
      */
     public static class Intersection {
@@ -119,6 +125,9 @@ public abstract class Intersectable {
      * @return list of Intersection objects or null
      */
     public final List<Intersection> calculateIntersections(Ray ray, double maxDistance) {
+        if (box != null && !box.intersect(ray, maxDistance))
+            return null;
+
         return calculateIntersectionsHelper(ray, maxDistance);
     }
 
@@ -130,4 +139,19 @@ public abstract class Intersectable {
      * @return list of Intersection objects or null
      */
     protected abstract List<Intersection> calculateIntersectionsHelper(Ray ray, double maxDistance);
+
+    /**
+     * Returns the bounding box of the geometry.
+     *
+     * @return the bounding box
+     */
+    public Box getBoundingBox() {
+        return box;
+    }
+
+    /**
+     * Abstract method to set the bounding box of the geometry.
+     * This method must be implemented by subclasses to define their bounding box.
+     */
+    public abstract void setBoundingBox();
 }

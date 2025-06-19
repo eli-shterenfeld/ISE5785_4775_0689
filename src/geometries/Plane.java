@@ -70,4 +70,9 @@ public class Plane extends Geometry {
         return alignZero(t) <= 0 || alignZero(t - maxDistance) >= 0 ?
                 null : List.of(new Intersection(this, ray.getPoint(t)));
     }
+
+    @Override
+    public void setBoundingBox() {
+        this.box = null;
+    }
 }

@@ -215,7 +215,7 @@ class TryForBonusTests {
      * transparent Sphere producing partial shadow
      */
     @Test
-    void beautifulGlassAndFireballNoSoft() {
+    void beautifulGlassAndFireball() {
         scene.geometries.add(
 
                 new Sphere(400d, new Point(-500, -400, -1000))
@@ -268,7 +268,7 @@ class TryForBonusTests {
                 .setResolution(800, 800)
                 .build()
                 .renderImage()
-                .writeToImage("beautifulGlassAndFireballNoSoft");
+                .writeToImage("beautifulGlassAndFireball");
     }
 
     /**
@@ -712,7 +712,7 @@ class TryForBonusTests {
                 .setResolution(500, 500)
                 .build()
                 .renderImage()
-                .writeToImage("beautifulGlassAndFireballNoSoft");
+                .writeToImage("boxSphereCylinderNoSoftShadow");
     }
 
     /**
@@ -809,6 +809,6 @@ class TryForBonusTests {
                 .setResolution(500, 500)
                 .build()
                 .renderImage()
-                .writeToImage("beautifulGlassAndFireballWithSoft");
+                .writeToImage("boxSphereCylinderSoftShadow");
     }
 }

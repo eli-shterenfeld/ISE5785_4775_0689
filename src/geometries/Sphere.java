@@ -63,4 +63,11 @@ public class Sphere extends RadialGeometry {
             return t1 <= 0 ? List.of(new Intersection(this, ray.getPoint(t2)))
                     : List.of(new Intersection(this, ray.getPoint(t1)), new Intersection(this, ray.getPoint(t2)));
     }
+
+    @Override
+    public void setBoundingBox() {
+        Point min = center.subtract(new Vector(radius, radius, radius));
+        Point max = center.add(new Vector(radius, radius, radius));
+        this.box = new Box(min, max);
+    }
 }

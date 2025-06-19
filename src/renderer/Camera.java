@@ -97,6 +97,12 @@ public class Camera implements Cloneable {
     int nY = 1;
 
     /**
+     * Flag indicating whether to use a bounding box for rendering.
+     * If true, the camera will render only within the bounding box.
+     */
+    private boolean useBoundingBox = false;
+
+    /**
      * Private constructor to prevent instantiation from outside the builder.
      */
     private Camera() {
@@ -120,6 +126,15 @@ public class Camera implements Cloneable {
      */
     public static Builder getBuilder(Camera cam) {
         return new Builder(cam);
+    }
+
+    /**
+     * Returns the location of the camera.
+     *
+     * @return the camera's location point
+     */
+    public boolean isBoundingBoxUsed() {
+        return useBoundingBox;
     }
 
     /**
@@ -231,6 +246,17 @@ public class Camera implements Cloneable {
                 throw new IllegalArgumentException("Resolution must be positive");
             this.camera.nX = nX;
             this.camera.nY = nY;
+            return this;
+        }
+
+        /**
+         * Sets whether to use a bounding box for rendering.
+         *
+         * @param useBox true to use bounding box, false otherwise
+         * @return this Builder instance for method chaining
+         */
+        public Builder setBoundingBoxUsage(boolean useBox) {
+            camera.useBoundingBox = useBox;
             return this;
         }
 
