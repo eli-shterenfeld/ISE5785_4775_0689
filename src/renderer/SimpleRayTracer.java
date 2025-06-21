@@ -134,7 +134,7 @@ public class SimpleRayTracer extends RayTracerBase {
         Color sum = Color.BLACK;
         for (Ray r : rayList)
             sum = sum.add(calcGlobalEffect(r, level, k, kX));
-        return sum.reduce(rayList.size());
+        return rayList.isEmpty() ? calcGlobalEffect(baseRay, level, k, kX) : sum.reduce(rayList.size());
     }
 
     /**
@@ -383,7 +383,7 @@ public class SimpleRayTracer extends RayTracerBase {
                     calculateRayTransparency(shadowRay, light.getDistance(intersection.point))
             );
         }
-        return totalTransparency.reduce(shadowRays.size());
+        return shadowRays.isEmpty() ? Double3.ONE : totalTransparency.reduce(shadowRays.size());
     }
 
     /**
