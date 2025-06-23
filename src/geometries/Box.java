@@ -7,22 +7,31 @@ public class Box {
     /**
      * The minimum corner point of the bounding box.
      */
-    private final Point min;
+    private Point min;
 
     /**
      * The maximum corner point of the bounding box.
      */
-    private final Point max;
+    private Point max;
+
+    // Cached center point for better performance
+    private Point center;
 
     public Box(Point min, Point max) {
         this.min = min;
         this.max = max;
     }
 
+    public Box(Box other) {
+        this.min = new Point(other.min.getX(), other.min.getY(), other.min.getZ());
+        this.max = new Point(other.max.getX(), other.max.getY(), other.max.getZ());
+    }
+
     /**
      * Checks if a ray intersects the bounding box using an optimized slab method.
      *
-     * @param ray the ray to test for intersection
+     * @param ray         the ray to test for intersection
+     * @param maxDistance the maximum distance to consider for intersection
      * @return true if the ray intersects the bounding box, false otherwise
      */
     public boolean intersect(Ray ray, double maxDistance) {
@@ -64,7 +73,7 @@ public class Box {
         }
 
         // We intersected the box; now check if it's within the max distance
-        return tMin <= maxDistance && tMax >= 0 && tMax <= maxDistance;
+        return tMin <= maxDistance && tMax >= 0;
     }
 
     /**
@@ -84,5 +93,69 @@ public class Box {
     public Point getMax() {
         return max;
     }
+
+    /**
+     * Gets the center point of the bounding box (cached for performance).
+     *
+     * @return the center point of the bounding box
+     */
+    public Point getCenter() {
+        if (center == null) {
+            double centerX = (min.getX() + max.getX()) * 0.5;
+            double centerY = (min.getY() + max.getY()) * 0.5;
+            double centerZ = (min.getZ() + max.getZ()) * 0.5;
+            center = new Point(centerX, centerY, centerZ);
+        }
+        return center;
+    }
+
+    public static Box combine(Box b1, Box b2) {
+        if (b1 == null) return b2;
+        if (b2 == null) return b1;
+
+        Point min1 = b1.getMin(), max1 = b1.getMax();
+        Point min2 = b2.getMin(), max2 = b2.getMax();
+
+        Point min = new Point(
+                Math.min(min1.getX(), min2.getX()),
+                Math.min(min1.getY(), min2.getY()),
+                Math.min(min1.getZ(), min2.getZ())
+        );
+
+        Point max = new Point(
+                Math.max(max1.getX(), max2.getX()),
+                Math.max(max1.getY(), max2.getY()),
+                Math.max(max1.getZ(), max2.getZ())
+        );
+
+        return new Box(min, max);
+    }
+
+    public double surfaceArea() {
+        double dx = max.getX() - min.getX();
+        double dy = max.getY() - min.getY();
+        double dz = max.getZ() - min.getZ();
+        return 2 * (dx * dy + dx * dz + dy * dz);
+    }
+
+    public void expandToInclude(Box other) {
+        if (other == null) return;
+
+        Point oMin = other.getMin();
+        Point oMax = other.getMax();
+
+        min = new Point(
+                Math.min(min.getX(), oMin.getX()),
+                Math.min(min.getY(), oMin.getY()),
+                Math.min(min.getZ(), oMin.getZ())
+        );
+
+        max = new Point(
+                Math.max(max.getX(), oMax.getX()),
+                Math.max(max.getY(), oMax.getY()),
+                Math.max(max.getZ(), oMax.getZ())
+        );
+    }
+
 }
 
