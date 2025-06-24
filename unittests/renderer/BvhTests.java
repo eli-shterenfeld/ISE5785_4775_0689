@@ -11,6 +11,31 @@ import java.util.*;
 
 public class BvhTests {
 
+    private Geometries createColoredBox(Point base, double size, Material mat, Color color) {
+        Point p1 = base;
+        Point p2 = p1.add(new Vector(size, 0, 0));
+        Point p3 = p2.add(new Vector(0, size, 0));
+        Point p4 = p1.add(new Vector(0, size, 0));
+        Point p5 = p1.add(new Vector(0, 0, size));
+        Point p6 = p2.add(new Vector(0, 0, size));
+        Point p7 = p3.add(new Vector(0, 0, size));
+        Point p8 = p4.add(new Vector(0, 0, size));
+
+        Polygon front = new Polygon(p1, p2, p3, p4);
+        Polygon back = new Polygon(p5, p6, p7, p8);
+        Polygon right = new Polygon(p2, p3, p7, p6);
+        Polygon left = new Polygon(p1, p4, p8, p5);
+        Polygon top = new Polygon(p4, p3, p7, p8);
+        Polygon bottom = new Polygon(p1, p2, p6, p5);
+
+        for (Polygon face : List.of(front, back, right, left, top, bottom)) {
+            face.setMaterial(mat);
+            face.setEmission(color);
+        }
+
+        return new Geometries(front, back, right, left, top, bottom);
+    }
+
     @Test
     void manyObjectsTestNoImprove() {
         Scene scene = new Scene("1000 tiny shapes scene")
@@ -305,31 +330,6 @@ public class BvhTests {
                 .writeToImage("manyObjectsHierarchicalScene");
     }
 
-    private Geometries createColoredBox(Point base, double size, Material mat, Color color) {
-        Point p1 = base;
-        Point p2 = p1.add(new Vector(size, 0, 0));
-        Point p3 = p2.add(new Vector(0, size, 0));
-        Point p4 = p1.add(new Vector(0, size, 0));
-        Point p5 = p1.add(new Vector(0, 0, size));
-        Point p6 = p2.add(new Vector(0, 0, size));
-        Point p7 = p3.add(new Vector(0, 0, size));
-        Point p8 = p4.add(new Vector(0, 0, size));
-
-        Polygon front = new Polygon(p1, p2, p3, p4);
-        Polygon back = new Polygon(p5, p6, p7, p8);
-        Polygon right = new Polygon(p2, p3, p7, p6);
-        Polygon left = new Polygon(p1, p4, p8, p5);
-        Polygon top = new Polygon(p4, p3, p7, p8);
-        Polygon bottom = new Polygon(p1, p2, p6, p5);
-
-        for (Polygon face : List.of(front, back, right, left, top, bottom)) {
-            face.setMaterial(mat);
-            face.setEmission(color);
-        }
-
-        return new Geometries(front, back, right, left, top, bottom);
-    }
-
     @Test
     void manyObjectsTestWith10000Shapes() {
         Scene scene = new Scene("10000 tiny shapes scene")
@@ -337,7 +337,7 @@ public class BvhTests {
 
         Random rand = new Random(123); // קבוע לשחזור
 
-        for (int i = 0; i < 10000; i++) {
+        for (int i = 0; i < 100000; i++) {
             double x = rand.nextDouble(-500, 500);
             double y = rand.nextDouble(-500, 500);
             double z = rand.nextDouble(-1500, -300);
@@ -392,7 +392,8 @@ public class BvhTests {
             }
         }
 
-        scene.geometries.buildBVH(); // בונה את העץ לאחר ההוספה
+        scene.geometries.buildBVH();
+        //scene.geometries.buildBVH1(); // בונה את העץ לאחר ההוספה
 
         Camera camera = Camera.getBuilder()
                 .setLocation(new Point(1, 0, 1000))

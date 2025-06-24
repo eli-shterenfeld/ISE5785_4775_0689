@@ -14,14 +14,27 @@ public class Box {
      */
     private Point max;
 
-    // Cached center point for better performance
+    /**
+     * The center point of the bounding box (cached for performance).
+     */
     private Point center;
 
+    /**
+     * Constructs a bounding box with the specified minimum and maximum corner points.
+     *
+     * @param min the minimum corner point of the bounding box
+     * @param max the maximum corner point of the bounding box
+     */
     public Box(Point min, Point max) {
         this.min = min;
         this.max = max;
     }
 
+    /**
+     * Copy constructor to create a new Box from an existing one.
+     *
+     * @param other the Box to copy
+     */
     public Box(Box other) {
         this.min = new Point(other.min.getX(), other.min.getY(), other.min.getZ());
         this.max = new Point(other.max.getX(), other.max.getY(), other.max.getZ());
@@ -131,31 +144,30 @@ public class Box {
         return new Box(min, max);
     }
 
+    public Box combine(Box other) {
+        Point newMin = new Point(
+                Math.min(this.min.getX(), other.min.getX()),
+                Math.min(this.min.getY(), other.min.getY()),
+                Math.min(this.min.getZ(), other.min.getZ())
+        );
+        Point newMax = new Point(
+                Math.max(this.max.getX(), other.max.getX()),
+                Math.max(this.max.getY(), other.max.getY()),
+                Math.max(this.max.getZ(), other.max.getZ())
+        );
+        return new Box(newMin, newMax);
+    }
+
+    /**
+     * Calculates the volume of the bounding box.
+     *
+     * @return the volume of the bounding box
+     */
     public double surfaceArea() {
         double dx = max.getX() - min.getX();
         double dy = max.getY() - min.getY();
         double dz = max.getZ() - min.getZ();
         return 2 * (dx * dy + dx * dz + dy * dz);
     }
-
-    public void expandToInclude(Box other) {
-        if (other == null) return;
-
-        Point oMin = other.getMin();
-        Point oMax = other.getMax();
-
-        min = new Point(
-                Math.min(min.getX(), oMin.getX()),
-                Math.min(min.getY(), oMin.getY()),
-                Math.min(min.getZ(), oMin.getZ())
-        );
-
-        max = new Point(
-                Math.max(max.getX(), oMax.getX()),
-                Math.max(max.getY(), oMax.getY()),
-                Math.max(max.getZ(), oMax.getZ())
-        );
-    }
-
 }
 
