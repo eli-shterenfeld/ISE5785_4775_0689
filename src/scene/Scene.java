@@ -84,11 +84,10 @@ public class Scene {
     /**
      * Add a light source to the scene
      *
-     * @param light the light source to add
      * @return the scene itself (for method chaining)
      */
-    public Scene addLightSource(LightSource light) {
-        lights.add(light);
+    public Scene setLights(List<LightSource> lightsList) {
+        lights.addAll(lightsList);
         return this;
     }
 }

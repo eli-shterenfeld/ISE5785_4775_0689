@@ -34,13 +34,22 @@ public class BVHNode extends Intersectable {
      * A flag indicating whether this BVHNode is a leaf node or an internal node.
      * If true, this node contains geometries; if false, it has child nodes.
      */
-    private boolean isLeaf;
+    private final boolean isLeaf;
 
     /**
      * The maximum number of geometries that can be contained in a leaf node.
      * If the number of geometries exceeds this limit, the node will be split into child nodes.
      */
     private static final int MAX_LEAF_SIZE = 6;
+
+    /**
+     * Precomputed comparators for sorting by each axis.
+     */
+    private static final List<Comparator<Intersectable>> AXIS_COMPARATORS = Arrays.asList(
+            Comparator.<Intersectable>comparingDouble(g -> g.getBoundingBox().getCenter().getX()),
+            Comparator.<Intersectable>comparingDouble(g -> g.getBoundingBox().getCenter().getY()),
+            Comparator.<Intersectable>comparingDouble(g -> g.getBoundingBox().getCenter().getZ())
+    );
 
     /**
      * Constructs a BVHNode as a leaf node containing a list of intersectable geometries.
@@ -78,12 +87,10 @@ public class BVHNode extends Intersectable {
 
             if (leftHit) {
                 result = leftChild.calculateIntersectionsHelper(ray, maxDistance);
-                //result = leftChild.calculateIntersections(ray, maxDistance);
             }
 
             if (rightHit) {
                 List<Intersection> rightResult = rightChild.calculateIntersectionsHelper(ray, maxDistance);
-                //List<Intersection> rightResult = rightChild.calculateIntersections(ray, maxDistance);
                 if (rightResult != null) {
                     if (result == null) result = new ArrayList<>(rightResult);
                     else result.addAll(rightResult);
@@ -96,6 +103,7 @@ public class BVHNode extends Intersectable {
         // Leaf node – brute-force intersection with all geometries
         List<Intersection> result = null;
         for (Intersectable geo : leafGeometries) {
+            // Safe to call calculateIntersectionsHelper since geometries.clear() prevents nested BVH structures
             List<Intersection> temp = geo.calculateIntersectionsHelper(ray, maxDistance);
             if (temp != null) {
                 if (result == null)
@@ -122,8 +130,8 @@ public class BVHNode extends Intersectable {
         if (split == null || split.index <= 0 || split.index >= geometries.size())
             return new BVHNode(geometries); // Fallback: make it a leaf
 
-        geometries.sort(Comparator.comparingDouble(
-                g -> g.getBoundingBox().getCenter().get(split.axis)));
+        // Sort by the chosen axis
+        geometries.sort(AXIS_COMPARATORS.get(split.axis));
 
         List<Intersectable> leftList = new ArrayList<>(geometries.subList(0, split.index));
         List<Intersectable> rightList = new ArrayList<>(geometries.subList(split.index, geometries.size()));
@@ -172,25 +180,25 @@ public class BVHNode extends Intersectable {
     private static class SplitResult {
         int axis;
         int index;
-        double cost;
+//        double cost;
 
         /**
          * Constructs a SplitResult with the specified axis, index, and cost.
          *
          * @param axis  the axis along which the split occurs (0 = x, 1 = y, 2 = z)
          * @param index the index where the split occurs in the sorted list of objects
-         * @param cost  the cost associated with this split
          */
-        public SplitResult(int axis, int index, double cost) {
+        public SplitResult(int axis, int index) {
             this.axis = axis;
             this.index = index;
-            this.cost = cost;
+            //this.cost = cost;
         }
     }
 
     /**
      * Finds the best split for the given list of intersectable objects using surface area heuristic.
      * It evaluates splits along each axis (x, y, z) and chooses the one with the lowest cost.
+     * Optimized to sort only once per axis instead of repeatedly sorting the same list.
      *
      * @param objects the list of intersectable objects to be split
      * @return a SplitResult containing the best axis, index, and cost for the split
@@ -202,12 +210,17 @@ public class BVHNode extends Intersectable {
         Box globalBox = computeBoundingBox(objects);
         double totalArea = globalBox.surfaceArea();
 
+        // Pre-sort the list for each axis to avoid repeated sorting
+        List<List<Intersectable>> sortedLists = new ArrayList<>(3);
         for (int axis = 0; axis < 3; axis++) {
-            final int currentAxis = axis;
-            // Sort objects by bounding box center on current axis
-            objects.sort(Comparator.comparingDouble(g -> g.getBoundingBox().getCenter().get(currentAxis)));
+            List<Intersectable> sorted = new ArrayList<>(objects);
+            sorted.sort(AXIS_COMPARATORS.get(axis));
+            sortedLists.add(sorted);
+        }
 
-            int n = objects.size();
+        for (int axis = 0; axis < 3; axis++) {
+            List<Intersectable> sortedObjects = sortedLists.get(axis);
+            int n = sortedObjects.size();
 
             // Precompute left and right bounding boxes
             Box[] leftBoxes = new Box[n];
@@ -215,14 +228,14 @@ public class BVHNode extends Intersectable {
 
             Box left = null;
             for (int i = 0; i < n; i++) {
-                Box b = objects.get(i).getBoundingBox();
+                Box b = sortedObjects.get(i).getBoundingBox();
                 left = (left == null) ? new Box(b) : left.combine(b);
                 leftBoxes[i] = left;
             }
 
             Box right = null;
             for (int i = n - 1; i >= 0; i--) {
-                Box b = objects.get(i).getBoundingBox();
+                Box b = sortedObjects.get(i).getBoundingBox();
                 right = (right == null) ? new Box(b) : right.combine(b);
                 rightBoxes[i] = right;
             }
@@ -242,7 +255,7 @@ public class BVHNode extends Intersectable {
 
                 if (cost < bestCost) {
                     bestCost = cost;
-                    best = new SplitResult(axis, i, cost);
+                    best = new SplitResult(axis, i);
                 }
             }
         }

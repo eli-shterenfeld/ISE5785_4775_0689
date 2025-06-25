@@ -19,11 +19,13 @@ import java.util.*;
  */
 public class Geometries extends Intersectable {
 
+    /**
+     * The bounding box of the geometries.
+     */
     private Intersectable accelerationStructure = null;
     /**
      * List of intersectable geometries.
      */
-    //private List<Intersectable> geometries = new LinkedList<Intersectable>();
     private List<Intersectable> geometries = new ArrayList<Intersectable>();
 
     /**
