@@ -101,16 +101,18 @@ public class Cylinder extends Tube {
         }
 
         // 4. Sort by distance
-        intersections.sort(Comparator.comparingDouble(p ->
-                p.point.subtract(rayOrigin).dotProduct(ray.getDirection())));
+//        intersections.sort(Comparator.comparingDouble(p ->
+//                p.point.subtract(rayOrigin).dotProduct(ray.getDirection())));
+        intersections.sort(Comparator.comparingDouble(
+                p -> p.point.distanceSquared(ray.getHead())));
 
         return intersections.isEmpty() ? null : intersections;
     }
 
     @Override
     public void setBoundingBox() {
-        Point base = axis.getPoint(0);
-        Vector dir = axis.getDirection().normalize();
+        Point base = axis.getHead();
+        Vector dir = axis.getDirection();
         Point top = base.add(dir.scale(height));
 
         Vector u = dir.findAnyOrthogonal().normalize();
@@ -144,7 +146,7 @@ public class Cylinder extends Tube {
             if (z > maxZ) maxZ = z;
         }
 
-        this.box = new Box(
+        this.box = new AABB(
                 new Point(minX, minY, minZ),
                 new Point(maxX, maxY, maxZ)
         );

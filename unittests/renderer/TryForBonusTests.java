@@ -278,6 +278,7 @@ class TryForBonusTests {
     @Test
     void composedSeparatedSceneForBonus() {
         Scene scene = buildScene();
+        scene.geometries.buildBVH();
         cameraBuilder
                 .setLocation(new Point(-1600, -200, 2165))
                 .setDirection(new Point(0, -500, -1500), new Vector(0, 1, 0))

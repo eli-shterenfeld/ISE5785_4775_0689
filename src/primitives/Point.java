@@ -79,9 +79,12 @@ public class Point {
     }
 
     /**
-     * Returns the x-coordinate of the point.
+     * Returns the coordinate value at a specified index.
+     * The index should be 0 for x, 1 for y, and 2 for z.
      *
-     * @return the x-coordinate
+     * @param index the index of the coordinate (0 for x, 1 for y, 2 for z)
+     * @return the coordinate value at the specified index
+     * @throws IllegalArgumentException if the index is not 0, 1, or 2
      */
     public double get(int index) {
         return switch (index) {

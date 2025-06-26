@@ -14,7 +14,7 @@ public abstract class Intersectable {
      * The bounding box of the intersectable geometry.
      * It is used for quick rejection of rays that do not intersect the geometry.
      */
-    protected Box box = null;
+    protected AABB box = null;
 
     /**
      * Passive Data Structure (PDS) to contain intersection information.
@@ -125,8 +125,7 @@ public abstract class Intersectable {
      * @return list of Intersection objects or null
      */
     public final List<Intersection> calculateIntersections(Ray ray, double maxDistance) {
-        if (box != null && !box.intersect(ray, maxDistance))
-            return null;
+        if (box != null && !box.intersect(ray, maxDistance)) return null;
 
         return calculateIntersectionsHelper(ray, maxDistance);
     }
@@ -145,7 +144,7 @@ public abstract class Intersectable {
      *
      * @return the bounding box
      */
-    public Box getBoundingBox() {
+    public AABB getBoundingBox() {
         return box;
     }
 

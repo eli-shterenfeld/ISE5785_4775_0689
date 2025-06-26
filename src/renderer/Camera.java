@@ -544,8 +544,12 @@ public class Camera implements Cloneable {
      */
     private Camera renderImageNoThreads() {
         for (int i = 0; i < nY; ++i)
-            for (int j = 0; j < nX; ++j)
+            for (int j = 0; j < nX; ++j) {
+                if (i == 400 && j == 400) {
+                    int g = 10;
+                }
                 castRay(j, i);
+            }
         return this;
     }
 

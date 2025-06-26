@@ -56,7 +56,8 @@ public class JitterDiskSampler implements RaySampler {
                         .add(v.scale(r * Math.sin(angle)))
                         .subtract(origin);
 
-                if (newDir.dotProduct(normal) > 0) rays.add(new Ray(origin, newDir, normal));
+                //if (newDir.dotProduct(normal) > 0)
+                rays.add(new Ray(origin, newDir, normal));
             }
         }
 

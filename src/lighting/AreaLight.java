@@ -1,5 +1,9 @@
 package lighting;
 
+/**
+ * Area light source emitting from a finite surface; produces soft shadows.
+ * Implementations must return intensity and sample a point on the emitter.
+ */
 public interface AreaLight {
 
     /**
@@ -12,7 +16,6 @@ public interface AreaLight {
     /**
      * Sets the radius of the area light.
      *
-     * @param radius the radius to set
      * @return the area light instance
      */
     int getShadowRayCount();

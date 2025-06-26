@@ -82,8 +82,9 @@ public class Scene {
     }
 
     /**
-     * Add a light source to the scene
+     * Set the list of light sources
      *
+     * @param lightsList the list of light sources to assign
      * @return the scene itself (for method chaining)
      */
     public Scene setLights(List<LightSource> lightsList) {

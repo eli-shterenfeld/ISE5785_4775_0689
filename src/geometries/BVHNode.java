@@ -5,12 +5,26 @@ import primitives.Ray;
 
 import java.util.*;
 
+/**
+ * Node in a Bounding Volume Hierarchy (BVH) tree for accelerating
+ * ray–geometry intersection tests.
+ * <p>
+ * Each node is either a leaf (holding a small list of geometries)
+ * or an internal node with two children and a bounding AABB.
+ * <p>
+ * Built recursively using SAH (Surface Area Heuristic) to choose
+ * the optimal axis and split point for minimal traversal cost.
+ * <p>
+ * Immutable after construction — safe for multithreaded rendering.
+ *
+ * @author Eli and David
+ */
 public class BVHNode extends Intersectable {
 
     /**
      * The bounding box of this BVHNode, which is used for quick rejection of rays that do not intersect the node.
      */
-    private Box box;
+    private AABB box;
 
     /**
      * The left child of this BVHNode. If this node is a leaf, this will be null.
@@ -51,6 +65,21 @@ public class BVHNode extends Intersectable {
             Comparator.<Intersectable>comparingDouble(g -> g.getBoundingBox().getCenter().getZ())
     );
 
+//    private static final List<Comparator<Intersectable>> AXIS_COMPARATORS = Arrays.asList(
+//            Comparator.<Intersectable>comparingDouble(g -> {
+//                AABB box = g.getBoundingBox();
+//                return box != null ? box.getCenter().getX() : Double.NEGATIVE_INFINITY;
+//            }),
+//            Comparator.<Intersectable>comparingDouble(g -> {
+//                AABB box = g.getBoundingBox();
+//                return box != null ? box.getCenter().getY() : Double.NEGATIVE_INFINITY;
+//            }),
+//            Comparator.<Intersectable>comparingDouble(g -> {
+//                AABB box = g.getBoundingBox();
+//                return box != null ? box.getCenter().getZ() : Double.NEGATIVE_INFINITY;
+//            })
+//    );
+
     /**
      * Constructs a BVHNode as a leaf node containing a list of intersectable geometries.
      * This constructor is used when the number of geometries is less than or equal to MAX_LEAF_SIZE.
@@ -74,7 +103,7 @@ public class BVHNode extends Intersectable {
         this.leftChild = left;
         this.rightChild = right;
         this.isLeaf = false;
-        this.box = Box.combine(left.getBoundingBox(), right.getBoundingBox());
+        this.box = AABB.combine(left.getBoundingBox(), right.getBoundingBox());
     }
 
     @Override
@@ -126,6 +155,8 @@ public class BVHNode extends Intersectable {
         if (geometries.size() <= MAX_LEAF_SIZE)
             return new BVHNode(geometries); // Leaf node
 
+        geometries.removeIf(g -> g.getBoundingBox() == null);
+
         SplitResult split = findBestSplit(geometries);
         if (split == null || split.index <= 0 || split.index >= geometries.size())
             return new BVHNode(geometries); // Fallback: make it a leaf
@@ -149,12 +180,12 @@ public class BVHNode extends Intersectable {
      * @param list the list of intersectable geometries
      * @return a bounding box that encompasses all geometries in the list
      */
-    private static Box computeBoundingBox(List<Intersectable> list) {
+    private static AABB computeBoundingBox(List<Intersectable> list) {
         double minX = Double.POSITIVE_INFINITY, minY = Double.POSITIVE_INFINITY, minZ = Double.POSITIVE_INFINITY;
         double maxX = Double.NEGATIVE_INFINITY, maxY = Double.NEGATIVE_INFINITY, maxZ = Double.NEGATIVE_INFINITY;
 
         for (Intersectable geo : list) {
-            Box b = geo.getBoundingBox();
+            AABB b = geo.getBoundingBox();
             if (b == null) continue;
 
             Point min = b.getMin();
@@ -169,7 +200,7 @@ public class BVHNode extends Intersectable {
             maxZ = Math.max(maxZ, max.getZ());
         }
 
-        return new Box(new Point(minX, minY, minZ), new Point(maxX, maxY, maxZ));
+        return new AABB(new Point(minX, minY, minZ), new Point(maxX, maxY, maxZ));
     }
 
     /**
@@ -178,9 +209,16 @@ public class BVHNode extends Intersectable {
      * and the cost associated with that split.
      */
     private static class SplitResult {
-        int axis;
-        int index;
-//        double cost;
+
+        /**
+         * The axis along which the split occurs (0 = x, 1 = y, 2 = z).
+         */
+        final int axis;
+
+        /**
+         * The index in the sorted list of objects where the split occurs.
+         */
+        final int index;
 
         /**
          * Constructs a SplitResult with the specified axis, index, and cost.
@@ -191,7 +229,6 @@ public class BVHNode extends Intersectable {
         public SplitResult(int axis, int index) {
             this.axis = axis;
             this.index = index;
-            //this.cost = cost;
         }
     }
 
@@ -207,7 +244,7 @@ public class BVHNode extends Intersectable {
         SplitResult best = null;
         double bestCost = Double.POSITIVE_INFINITY;
 
-        Box globalBox = computeBoundingBox(objects);
+        AABB globalBox = computeBoundingBox(objects);
         double totalArea = globalBox.surfaceArea();
 
         // Pre-sort the list for each axis to avoid repeated sorting
@@ -223,27 +260,27 @@ public class BVHNode extends Intersectable {
             int n = sortedObjects.size();
 
             // Precompute left and right bounding boxes
-            Box[] leftBoxes = new Box[n];
-            Box[] rightBoxes = new Box[n];
+            AABB[] leftBoxes = new AABB[n];
+            AABB[] rightBoxes = new AABB[n];
 
-            Box left = null;
+            AABB left = null;
             for (int i = 0; i < n; i++) {
-                Box b = sortedObjects.get(i).getBoundingBox();
-                left = (left == null) ? new Box(b) : left.combine(b);
+                AABB b = sortedObjects.get(i).getBoundingBox();
+                left = (left == null) ? new AABB(b) : left.combine(b);
                 leftBoxes[i] = left;
             }
 
-            Box right = null;
+            AABB right = null;
             for (int i = n - 1; i >= 0; i--) {
-                Box b = sortedObjects.get(i).getBoundingBox();
-                right = (right == null) ? new Box(b) : right.combine(b);
+                AABB b = sortedObjects.get(i).getBoundingBox();
+                right = (right == null) ? new AABB(b) : right.combine(b);
                 rightBoxes[i] = right;
             }
 
             // Try all split points
             for (int i = 1; i < n; i++) {
-                Box leftBox = leftBoxes[i - 1];
-                Box rightBox = rightBoxes[i];
+                AABB leftBox = leftBoxes[i - 1];
+                AABB rightBox = rightBoxes[i];
 
                 int leftCount = i;
                 int rightCount = n - i;
@@ -264,7 +301,7 @@ public class BVHNode extends Intersectable {
     }
 
     @Override
-    public Box getBoundingBox() {
+    public AABB getBoundingBox() {
         return box;
     }
 
@@ -273,3 +310,4 @@ public class BVHNode extends Intersectable {
         if (isLeaf) this.box = computeBoundingBox(leafGeometries);
     }
 }
+

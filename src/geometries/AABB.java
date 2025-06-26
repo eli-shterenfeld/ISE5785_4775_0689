@@ -2,17 +2,22 @@ package geometries;
 
 import primitives.*;
 
-public class Box {
+/**
+ * Represents an Axis-Aligned Bounding Box (AABB) in 3D space.
+ * This class provides methods to check for ray intersections, point containment,
+ * and bounding box combinations.
+ */
+public class AABB {
 
     /**
      * The minimum corner point of the bounding box.
      */
-    private Point min;
+    private final Point min;
 
     /**
      * The maximum corner point of the bounding box.
      */
-    private Point max;
+    private final Point max;
 
     /**
      * The center point of the bounding box (cached for performance).
@@ -25,17 +30,17 @@ public class Box {
      * @param min the minimum corner point of the bounding box
      * @param max the maximum corner point of the bounding box
      */
-    public Box(Point min, Point max) {
+    public AABB(Point min, Point max) {
         this.min = min;
         this.max = max;
     }
 
     /**
-     * Copy constructor to create a new Box from an existing one.
+     * Copy constructor to create a new AABB from an existing one.
      *
-     * @param other the Box to copy
+     * @param other the AABB to copy
      */
-    public Box(Box other) {
+    public AABB(AABB other) {
         this.min = new Point(other.min.getX(), other.min.getY(), other.min.getZ());
         this.max = new Point(other.max.getX(), other.max.getY(), other.max.getZ());
     }
@@ -122,7 +127,14 @@ public class Box {
         return center;
     }
 
-    public static Box combine(Box b1, Box b2) {
+    /**
+     * Combines two bounding boxes into one that encompasses both.
+     *
+     * @param b1 the first bounding box
+     * @param b2 the second bounding box
+     * @return a new AABB that encompasses both b1 and b2, or null if both are null
+     */
+    public static AABB combine(AABB b1, AABB b2) {
         if (b1 == null) return b2;
         if (b2 == null) return b1;
 
@@ -141,10 +153,16 @@ public class Box {
                 Math.max(max1.getZ(), max2.getZ())
         );
 
-        return new Box(min, max);
+        return new AABB(min, max);
     }
 
-    public Box combine(Box other) {
+    /**
+     * Combines this bounding box with another bounding box.
+     *
+     * @param other the other bounding box to combine with
+     * @return a new AABB that encompasses both this and the other bounding box
+     */
+    public AABB combine(AABB other) {
         Point newMin = new Point(
                 Math.min(this.min.getX(), other.min.getX()),
                 Math.min(this.min.getY(), other.min.getY()),
@@ -155,7 +173,7 @@ public class Box {
                 Math.max(this.max.getY(), other.max.getY()),
                 Math.max(this.max.getZ(), other.max.getZ())
         );
-        return new Box(newMin, newMax);
+        return new AABB(newMin, newMax);
     }
 
     /**
@@ -168,6 +186,18 @@ public class Box {
         double dy = max.getY() - min.getY();
         double dz = max.getZ() - min.getZ();
         return 2 * (dx * dy + dx * dz + dy * dz);
+    }
+
+    /**
+     * Creates an infinite bounding box that covers the entire space.
+     *
+     * @return an AABB representing an infinite bounding box
+     */
+    public static AABB createInfiniteBoundingBox() {
+        return new AABB(
+                new Point(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY),
+                new Point(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY)
+        );
     }
 }
 

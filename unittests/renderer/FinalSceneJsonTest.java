@@ -6,6 +6,11 @@ import primitives.Vector;
 import scene.JsonScene;
 import scene.Scene;
 
+/**
+ * Integration test for rendering a full scene loaded from a JSON file.
+ * <p>
+ * Verifies end-to-end rendering with BVH and multithreading enabled.
+ */
 public class FinalSceneJsonTest {
 
     /**
@@ -18,6 +23,10 @@ public class FinalSceneJsonTest {
     private final Camera.Builder cameraBuilder = Camera.getBuilder()
             .setRayTracer(scene, RayTracerType.SIMPLE);
 
+    /**
+     * Loads a complex scene from JSON, builds BVH, sets up a camera,
+     * renders the image with multithreading, and writes it to a file.
+     */
     @Test
     void composedSceneFromJson() {
         Scene scene = JsonScene.importScene("scenes/final_scene (1).json");
@@ -34,5 +43,4 @@ public class FinalSceneJsonTest {
                 .renderImage()
                 .writeToImage("composedSceneFromJson");
     }
-
 }

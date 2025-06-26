@@ -20,6 +20,10 @@ import java.util.*;
 public class Geometries extends Intersectable {
 
     /**
+     * The infinite geometries witch has not had bounding box.
+     */
+    private final List<Intersectable> infinite = new ArrayList<>();
+    /**
      * The bounding box of the geometries.
      */
     private Intersectable accelerationStructure = null;
@@ -55,10 +59,32 @@ public class Geometries extends Intersectable {
 
     @Override
     protected List<Intersection> calculateIntersectionsHelper(Ray ray, double maxDistance) {
-        if (accelerationStructure != null)
-            return accelerationStructure.calculateIntersections(ray, maxDistance);
-
         List<Intersection> list = null;
+        if (accelerationStructure != null) {
+            for (Intersectable item : infinite) {
+                List<Intersection> tmp = item.calculateIntersections(ray, maxDistance);
+                if (tmp != null) {
+                    if (list == null)
+                        list = new ArrayList<>(tmp);
+                    else
+                        list.addAll(tmp);
+                }
+            }
+            List<Intersection> listBVH = accelerationStructure.calculateIntersections(ray, maxDistance);
+
+            if (listBVH == null)
+                return list;
+
+            if (list == null)
+                return listBVH;
+
+            list.addAll(listBVH);
+            return list;
+        }
+
+        // if (accelerationStructure != null) return accelerationStructure.calculateIntersections(ray, maxDistance);
+
+        //List<Intersection> list = null;
         for (Intersectable item : geometries) {
             List<Intersection> found = item.calculateIntersections(ray, maxDistance);
             if (found != null) {
@@ -83,7 +109,7 @@ public class Geometries extends Intersectable {
 
         for (Intersectable geo : geometries) {
             geo.setBoundingBox();
-            Box b = geo.getBoundingBox();
+            AABB b = geo.getBoundingBox();
             if (b == null) continue;
 
             Point min = b.getMin(), max = b.getMax();
@@ -96,7 +122,7 @@ public class Geometries extends Intersectable {
             if (max.getZ() > maxZ) maxZ = max.getZ();
         }
 
-        this.box = new Box(new Point(minX, minY, minZ), new Point(maxX, maxY, maxZ));
+        this.box = new AABB(new Point(minX, minY, minZ), new Point(maxX, maxY, maxZ));
     }
 
     /**
@@ -104,7 +130,12 @@ public class Geometries extends Intersectable {
      */
     public void buildBVH() {
         setBoundingBox();
+        for (Intersectable g : geometries) {
+            if (g.getBoundingBox() == null)
+                infinite.add(g);
+        }
         this.accelerationStructure = BVHNode.buildFrom(geometries);
+        this.box = AABB.createInfiniteBoundingBox();
         geometries.clear(); // optional, to free memory or mark as transferred
     }
 }

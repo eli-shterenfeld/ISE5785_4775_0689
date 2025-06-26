@@ -129,36 +129,6 @@ public class Polygon extends Geometry {
         return List.of(new Intersection(this, q)); // point is inside polygon
     }
 
-//    @Override
-//    public void setBoundingBox() {
-//        double minX = Double.POSITIVE_INFINITY;
-//        double minY = Double.POSITIVE_INFINITY;
-//        double minZ = Double.POSITIVE_INFINITY;
-//
-//        double maxX = Double.NEGATIVE_INFINITY;
-//        double maxY = Double.NEGATIVE_INFINITY;
-//        double maxZ = Double.NEGATIVE_INFINITY;
-//
-//        for (Point p : vertices) {
-//            double x = p.getX();
-//            double y = p.getY();
-//            double z = p.getZ();
-//
-//            if (x < minX) minX = x;
-//            if (y < minY) minY = y;
-//            if (z < minZ) minZ = z;
-//
-//            if (x > maxX) maxX = x;
-//            if (y > maxY) maxY = y;
-//            if (z > maxZ) maxZ = z;
-//        }
-//
-//        this.box = new Box(
-//                new Point(minX, minY, minZ),
-//                new Point(maxX, maxY, maxZ)
-//        );
-//    }
-
     @Override
     public void setBoundingBox() {
         double minX = Double.POSITIVE_INFINITY;
@@ -202,7 +172,7 @@ public class Polygon extends Geometry {
             maxZ = center + EPSILON / 2;
         }
 
-        this.box = new Box(
+        this.box = new AABB(
                 new Point(minX, minY, minZ),
                 new Point(maxX, maxY, maxZ)
         );
