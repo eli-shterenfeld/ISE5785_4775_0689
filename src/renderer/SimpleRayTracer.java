@@ -106,8 +106,11 @@ public class SimpleRayTracer extends RayTracerBase {
      */
     private Color calcGlobalEffects(Intersection intersection, int level, Double3 k) {
         Material m = intersection.material;
-        return traceBeamAverage(constructReflectedRay(intersection), intersection.normal, m, m.kR, level, k)
-                .add(traceBeamAverage(constructRefractedRay(intersection), intersection.normal.scale(-1), m, m.kT, level, k));
+//        return traceBeamAverage(constructReflectedRay(intersection), intersection.normal, m, m.kR, level, k, intersection)
+//                .add(traceBeamAverage(constructRefractedRay(intersection), intersection.normal.scale(-1), m, m.kT, level, k, intersection));
+        return traceBeamAverage(constructReflectedRay(intersection), intersection.normal, m, m.kR, level, k, intersection)
+                .add(traceBeamAverage(constructRefractedRay(intersection), intersection.normal.scale(-1), m, m.kT, level, k, intersection));
+
     }
 
     /**
@@ -122,8 +125,8 @@ public class SimpleRayTracer extends RayTracerBase {
      * @param k        attenuation factor for each color component
      * @return the average color contribution from glossy effects
      */
-    private Color traceBeamAverage(Ray baseRay, Vector normal, Material material, Double3 kX, int level, Double3 k) {
-        if (material.glossinessRadius <= 0 || material.glossinessRays <= 1)
+    private Color traceBeamAverage(Ray baseRay, Vector normal, Material material, Double3 kX, int level, Double3 k, Intersection intersection) {
+        if (intersection.material.glossinessRadius <= 0 || intersection.material.glossinessRays <= 1)
             return calcGlobalEffect(baseRay, level, k, kX);
 
         var rayList = raySampler.sample(
@@ -131,10 +134,12 @@ public class SimpleRayTracer extends RayTracerBase {
                 material.glossinessDistance, material.glossinessRays
         );
 
+        rayList.removeIf(g -> g.getDirection().dotProduct(normal) * intersection.dotProductRayNormal > 0); // Remove rays that are not in the correct hemisphere
+
         Color sum = Color.BLACK;
         for (Ray r : rayList)
             sum = sum.add(calcGlobalEffect(r, level, k, kX));
-        return rayList.isEmpty() ? calcGlobalEffect(baseRay, level, k, kX) : sum.reduce(rayList.size());
+        return sum.reduce(rayList.size());
     }
 
     /**
@@ -275,39 +280,6 @@ public class SimpleRayTracer extends RayTracerBase {
 
     /**
      * Calculates the transparency of the intersection point.
-     *
-     * @param intersection the intersection data
-     * @return the transparency factor as Double3
-     */
-//    private Double3 transparency(Intersection intersection) {
-//        if (intersection.lightSource.getShadowRayCount() > 1) return transparencyWithManyRays(intersection);
-//
-//        Ray shadowRay = new Ray(
-//                intersection.point,
-//                intersection.lightSource.getL(intersection.point).scale(-1),
-//                intersection.normal
-//        );
-//
-//        var shadowIntersections = scene.geometries.calculateIntersections(
-//                shadowRay,
-//                intersection.lightSource.getDistance(intersection.point)
-//        );
-//
-//        var ktr = Double3.ONE;
-//        if (shadowIntersections == null) return ktr;
-//
-//        for (var shadowI : shadowIntersections) {
-//            ktr = ktr.product(shadowI.material.kT);
-//            if (ktr.lowerThan(MIN_CALC_COLOR_K))
-//                return Double3.ZERO;
-//        }
-//        return ktr;
-//    }
-
-// Fixed transparency methods
-
-    /**
-     * Calculates the transparency of the intersection point.
      * Automatically chooses between hard and soft shadow transparency
      * based on the light source type and properties.
      *
@@ -375,7 +347,7 @@ public class SimpleRayTracer extends RayTracerBase {
                 light.getDistance(intersection.point),
                 areaLight.getShadowRayCount()
         );
-
+        shadowRays.removeIf(g -> g.getDirection().dotProduct(intersection.normal) * intersection.dotProductRayNormal > 0);
         // Average transparency across all shadow rays
         Double3 totalTransparency = Double3.ZERO;
         for (Ray shadowRay : shadowRays) {
@@ -383,7 +355,7 @@ public class SimpleRayTracer extends RayTracerBase {
                     calculateRayTransparency(shadowRay, light.getDistance(intersection.point))
             );
         }
-        return shadowRays.isEmpty() ? Double3.ONE : totalTransparency.reduce(shadowRays.size());
+        return totalTransparency.reduce(shadowRays.size());
     }
 
     /**

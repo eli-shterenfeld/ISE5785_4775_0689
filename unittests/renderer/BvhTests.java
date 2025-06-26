@@ -481,7 +481,7 @@ public class BvhTests {
         Material waterMat = new Material()
                 .setKD(0.05)
                 .setKS(0.3)
-                .setKR(0.9).setGlossiness(0.3, 3, 50);
+                .setKR(0.9).setGlossiness(0.04, 4, 50);
 
         Color waterCol = new Color(30, 40, 50);
 
@@ -583,7 +583,7 @@ public class BvhTests {
         Material waterMat = new Material()
                 .setKD(0.05)
                 .setKS(0.3)
-                .setKR(0.9).setGlossiness(0.3, 3, 50);
+                .setKR(0.9).setGlossiness(0.04, 4, 50);
 
         Color waterCol = new Color(30, 40, 50);
 
@@ -686,7 +686,7 @@ public class BvhTests {
         Material waterMat = new Material()
                 .setKD(0.05)
                 .setKS(0.3)
-                .setKR(0.9).setGlossiness(0.3, 3, 50);
+                .setKR(0.9).setGlossiness(0.04, 4, 50);
 
         Color waterCol = new Color(30, 40, 50);
 
@@ -790,7 +790,8 @@ public class BvhTests {
         Material waterMat = new Material()
                 .setKD(0.05)
                 .setKS(0.3)
-                .setKR(0.9).setGlossiness(0.3, 3, 50);
+                .setKR(0.9)
+                .setGlossiness(0.04, 4, 50);
 
         Color waterCol = new Color(30, 40, 50);
 
