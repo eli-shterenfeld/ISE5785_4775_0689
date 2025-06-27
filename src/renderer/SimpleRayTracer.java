@@ -105,11 +105,8 @@ public class SimpleRayTracer extends RayTracerBase {
      * @return the color contribution from global effects
      */
     private Color calcGlobalEffects(Intersection intersection, int level, Double3 k) {
-        Material m = intersection.material;
-//        return traceBeamAverage(constructReflectedRay(intersection), intersection.normal, m, m.kR, level, k, intersection)
-//                .add(traceBeamAverage(constructRefractedRay(intersection), intersection.normal.scale(-1), m, m.kT, level, k, intersection));
-        return traceBeamAverage(constructReflectedRay(intersection), intersection.normal, m, m.kR, level, k, intersection)
-                .add(traceBeamAverage(constructRefractedRay(intersection), intersection.normal.scale(-1), m, m.kT, level, k, intersection));
+        return traceBeamAverage(constructReflectedRay(intersection), intersection.normal, intersection.material.kR, level, k, intersection)
+                .add(traceBeamAverage(constructRefractedRay(intersection), intersection.normal.scale(-1), intersection.material.kT, level, k, intersection));
 
     }
 
@@ -117,23 +114,21 @@ public class SimpleRayTracer extends RayTracerBase {
      * Traces a beam of rays for glossy reflection or refraction.
      * This method averages the color contributions from multiple rays.
      *
-     * @param baseRay  the base ray (reflection or refraction)
-     * @param normal   the surface normal at the intersection point
-     * @param material the material of the intersected geometry
-     * @param kX       attenuation factor for the current color component
-     * @param level    the recursive level (decreasing with each call)
-     * @param k        attenuation factor for each color component
+     * @param baseRay the base ray (reflection or refraction)
+     * @param normal  the surface normal at the intersection point
+     * @param kX      attenuation factor for the current color component
+     * @param level   the recursive level (decreasing with each call)
+     * @param k       attenuation factor for each color component
      * @return the average color contribution from glossy effects
      */
-    private Color traceBeamAverage(Ray baseRay, Vector normal, Material material, Double3 kX, int level, Double3 k, Intersection intersection) {
+    private Color traceBeamAverage(Ray baseRay, Vector normal, Double3 kX, int level, Double3 k, Intersection intersection) {
         if (intersection.material.glossinessRadius <= 0 || intersection.material.glossinessRays <= 1)
             return calcGlobalEffect(baseRay, level, k, kX);
 
         var rayList = raySampler.sample(
-                baseRay, normal, material.glossinessRadius,
-                material.glossinessDistance, material.glossinessRays
+                baseRay, normal, intersection.material.glossinessRadius,
+                intersection.material.glossinessDistance, intersection.material.glossinessRays
         );
-
         rayList.removeIf(g -> g.getDirection().dotProduct(normal) * intersection.dotProductRayNormal > 0); // Remove rays that are not in the correct hemisphere
 
         Color sum = Color.BLACK;
