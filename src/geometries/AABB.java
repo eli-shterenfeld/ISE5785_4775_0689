@@ -65,7 +65,6 @@ public class AABB {
             double axisMin = min.get(axis);
             double axisMax = max.get(axis);
 
-            // If ray is (almost) parallel to the axis
             if (Math.abs(axisDir) < 1e-15) {
                 if (axisOrigin < axisMin || axisOrigin > axisMax) {
                     return false;
@@ -82,15 +81,14 @@ public class AABB {
                 t2 = temp;
             }
 
-            tMin = Math.max(tMin, t1);
-            tMax = Math.min(tMax, t2);
+            if (t1 > tMin) tMin = t1;
+            if (t2 < tMax) tMax = t2;
 
             if (tMin > tMax + 1e-10) {
                 return false;
             }
         }
 
-        // We intersected the box; now check if it's within the max distance
         return tMin <= maxDistance && tMax >= 0;
     }
 
@@ -186,18 +184,6 @@ public class AABB {
         double dy = max.getY() - min.getY();
         double dz = max.getZ() - min.getZ();
         return 2 * (dx * dy + dx * dz + dy * dz);
-    }
-
-    /**
-     * Creates an infinite bounding box that covers the entire space.
-     *
-     * @return an AABB representing an infinite bounding box
-     */
-    public static AABB createInfiniteBoundingBox() {
-        return new AABB(
-                new Point(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY),
-                new Point(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY)
-        );
     }
 }
 

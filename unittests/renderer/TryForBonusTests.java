@@ -380,7 +380,7 @@ class TryForBonusTests {
                                 .setShininess(200)
                                 .setKR(0.8)
                                 .setKT(0.85)
-                                .setGlossiness(0.2, 4, 100)),
+                                .setGlossinessReflacted(0.2, 4, 100)),
 
                 new Triangle(
                         new Point(-5000, -1000, -1500),
@@ -414,7 +414,7 @@ class TryForBonusTests {
                                 .setShininess(200)
                                 .setKR(0.8)
                                 .setKT(0.85)
-                                .setGlossiness(0.6, 4, 100)),
+                                .setGlossinessRefracted(0.5, 4, 100)),
 
                 new Polygon(
                         new Point(1500, -1000, -1200),
@@ -428,7 +428,7 @@ class TryForBonusTests {
                                 .setShininess(200)
                                 .setKR(0.8)
                                 .setKT(0.85)
-                                .setGlossiness(0.5, 4, 100)),
+                                .setGlossinessRefracted(0.5, 4, 100)),
 
                 new Sphere(300d, new Point(-2000, -500, -2000))
                         .setEmission(new Color(110, 40, 20))

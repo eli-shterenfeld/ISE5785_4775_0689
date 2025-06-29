@@ -14,7 +14,7 @@ public abstract class Intersectable {
      * The bounding box of the intersectable geometry.
      * It is used for quick rejection of rays that do not intersect the geometry.
      */
-    protected AABB box = null;
+    public AABB box = null;
 
     /**
      * Passive Data Structure (PDS) to contain intersection information.

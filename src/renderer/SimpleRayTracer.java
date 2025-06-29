@@ -105,35 +105,38 @@ public class SimpleRayTracer extends RayTracerBase {
      * @return the color contribution from global effects
      */
     private Color calcGlobalEffects(Intersection intersection, int level, Double3 k) {
-        return traceBeamAverage(constructReflectedRay(intersection), intersection.normal, intersection.material.kR, level, k, intersection)
-                .add(traceBeamAverage(constructRefractedRay(intersection), intersection.normal.scale(-1), intersection.material.kT, level, k, intersection));
-
+        return traceBeamAverage(constructReflectedRay(intersection), intersection.normal, intersection.material.glossinessRadius,
+                intersection.material.glossinessDistance, intersection.material.glossinessRays, intersection.material.kR, level, k, intersection)
+                .add(
+                        traceBeamAverage(constructRefractedRay(intersection), intersection.normal.scale(-1), intersection.material.glossinessRefrerectedtRadius,
+                                intersection.material.glossinessRefrerectedtDistance, intersection.material.glossinessRefrerectedtRays, intersection.material.kT, level, k, intersection));
     }
 
     /**
-     * Traces a beam of rays for glossy reflection or refraction.
-     * This method averages the color contributions from multiple rays.
+     * Samples multiple rays around the base ray to calculate the average color contribution.
+     * This method is used for glossy reflections and refractions.
      *
-     * @param baseRay the base ray (reflection or refraction)
-     * @param normal  the surface normal at the intersection point
-     * @param kX      attenuation factor for the current color component
-     * @param level   the recursive level (decreasing with each call)
-     * @param k       attenuation factor for each color component
-     * @return the average color contribution from glossy effects
+     * @param baseRay    the base ray to sample from
+     * @param hemiNormal the hemisphere normal vector
+     * @param radius     the radius of the sampling disk
+     * @param distance   the maximum distance for sampling
+     * @param rays       the number of rays to sample
+     * @param kX         attenuation factor for the current color component
+     * @param level      the recursive level (decreasing with each call)
+     * @param k          attenuation factor for each color component
+     * @param inter      the intersection object
+     * @return the average color contribution from sampled rays
      */
-    private Color traceBeamAverage(Ray baseRay, Vector normal, Double3 kX, int level, Double3 k, Intersection intersection) {
-        if (intersection.material.glossinessRadius <= 0 || intersection.material.glossinessRays <= 1)
-            return calcGlobalEffect(baseRay, level, k, kX);
+    private Color traceBeamAverage(Ray baseRay, Vector hemiNormal, double radius, double distance, int rays, Double3 kX, int level, Double3 k, Intersection inter) {
+        if (radius <= 0 && rays <= 1) return calcGlobalEffect(baseRay, level, k, kX);
 
-        var rayList = raySampler.sample(
-                baseRay, normal, intersection.material.glossinessRadius,
-                intersection.material.glossinessDistance, intersection.material.glossinessRays
-        );
-        rayList.removeIf(g -> g.getDirection().dotProduct(normal) * intersection.dotProductRayNormal > 0); // Remove rays that are not in the correct hemisphere
+        var rayList = raySampler.sample(baseRay, hemiNormal, radius, distance, rays);
+        rayList.removeIf(r -> r.getDirection().dotProduct(hemiNormal) * inter.dotProductRayNormal > 0);
 
         Color sum = Color.BLACK;
         for (Ray r : rayList)
             sum = sum.add(calcGlobalEffect(r, level, k, kX));
+
         return sum.reduce(rayList.size());
     }
 
@@ -232,7 +235,6 @@ public class SimpleRayTracer extends RayTracerBase {
      * @return the specular component as Double3
      */
     private Double3 calcSpecular(Intersection intersection) {
-        // Calculate reflection vector R = L - 2 * (N·L) * N
         Vector r = intersection.lightDirection.subtract(intersection.normal.scale(2 * intersection.nl)).normalize();
         double vr = alignZero(intersection.rayDirection.dotProduct(r));
         return vr >= 0 ? Double3.ZERO

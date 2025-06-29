@@ -14,6 +14,13 @@ public class Material {
     public double glossinessRadius = 0;
 
     /**
+     * Glossiness radius for refracted reflection.
+     * If set to 0, the material is perfectly shiny.
+     * If greater than 0, it simulates a glossy surface with a certain radius.
+     */
+    public double glossinessRefrerectedtRadius = 0;
+
+    /**
      * Distance for glossy reflection.
      * Determines how far the glossy effect extends.
      * A value of 1 means the glossy effect is applied at the intersection point.
@@ -25,6 +32,18 @@ public class Material {
      * Determines the quality of the glossy effect.
      */
     public int glossinessRays = 1;
+
+    /**
+     * Number of rays to be used for glossy refracted reflection.
+     * Determines the quality of the glossy effect.
+     */
+    public double glossinessRefrerectedtDistance = 1;
+
+    /**
+     * Number of rays to be used for glossy reflection.
+     * Determines the quality of the glossy effect.
+     */
+    public int glossinessRefrerectedtRays = 1;
 
     /**
      * Reflection coefficient.
@@ -191,10 +210,26 @@ public class Material {
      * @param rays     number of rays to generate for glossy reflection
      * @return the current material object
      */
-    public Material setGlossiness(double radius, double distance, int rays) {
+    public Material setGlossinessReflacted(double radius, double distance, int rays) {
         this.glossinessRadius = radius <= 0 ? 0 : radius;
         this.glossinessRays = rays <= 0 ? 1 : rays;
         this.glossinessDistance = distance <= 0 ? 1 : distance;
         return this;
     }
+
+    /**
+     * Sets the glossiness parameters for refracted reflection.
+     *
+     * @param radius   the radius of the glossy effect (0 for perfect reflection)
+     * @param distance the distance from the intersection point to the screen
+     * @param rays     number of rays to generate for glossy refracted reflection
+     * @return the current material object
+     */
+    public Material setGlossinessRefracted(double radius, double distance, int rays) {
+        this.glossinessRefrerectedtRadius = radius <= 0 ? 0 : radius;
+        this.glossinessRefrerectedtRays = rays <= 0 ? 1 : rays;
+        this.glossinessRefrerectedtDistance = distance <= 0 ? 1 : distance;
+        return this;
+    }
+
 }
