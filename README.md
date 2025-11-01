@@ -26,4 +26,4 @@ Supports realistic lighting, shadows, reflections, refractions, BVH acceleration
 
 ## 📷 Render Example
 
-  ![Polygon Scene](images/stage2PolygonTreeTest_manualHierarchyCBRN.png)
+  ![Polygon Scene](stage2PolygonTreeTest_manualHierarchyCBRN.png)
