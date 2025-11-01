@@ -23,7 +23,3 @@ Supports realistic lighting, shadows, reflections, refractions, BVH acceleration
   - `renderer` – ray tracer, pixel sampling, image writing  
   - `lighting` – materials, light sources, shading models  
   - `scene` – camera, objects, lights configuration
-
-## 📷 Render Example
-
-  ![Polygon Scene](stage2PolygonTreeTest_manualHierarchyCBRN.png)
